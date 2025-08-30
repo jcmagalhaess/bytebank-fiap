@@ -1,10 +1,25 @@
-import type { EditTransactionModalProps } from "@/interfaces/componentProps";
-import { TransactionType } from "@/app/models/transaction";
+import type { TransactionType } from "@/app/models/transaction";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { useState, useEffect } from "react";
 import { formatToBRL } from "@/utils/format";
+import { useEffect, useState } from "react";
+
+// Definição da interface de props no mesmo arquivo para evitar dependências
+interface EditTransactionModalProps {
+  isOpen: boolean;
+  transaction: {
+    id: number;
+    type: TransactionType;
+    amount: number;
+  } | null;
+  onSave: (updated: {
+    id: number;
+    type: TransactionType;
+    amount: number;
+  }) => void;
+  onClose: () => void;
+}
 
 export function EditTransactionModal({
   isOpen,
@@ -14,6 +29,8 @@ export function EditTransactionModal({
 }: EditTransactionModalProps) {
   const [type, setType] = useState<TransactionType>("deposit");
   const [amount, setAmount] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
   const transactionOptions = [
     { label: "Depósito", value: "deposit", bold: true },
     { label: "Transferência", value: "transfer", bold: true },
@@ -23,6 +40,7 @@ export function EditTransactionModal({
     if (transaction) {
       setType(transaction.type);
       setAmount(Math.round(transaction.amount * 100).toString());
+      setErrorMessage(""); // Limpa a mensagem de erro ao abrir o modal
     }
   }, [transaction]);
 
@@ -35,7 +53,7 @@ export function EditTransactionModal({
     const parsedAmount = Number(amount) / 100;
 
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
-      alert("Por favor, informe um valor válido maior que zero.");
+      setErrorMessage("Por favor, informe um valor válido maior que zero.");
       return;
     }
 
@@ -56,7 +74,11 @@ export function EditTransactionModal({
         <h2 className="text-xl font-semibold mb-4 text-[#0A2A4D]">
           Editar Transação
         </h2>
-
+        {errorMessage && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl relative mb-4">
+            <span className="block sm:inline">{errorMessage}</span>
+          </div>
+        )}
         <div className="mb-4">
           <Select
             label="Tipo de transação"

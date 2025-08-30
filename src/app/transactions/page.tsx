@@ -1,6 +1,7 @@
 "use client";
 
 import { PageContainer } from '@/components/pageContainer';
+import { EditTransactionModal } from '@/components/transaction/EditTransactionModal';
 import { TransactionRow } from '@/components/transaction/transactionRow';
 import { Button } from '@/components/ui/button';
 import { formatToBRL } from '@/utils/format';
@@ -8,7 +9,6 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import type { Transaction } from '../models/transaction';
 import { TransactionService } from '../services/transactionService';
-import { EditTransactionModal } from './edit/[id]/page';
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
