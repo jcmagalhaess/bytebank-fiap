@@ -12,8 +12,8 @@ env:
   ECS_CLUSTER: bytebank-cluster
   ECS_FRONTEND_SERVICE: bytebank-ui-task-family-service-g1b4u7eq # O nome do seu serviço frontend no ECS
   ECS_BACKEND_SERVICE: bytebank-api-task-family-service-150uero3 # O nome do seu serviço backend no ECS
-  FRONTEND_TASK_DEFINITION: bytebank-ui-task-family # O nome da sua task definition frontend
-  BACKEND_TASK_DEFINITION: bytebank-api-task-family # O nome da sua task definition backend
+  FRONTEND_TASK_DEFINITION: aws/bytebank-ui-task-definition.json # O nome da sua task definition frontend
+  BACKEND_TASK_DEFINITION: aws/bytebank-api-task-definition.json # O nome da sua task definition backend
 
 jobs:
   build-and-deploy:

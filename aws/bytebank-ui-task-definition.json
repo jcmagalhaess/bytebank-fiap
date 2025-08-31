@@ -1,0 +1,81 @@
+{
+  "compatibilities": ["EC2", "FARGATE"],
+  "containerDefinitions": [
+    {
+      "cpu": 0,
+      "environment": [],
+      "environmentFiles": [],
+      "essential": true,
+      "image": "668634973940.dkr.ecr.sa-east-1.amazonaws.com/fiap/bytebank-ui",
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/bytebank-ui-task-family",
+          "awslogs-create-group": "true",
+          "awslogs-region": "sa-east-1",
+          "awslogs-stream-prefix": "ecs"
+        },
+        "secretOptions": []
+      },
+      "mountPoints": [],
+      "name": "bytebank-ui-container",
+      "portMappings": [
+        {
+          "appProtocol": "http",
+          "containerPort": 4200,
+          "hostPort": 4200,
+          "name": "bytebank-ui-container-4200-tcp",
+          "protocol": "tcp"
+        }
+      ],
+      "systemControls": [],
+      "ulimits": [],
+      "volumesFrom": []
+    }
+  ],
+  "cpu": "512",
+  "enableFaultInjection": false,
+  "executionRoleArn": "arn:aws:iam::668634973940:role/ecsTaskExecutionRole",
+  "family": "bytebank-ui-task-family",
+  "memory": "1024",
+  "networkMode": "awsvpc",
+  "placementConstraints": [],
+  "registeredAt": "2025-08-31T19:51:52.052Z",
+  "registeredBy": "arn:aws:iam::668634973940:root",
+  "requiresAttributes": [
+    {
+      "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+    },
+    {
+      "name": "ecs.capability.execution-role-awslogs"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.ecr-auth"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+    },
+    {
+      "name": "ecs.capability.execution-role-ecr-pull"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+    },
+    {
+      "name": "ecs.capability.task-eni"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+    }
+  ],
+  "requiresCompatibilities": ["FARGATE"],
+  "revision": 1,
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "status": "ACTIVE",
+  "taskDefinitionArn": "arn:aws:ecs:sa-east-1:668634973940:task-definition/bytebank-ui-task-family:1",
+  "volumes": [],
+  "tags": []
+}

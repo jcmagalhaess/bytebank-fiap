@@ -1,0 +1,86 @@
+{
+  "compatibilities": ["EC2", "FARGATE"],
+  "containerDefinitions": [
+    {
+      "cpu": 0,
+      "environment": [
+        {
+          "name": "MONGODB_URI",
+          "value": "mongodb+srv://bytebank_db_user:iOJsGRYIfQQ4eXaQ@bytebank-fiap-api.yi5v6ph.mongodb.net/?retryWrites=true&w=majority&appName=bytebank-fiap-api"
+        }
+      ],
+      "environmentFiles": [],
+      "essential": true,
+      "image": "668634973940.dkr.ecr.sa-east-1.amazonaws.com/fiap/bytebank-api",
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/bytebank-api-task-family",
+          "awslogs-create-group": "true",
+          "awslogs-region": "sa-east-1",
+          "awslogs-stream-prefix": "ecs"
+        },
+        "secretOptions": []
+      },
+      "mountPoints": [],
+      "name": "bytebank-api-container",
+      "portMappings": [
+        {
+          "appProtocol": "http",
+          "containerPort": 3000,
+          "hostPort": 3000,
+          "name": "bytebank-api-container-3000-tcp",
+          "protocol": "tcp"
+        }
+      ],
+      "systemControls": [],
+      "ulimits": [],
+      "volumesFrom": []
+    }
+  ],
+  "cpu": "512",
+  "enableFaultInjection": false,
+  "executionRoleArn": "arn:aws:iam::668634973940:role/ecsTaskExecutionRole",
+  "family": "bytebank-api-task-family",
+  "memory": "1024",
+  "networkMode": "awsvpc",
+  "placementConstraints": [],
+  "registeredAt": "2025-08-31T19:50:06.070Z",
+  "registeredBy": "arn:aws:iam::668634973940:root",
+  "requiresAttributes": [
+    {
+      "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+    },
+    {
+      "name": "ecs.capability.execution-role-awslogs"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.ecr-auth"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+    },
+    {
+      "name": "ecs.capability.execution-role-ecr-pull"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+    },
+    {
+      "name": "ecs.capability.task-eni"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+    }
+  ],
+  "requiresCompatibilities": ["FARGATE"],
+  "revision": 1,
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "status": "ACTIVE",
+  "taskDefinitionArn": "arn:aws:ecs:sa-east-1:668634973940:task-definition/bytebank-api-task-family:1",
+  "volumes": [],
+  "tags": []
+}
