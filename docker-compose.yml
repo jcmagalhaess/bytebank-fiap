@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  # Serviço para o Front-end (Next.js)
+  frontend:
+    # Use o Dockerfile na pasta 'frontend' para construir a imagem
+    build:
+      context: ./frontend
+      dockerfile: DockerFile
+    # Mapeia a porta 3000 do container para a porta 3000 da sua máquina
+    ports:
+      - "4200:4200"
+    # Reinicia o container se ele falhar
+    restart: always
+    # Define as variáveis de ambiente necessárias para o Next.js
+    environment:
+      - PORT=3000
+    # Monta um volume para o hot-reloading em modo de desenvolvimento
+    volumes:
+      - ./frontend:/app
+
+  # Serviço para o Back-end
+  backend:
+    # Use o Dockerfile na pasta 'backend' para construir a imagem
+    build:
+      context: ./backend
+      dockerfile: DockerFile
+    # Mapeia a porta do back-end (ex: 5000) para a sua máquina
+    ports:
+      - "3000:3000"
+    # Reinicia o container se ele falhar
+    restart: always
+    # Opcional: Define variáveis de ambiente para o back-end
+    environment:
+      - NODE_ENV=development
+    # Opcional: Monta um volume para o hot-reloading
+    volumes:
+      - ./backend:/app
