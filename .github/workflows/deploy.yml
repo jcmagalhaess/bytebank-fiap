@@ -1,0 +1,95 @@
+name: Deploy to AWS ECS
+
+on:
+  push:
+    branches:
+      - FIAP-35 # ou a branch que você usa para deploy
+
+env:
+  AWS_REGION: sa-east-1 # Mude para a sua região da AWS
+  ECR_FRONTEND_REPO: bytebank-ui
+  ECR_BACKEND_REPO: bytebank-api
+  ECS_CLUSTER: bytebank-cluster
+  ECS_FRONTEND_SERVICE: bytebank-ui-task-family-service-g1b4u7eq # O nome do seu serviço frontend no ECS
+  ECS_BACKEND_SERVICE: bytebank-api-task-family-service-150uero3 # O nome do seu serviço backend no ECS
+  FRONTEND_TASK_DEFINITION: bytebank-ui-task-family # O nome da sua task definition frontend
+  BACKEND_TASK_DEFINITION: bytebank-api-task-family # O nome da sua task definition backend
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Construção e push do Backend
+      - name: Build backend Docker image
+        run: |
+          cd backend
+          docker build -t $ECR_BACKEND_REPO:$GITHUB_SHA .
+
+      - name: Push backend Docker image to ECR
+        run: |
+          docker tag $ECR_BACKEND_REPO:$GITHUB_SHA ${{ steps.login-ecr.outputs.registry }}/$ECR_BACKEND_REPO:$GITHUB_SHA
+          docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_BACKEND_REPO:$GITHUB_SHA
+
+      # Construção e push do Frontend
+      - name: Build frontend Docker image
+        run: |
+          cd frontend
+          docker build -t $ECR_FRONTEND_REPO:$GITHUB_SHA .
+
+      - name: Push frontend Docker image to ECR
+        run: |
+          docker tag $ECR_FRONTEND_REPO:$GITHUB_SHA ${{ steps.login-ecr.outputs.registry }}/$ECR_FRONTEND_REPO:$GITHUB_SHA
+          docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_FRONTEND_REPO:$GITHUB_SHA
+
+      # Deploy do Backend
+      - name: Render backend task definition
+        id: render-backend-task
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.BACKEND_TASK_DEFINITION }}
+          container-name: bytebank-api-container # Nome do container na Task Definition
+          image: ${{ steps.login-ecr.outputs.registry }}/$ECR_BACKEND_REPO:$GITHUB_SHA
+
+      - name: Deploy backend to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-backend-task.outputs.task-definition }}
+          service: ${{ env.ECS_BACKEND_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
+
+      # Deploy do Frontend
+      - name: Render frontend task definition
+        id: render-frontend-task
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.FRONTEND_TASK_DEFINITION }}
+          container-name: bytebank-ui-container # Nome do container na Task Definition
+          image: ${{ steps.login-ecr.outputs.registry }}/$ECR_FRONTEND_REPO:$GITHUB_SHA
+
+      - name: Deploy frontend to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-frontend-task.outputs.task-definition }}
+          service: ${{ env.ECS_FRONTEND_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true

@@ -14,7 +14,7 @@ services:
     restart: always
     # Define as variáveis de ambiente necessárias para o Next.js
     environment:
-      - PORT=3000
+      - PORT=4200
     # Monta um volume para o hot-reloading em modo de desenvolvimento
     volumes:
       - ./frontend:/app
