@@ -7,8 +7,8 @@ on:
 
 env:
   AWS_REGION: sa-east-1 # Mude para a sua região da AWS
-  ECR_FRONTEND_REPO: bytebank-ui
-  ECR_BACKEND_REPO: bytebank-api
+  ECR_FRONTEND_REPO: fiap/bytebank-ui
+  ECR_BACKEND_REPO: fiap/bytebank-api
   ECS_CLUSTER: bytebank-cluster
   ECS_FRONTEND_SERVICE: bytebank-ui-task-family-service-g1b4u7eq # O nome do seu serviço frontend no ECS
   ECS_BACKEND_SERVICE: bytebank-api-task-family-service-150uero3 # O nome do seu serviço backend no ECS
