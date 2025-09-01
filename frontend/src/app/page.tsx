@@ -4,7 +4,6 @@ import { PageContainer } from '@/components/pageContainer';
 import { useEffect, useState } from 'react';
 import NewTransactionForm from '../components/NewTransactionForm';
 import Statement from '../components/Statement';
-import BackendTest from '../components/BackendTest';
 import { useAuthContext } from '../contexts/AuthContext';
 import type { Transaction } from './models/transaction';
 import { TransactionService } from './services/transactionService';
@@ -58,11 +57,6 @@ export default function HomePage() {
       <section className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] xl:gap-0 md:flex md:flex-col md:gap-0 lg:flex lg:flex-col xl:grid ">
         {!loading && <Statement transactions={transactions} onRefresh={refreshTransactions}/>}
         {!loading && <NewTransactionForm onAdd={handleAddTransaction} />}
-      </section>
-
-      {/* Componente de teste do backend */}
-      <section className="mt-8">
-        <BackendTest />
       </section>
 
       {/* 🔔 Notificação visível sempre que ativa */}
