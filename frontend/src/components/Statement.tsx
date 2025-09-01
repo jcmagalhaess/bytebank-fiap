@@ -14,16 +14,16 @@ interface StatementProps {
 }
 
 export default function Statement({
-  transactions,
+  transactions: propTransactions,
   limit = 4,
   onRefresh,
 }: StatementProps) {
-  const [transaction, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
 
   async function fetchTransactions() {
-    const list = TransactionService.list();
+    const list = await TransactionService.list();
     setTransactions(list);
     onRefresh();
   }
@@ -53,10 +53,10 @@ export default function Statement({
       variant="sectioned"
       className="bg-white p-6 rounded-xl shadow-md max-w-[1200px] w-full"
     >
-      {transaction.length === 0 ? (
+      {transactions.length === 0 ? (
         <p className="text-gray-400">Nenhuma transação encontrada.</p>
       ) : (
-        transaction
+        transactions
           .slice()
           .reverse()
           .slice(0, limit)

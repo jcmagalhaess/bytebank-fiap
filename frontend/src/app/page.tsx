@@ -4,10 +4,13 @@ import { PageContainer } from '@/components/pageContainer';
 import { useEffect, useState } from 'react';
 import NewTransactionForm from '../components/NewTransactionForm';
 import Statement from '../components/Statement';
+import BackendTest from '../components/BackendTest';
+import { useAuthContext } from '../contexts/AuthContext';
 import type { Transaction } from './models/transaction';
 import { TransactionService } from './services/transactionService';
 
 export default function HomePage() {
+  const { user, isAuthenticated } = useAuthContext();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [showNotification, setShowNotification] = useState(false);
@@ -28,11 +31,11 @@ export default function HomePage() {
     minimumFractionDigits: 2,
   });
 
-  const balance = transactions.reduce((acc, t) => {
+  const balance = Array.isArray(transactions) ? transactions.reduce((acc, t) => {
     if (t.type === 'deposit') return acc + t.amount;
     if (t.type === 'transfer') return acc - t.amount;
     return acc;
-  }, 0);
+  }, 0) : 0;
 
   async function handleAddTransaction(transaction: Omit<Transaction, 'id'>) {
     setLoading(true);
@@ -47,7 +50,7 @@ export default function HomePage() {
       {/* Card superior com saldo */}
       <PageContainer
         variant="highlight"
-        title="Olá Joana"
+        title={isAuthenticated && user ? `Olá ${user.username}` : "Olá Visitante"}
         subtitle={loading ? "Carregando..." : currencyFormatter.format(balance)}
       />
 
@@ -55,6 +58,11 @@ export default function HomePage() {
       <section className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] xl:gap-0 md:flex md:flex-col md:gap-0 lg:flex lg:flex-col xl:grid ">
         {!loading && <Statement transactions={transactions} onRefresh={refreshTransactions}/>}
         {!loading && <NewTransactionForm onAdd={handleAddTransaction} />}
+      </section>
+
+      {/* Componente de teste do backend */}
+      <section className="mt-8">
+        <BackendTest />
       </section>
 
       {/* 🔔 Notificação visível sempre que ativa */}
