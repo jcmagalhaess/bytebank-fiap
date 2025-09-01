@@ -1,6 +1,10 @@
 "use client";
 
-import { TransactionName, TransactionType, TransactionTypeNameMap } from "@/app/models/transaction";
+import {
+  TransactionName,
+  TransactionType,
+  TransactionTypeNameMap,
+} from "@/app/models/transaction";
 import { ArrowDownIcon } from "../icons/arrowDownIcon";
 import { ArrowUpIcon } from "../icons/arrowUpIcon";
 import { EditIcon } from "../icons/editIcon";
@@ -11,6 +15,7 @@ interface TransactionRowProps {
   name?: string;
   date: string;
   amount: string;
+  categoria?: string;
   onEdit?: () => void;
   onDelete?: () => void;
 }
@@ -18,6 +23,7 @@ export function TransactionRow({
   type,
   date,
   amount,
+  categoria,
   onEdit,
   onDelete,
 }: TransactionRowProps) {
@@ -26,17 +32,25 @@ export function TransactionRow({
 
   return (
     <div className="w-full border-b border-backgroundSecondary py-4 text-xs sm:text-sm text-textPrimary font-inter">
-
       {/* Mobile layout */}
       <div className="flex flex-col sm:hidden gap-2">
-
         {/* Linha 1: ícone, nome e data */}
         <div className="flex items-center gap-2">
           <div className="rounded-full p-2 bg-transparent">
             <Icon className="text-white" />
           </div>
           <div className="flex flex-col">
-            <span className="font-semibold">{name}</span>
+            <span className="font-semibold block md:hidden">{name}</span>
+            {/* Categoria */}
+            <span>
+              {categoria ? (
+                <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  {categoria}
+                </span>
+              ) : (
+                "-"
+              )}
+            </span>
             <span className="text-xs">{date}</span>
           </div>
         </div>
@@ -54,16 +68,24 @@ export function TransactionRow({
       </div>
 
       {/* Desktop layout */}
-      <div className="hidden sm:grid grid-cols-[repeat(4,minmax(0,1fr))] gap-6 md:gap-0 x:gap-[50px] xl:gap-0 items-center w-[120%] lg:gap-0">
-
+      <div className="hidden sm:grid grid-cols-[repeat(5,minmax(0,1fr))] gap-6 md:gap-0 x:gap-[50px] xl:gap-0 items-center w-[120%] lg:gap-0">
         {/* Transação */}
-        <div className="flex items-center gap-2 overflow-x-hidden">
+        <div className="flex md:flex-col lg:flex-row items-center gap-2 overflow-x-hidden">
           <div className="rounded-full p-2 bg-transparent">
             <Icon className="text-white" />
           </div>
           <span className="font-semibold">{name}</span>
         </div>
-
+        {/* Categoria */}
+        <span>
+          {categoria ? (
+            <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+              {categoria}
+            </span>
+          ) : (
+            "-"
+          )}
+        </span>
         {/* Data */}
         <span>{date}</span>
 
@@ -71,7 +93,7 @@ export function TransactionRow({
         <span className="font-bold">{amount}</span>
 
         {/* Ações */}
-        <div className="flex gap-2 -ml-[30px]">
+        <div className="flex gap-2 -ml-[30px] sm:block md:hidden lg:block">
           <button onClick={onEdit}>
             <EditIcon className="text-textPrimary hover:text-feedbackInfo w-5 h-5" />
           </button>

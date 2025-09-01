@@ -21,13 +21,21 @@ export class TransactionService {
     return this.loadTransactions().find(t => t.id === id);
   }
 
-  static add(t: Omit<Transaction, 'id'>): Transaction {
-    const transactions = this.loadTransactions();
-    const newTransaction = new Transaction(Date.now(), t.type, t.amount, t.date);
-    transactions.push(newTransaction);
-    this.saveTransactions(transactions);
-    return newTransaction;
-  }
+static add(t: Omit<Transaction, "id">): Transaction {
+  const transactions = this.loadTransactions();
+  const newTransaction = new Transaction(
+    Date.now(),
+    t.type,
+    t.amount,
+    t.date,
+    t.categoria
+  );
+  transactions.push(newTransaction);
+  this.saveTransactions(transactions);
+  return newTransaction;
+}
+
+
 
   static update(id: number, data: Partial<Transaction>): Transaction | undefined {
     const transactions = this.loadTransactions();

@@ -12,5 +12,6 @@ export class Transaction {
     public type: TransactionType,
     public amount: number,
     public date: string,
+    public categoria?: string
   ) {}
 }

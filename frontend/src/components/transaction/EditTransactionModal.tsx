@@ -12,11 +12,13 @@ interface EditTransactionModalProps {
     id: number;
     type: TransactionType;
     amount: number;
+    categoria?: string;
   } | null;
   onSave: (updated: {
     id: number;
     type: TransactionType;
     amount: number;
+    categoria?: string;
   }) => void;
   onClose: () => void;
 }
@@ -30,6 +32,7 @@ export function EditTransactionModal({
   const [type, setType] = useState<TransactionType>("deposit");
   const [amount, setAmount] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [categoria, setCategoria] = useState("");
 
   const transactionOptions = [
     { label: "Depósito", value: "deposit", bold: true },
@@ -40,6 +43,7 @@ export function EditTransactionModal({
     if (transaction) {
       setType(transaction.type);
       setAmount(Math.round(transaction.amount * 100).toString());
+      setCategoria(transaction.categoria || "");
       setErrorMessage(""); // Limpa a mensagem de erro ao abrir o modal
     }
   }, [transaction]);
@@ -62,6 +66,7 @@ export function EditTransactionModal({
         id: transaction.id,
         type,
         amount: parsedAmount,
+        categoria,
       });
     }
   }
@@ -96,8 +101,17 @@ export function EditTransactionModal({
             onChange={handleAmountChange}
             className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
             inputMode="numeric"
-            required
             placeholder="Digite aqui o valor da transação"
+          />
+        </div>
+        <div className="mb-4">
+          <Input
+            label="Categoria"
+            type="text"
+            value={categoria}
+            onChange={(e) => setCategoria(e.target.value)}
+            className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+            placeholder="Digite a categoria da transação"
           />
         </div>
 
