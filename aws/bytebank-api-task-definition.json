@@ -39,7 +39,6 @@
     }
   ],
   "cpu": "512",
-  "enableFaultInjection": false,
   "executionRoleArn": "arn:aws:iam::668634973940:role/ecsTaskExecutionRole",
   "family": "bytebank-api-task-family",
   "memory": "1024",
