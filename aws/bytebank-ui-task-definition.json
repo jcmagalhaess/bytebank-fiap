@@ -6,7 +6,7 @@
       "environment": [],
       "environmentFiles": [],
       "essential": true,
-      "image": "668634973940.dkr.ecr.sa-east-1.amazonaws.com/fiap/bytebank-ui",
+      "image": "668634973940.dkr.ecr.sa-east-1.amazonaws.com/fiap/bytebank-ui:${{ github.sha }}",
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
