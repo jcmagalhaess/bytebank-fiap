@@ -50,14 +50,9 @@ export default function Statement({
           .reverse()
           .slice(0, limit)
           .map((t) => {
-            console.log('Renderizando transação:', t);
-            console.log('Tipo da transação:', t.type);
-            console.log('Valor da transação:', t.amount, 'Tipo:', typeof t.amount);
-            console.log('Categoria da transação:', t.categoria);
             
             const formattedAmount = formatToBRL(t.amount);
-            console.log('Valor formatado:', formattedAmount);
-            
+
             return (
               <TransactionRow
                 key={t.id}

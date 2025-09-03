@@ -35,19 +35,15 @@ export class TransactionService {
     try {
       // Carrega transações locais PRIMEIRO
       const localTransactions = this.loadTransactions();
-      console.log('Transações locais carregadas:', localTransactions);
       
       // SE JÁ TEM TRANSAÇÕES LOCAIS, RETORNA ELAS SEMPRE
       if (localTransactions.length > 0) {
-        console.log('🔥 TRANSAÇÕES LOCAIS EXISTEM - RETORNANDO SEMPRE AS LOCAIS');
-        console.log('🚫 NÃO BUSCANDO DA API - localStorage é a ÚNICA fonte da verdade');
         return localTransactions;
       }
       
       // SÓ BUSCA DA API SE NÃO TEM NADA LOCAL E NUNCA FOI SINCRONIZADO
       const syncKey = this.getSyncFlagKey();
       if (!localStorage.getItem(syncKey)) {
-        console.log('🔄 PRIMEIRA VEZ - Sincronizando com API...');
         
         // Busca conta do usuário
         const accounts = await this.getAccounts();
@@ -64,7 +60,7 @@ export class TransactionService {
         
         // Busca da API UMA ÚNICA VEZ
         const apiTransactions = await TransactionApiService.getTransactions(accountId);
-        console.log('Transações da API recebidas:', apiTransactions);
+        
         
         // Mapeia e salva
         const mappedTransactions = this.mapApiTransactionsToLocal(apiTransactions);
@@ -72,14 +68,12 @@ export class TransactionService {
         
         // MARCA COMO SINCRONIZADO PARA SEMPRE
         localStorage.setItem(syncKey, 'true');
-        console.log('✅ SINCRONIZAÇÃO INICIAL CONCLUÍDA - NUNCA MAIS BUSCARÁ DA API');
         
         return mappedTransactions;
       }
       
       // Se chegou aqui, não tem transações locais mas já foi sincronizado
       // Isso significa que o usuário excluiu tudo - retorna array vazio
-      console.log('📭 Usuário excluiu todas as transações - retornando array vazio');
       return [];
       
     } catch (error) {
@@ -181,7 +175,6 @@ export class TransactionService {
   // Método para mapear transações da API para o formato local
   private static mapApiTransactionsToLocal(apiTransactions: any[]): Transaction[] {
     return apiTransactions.map((t: any) => {
-      console.log('Mapeando transação da API para local:', t);
       
       // Preserva o tipo original se existir, senão converte da API
       let transactionType: 'deposit' | 'transfer';
@@ -205,10 +198,6 @@ export class TransactionService {
         t.date || new Date().toISOString(),
         t.from || t.to || t.categoria || 'Geral'
       );
-      
-      console.log('Transação mapeada com tipo preservado:', transaction);
-      console.log('Tipo original da API:', t.type);
-      console.log('Tipo mapeado:', transaction.type);
       
       return transaction;
     });
