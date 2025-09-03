@@ -1,28 +1,87 @@
 import { Transaction } from "../models/transaction";
 import { TransactionApiService } from "../../services/transactionApiService";
 
-const STORAGE_KEY = "transactions";
-
 export class TransactionService {
+  // Chave do localStorage baseada no usuário logado
+  private static getStorageKey(): string {
+    try {
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return `transactions_${payload.id}`;
+      }
+    } catch (error) {
+      console.warn('Erro ao decodificar token:', error);
+    }
+    // Fallback para chave genérica se não conseguir obter o ID
+    return "transactions_anonymous";
+  }
+
   // Fallback para localStorage quando API não estiver disponível
   static loadTransactions(): Transaction[] {
-    const data = localStorage.getItem(STORAGE_KEY);
+    const storageKey = this.getStorageKey();
+    const data = localStorage.getItem(storageKey);
     if (!data) return [];
     return JSON.parse(data);
   }
 
   static saveTransactions(transactions: Transaction[]) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
+    const storageKey = this.getStorageKey();
+    localStorage.setItem(storageKey, JSON.stringify(transactions));
   }
 
-  // Método principal que tenta usar API primeiro, fallback para localStorage
-  static async list(accountId?: string): Promise<Transaction[]> {
+  // Método principal que SEMPRE prioriza localStorage
+  static async list(): Promise<Transaction[]> {
     try {
-      if (accountId) {
-        return await TransactionApiService.getTransactions(accountId);
+      // Carrega transações locais PRIMEIRO
+      const localTransactions = this.loadTransactions();
+      console.log('Transações locais carregadas:', localTransactions);
+      
+      // SE JÁ TEM TRANSAÇÕES LOCAIS, RETORNA ELAS SEMPRE
+      if (localTransactions.length > 0) {
+        console.log('🔥 TRANSAÇÕES LOCAIS EXISTEM - RETORNANDO SEMPRE AS LOCAIS');
+        console.log('🚫 NÃO BUSCANDO DA API - localStorage é a ÚNICA fonte da verdade');
+        return localTransactions;
       }
-      // Se não tiver accountId, usa localStorage como fallback
-      return this.loadTransactions();
+      
+      // SÓ BUSCA DA API SE NÃO TEM NADA LOCAL E NUNCA FOI SINCRONIZADO
+      const syncKey = this.getSyncFlagKey();
+      if (!localStorage.getItem(syncKey)) {
+        console.log('🔄 PRIMEIRA VEZ - Sincronizando com API...');
+        
+        // Busca conta do usuário
+        const accounts = await this.getAccounts();
+        if (accounts.length === 0) {
+          console.warn('Nenhuma conta encontrada para o usuário');
+          return [];
+        }
+        
+        const accountId = accounts[0]._id || accounts[0].id;
+        if (!accountId) {
+          console.warn('ID da conta não encontrado');
+          return [];
+        }
+        
+        // Busca da API UMA ÚNICA VEZ
+        const apiTransactions = await TransactionApiService.getTransactions(accountId);
+        console.log('Transações da API recebidas:', apiTransactions);
+        
+        // Mapeia e salva
+        const mappedTransactions = this.mapApiTransactionsToLocal(apiTransactions);
+        this.saveTransactions(mappedTransactions);
+        
+        // MARCA COMO SINCRONIZADO PARA SEMPRE
+        localStorage.setItem(syncKey, 'true');
+        console.log('✅ SINCRONIZAÇÃO INICIAL CONCLUÍDA - NUNCA MAIS BUSCARÁ DA API');
+        
+        return mappedTransactions;
+      }
+      
+      // Se chegou aqui, não tem transações locais mas já foi sincronizado
+      // Isso significa que o usuário excluiu tudo - retorna array vazio
+      console.log('📭 Usuário excluiu todas as transações - retornando array vazio');
+      return [];
+      
     } catch (error) {
       console.warn('Erro ao buscar transações da API, usando localStorage:', error);
       return this.loadTransactions();
@@ -103,5 +162,55 @@ export class TransactionService {
       console.error('Erro ao buscar contas:', error);
       return [];
     }
+  }
+
+  // Chave para controlar se já foi feita a sincronização inicial
+  private static getSyncFlagKey(): string {
+    try {
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return `sync_completed_${payload.id}`;
+      }
+    } catch (error) {
+      console.warn('Erro ao decodificar token:', error);
+    }
+    return "sync_completed_anonymous";
+  }
+
+  // Método para mapear transações da API para o formato local
+  private static mapApiTransactionsToLocal(apiTransactions: any[]): Transaction[] {
+    return apiTransactions.map((t: any) => {
+      console.log('Mapeando transação da API para local:', t);
+      
+      // Preserva o tipo original se existir, senão converte da API
+      let transactionType: 'deposit' | 'transfer';
+      if (t.type === 'deposit' || t.type === 'transfer') {
+        // Já está no formato correto
+        transactionType = t.type;
+      } else if (t.type === 'Credit') {
+        transactionType = 'deposit';
+      } else if (t.type === 'Debit') {
+        transactionType = 'transfer';
+      } else {
+        // Fallback para transfer se não conseguir determinar
+        transactionType = 'transfer';
+        console.warn('Tipo de transação não reconhecido, usando fallback:', t.type);
+      }
+      
+      const transaction = new Transaction(
+        t.id || t._id || `api_${Date.now()}_${Math.random()}`, // ID único para transações da API
+        transactionType,
+        Number(t.value) || Number(t.amount) || 0,
+        t.date || new Date().toISOString(),
+        t.from || t.to || t.categoria || 'Geral'
+      );
+      
+      console.log('Transação mapeada com tipo preservado:', transaction);
+      console.log('Tipo original da API:', t.type);
+      console.log('Tipo mapeado:', transaction.type);
+      
+      return transaction;
+    });
   }
 }

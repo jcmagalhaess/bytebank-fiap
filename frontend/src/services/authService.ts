@@ -73,10 +73,14 @@ export class AuthService {
   }
 
   static logout(): void {
+    // NÃO limpa as transações do usuário para manter persistência
+    // As transações ficam no localStorage para serem recuperadas no próximo login
+    
     ApiService.removeAuthToken();
-    // Limpa outros dados do usuário se necessário
+    // Limpa apenas dados de autenticação
     if (typeof window !== 'undefined') {
       localStorage.removeItem('user_data');
+      localStorage.removeItem('auth_token');
     }
   }
 
@@ -85,7 +89,10 @@ export class AuthService {
   }
 
   static getToken(): string | null {
-    return ApiService.getAuthToken();
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('auth_token');
+    }
+    return null;
   }
 
   static async getCurrentUser(): Promise<User | null> {
@@ -94,9 +101,20 @@ export class AuthService {
         return null;
       }
 
-      const response = await ApiService.get<any[]>(API_CONFIG.ENDPOINTS.USERS);
-      // Retorna a lista de usuários da API
-      return response.result?.[0] || null;
+      // Decodifica o token para obter informações do usuário
+      const token = this.getToken();
+      if (!token) {
+        return null;
+      }
+
+      // Decodifica o JWT para obter os dados do usuário
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      
+      return {
+        id: payload.id,
+        username: payload.username,
+        email: payload.email
+      };
     } catch (error) {
       console.error('Erro ao buscar usuário atual:', error);
       return null;

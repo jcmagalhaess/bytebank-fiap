@@ -18,24 +18,13 @@ export default function Statement({
   limit = 4,
   onRefresh,
 }: StatementProps) {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
-
-  async function fetchTransactions() {
-    const list = await TransactionService.list();
-    setTransactions(list);
-    onRefresh();
-  }
-
-  useEffect(() => {
-    fetchTransactions();
-  }, []);
 
   async function handleDelete(id: number) {
     TransactionService.delete(id);
     setDeleteId(null);
-    fetchTransactions();
+    onRefresh(); // Chama apenas o callback do pai
   }
 
   async function handleSave(updated: {
@@ -45,7 +34,7 @@ export default function Statement({
   }) {
     TransactionService.update(updated.id, updated);
     setEditingTransaction(null);
-    fetchTransactions();
+    onRefresh(); // Chama apenas o callback do pai
   }
 
   return (
@@ -53,24 +42,34 @@ export default function Statement({
       variant="sectioned"
       className="bg-white p-6 rounded-xl shadow-md max-w-[1200px] w-full"
     >
-      {transactions.length === 0 ? (
+      {propTransactions.length === 0 ? (
         <p className="text-gray-400">Nenhuma transação encontrada.</p>
       ) : (
-        transactions
+        propTransactions
           .slice()
           .reverse()
           .slice(0, limit)
-          .map((t) => (
-            <TransactionRow
-              key={t.id}
-              type={t.type}
-              date={t.date.split("-").reverse().join("/")}
-              amount={formatToBRL(t.amount)}
-              categoria={t.categoria}
-              onEdit={() => setEditingTransaction(t)}
-              onDelete={() => setDeleteId(t.id)}
-            />
-          ))
+          .map((t) => {
+            console.log('Renderizando transação:', t);
+            console.log('Tipo da transação:', t.type);
+            console.log('Valor da transação:', t.amount, 'Tipo:', typeof t.amount);
+            console.log('Categoria da transação:', t.categoria);
+            
+            const formattedAmount = formatToBRL(t.amount);
+            console.log('Valor formatado:', formattedAmount);
+            
+            return (
+              <TransactionRow
+                key={t.id}
+                type={t.type}
+                date={t.date.split("-").reverse().join("/")}
+                amount={formattedAmount}
+                categoria={t.categoria || 'Geral'}
+                onEdit={() => setEditingTransaction(t)}
+                onDelete={() => setDeleteId(t.id)}
+              />
+            );
+          })
       )}
       <EditTransactionModal
         isOpen={!!editingTransaction}

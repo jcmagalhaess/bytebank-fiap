@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Header } from "../components/header";
 import { AuthProvider } from "../contexts/AuthContext";
+import AuthGuard from "../components/AuthGuard";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -24,14 +25,16 @@ export default function RootLayout({
           rel="stylesheet"
         />
         <AuthProvider>
-          <Header />
-          <div className="flex">
-            <main className="p-6 w-full md:w-[70%] mx-auto justify-items-center">
-              <div className="w-full justify-items-center">
-              {children}
-              </div>
-              </main>
-          </div>
+          <AuthGuard>
+            <Header />
+            <div className="flex">
+              <main className="p-6 w-full md:w-[70%] mx-auto justify-items-center">
+                <div className="w-full justify-items-center">
+                {children}
+                </div>
+                </main>
+            </div>
+          </AuthGuard>
         </AuthProvider>
       </body>
     </html>

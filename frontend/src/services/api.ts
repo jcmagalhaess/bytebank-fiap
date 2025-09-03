@@ -27,7 +27,7 @@ export class ApiService {
     return headers;
   }
 
-  private static async handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
+  private static async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ message: 'Erro na requisição' }));
       throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
@@ -36,7 +36,7 @@ export class ApiService {
     return await response.json();
   }
 
-  static async get<T>(endpoint: string): Promise<ApiResponse<T>> {
+  static async get<T>(endpoint: string): Promise<T> {
     const response = await fetch(getApiUrl(endpoint), {
       method: 'GET',
       headers: this.getHeaders(),
@@ -45,7 +45,7 @@ export class ApiService {
     return this.handleResponse<T>(response);
   }
 
-  static async post<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  static async post<T>(endpoint: string, data?: any): Promise<T> {
     const response = await fetch(getApiUrl(endpoint), {
       method: 'POST',
       headers: this.getHeaders(),
@@ -55,7 +55,7 @@ export class ApiService {
     return this.handleResponse<T>(response);
   }
 
-  static async put<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  static async put<T>(endpoint: string, data?: any): Promise<T> {
     const response = await fetch(getApiUrl(endpoint), {
       method: 'PUT',
       headers: this.getHeaders(),
@@ -65,7 +65,7 @@ export class ApiService {
     return this.handleResponse<T>(response);
   }
 
-  static async delete<T>(endpoint: string): Promise<ApiResponse<T>> {
+  static async delete<T>(endpoint: string): Promise<T> {
     const response = await fetch(getApiUrl(endpoint), {
       method: 'DELETE',
       headers: this.getHeaders(),
