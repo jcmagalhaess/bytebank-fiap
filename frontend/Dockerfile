@@ -1,32 +1,31 @@
-# STAGE 1: COMPILAÇÃO
-# Esta etapa instala as dependências de desenvolvimento e compila a aplicação.
-FROM node:20-alpine AS builder
+# Usa a imagem oficial do Node.js, versão 20, com a distribuição Alpine
+FROM node:20-alpine AS base
 
+# Instala as dependências de produção do Next.js
+FROM base AS deps
 WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
 
-# Instala as dependências e o "npm" para compilar o projeto
-COPY package*.json ./
-RUN npm install
-
-# Copia todo o código do projeto
+# Constrói o projeto em um ambiente de build separado
+FROM base AS builder
+WORKDIR /app
 COPY . .
-
-# Constrói o projeto Next.js para produção
 RUN npm run build
 
-# STAGE 2: PRODUÇÃO
-FROM node:20-alpine AS runner
-
+# O stage final, que contém apenas os arquivos de produção
+FROM base AS runner
 WORKDIR /app
 
+# Copia apenas os arquivos de produção do stage anterior
 COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
 
-# Define a variável de ambiente PORT
+# Define a variável de ambiente PORT para que o servidor Next.js use a porta 4200
 ENV PORT=4200
 
+# Expõe a porta 4200
 EXPOSE 4200
 
-CMD ["node", "server.js"]
+# O comando para iniciar a aplicação
+# Agora, ele executa o script start que já está configurado no Next.js
+CMD ["npm", "start"]
