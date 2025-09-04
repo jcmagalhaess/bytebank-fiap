@@ -85,6 +85,8 @@ jobs:
           task-definition: ${{ env.FRONTEND_TASK_DEFINITION }}
           container-name: bytebank-ui-container
           image: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_FRONTEND_REPO }}:${{ github.sha }}
+          environment-variables: |
+            PUBLIC_API_URL=${{ secrets.PUBLIC_API_URL }}
 
       - name: Deploy frontend to ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
