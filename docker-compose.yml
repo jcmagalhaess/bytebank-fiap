@@ -15,6 +15,7 @@ services:
     # Define as variáveis de ambiente necessárias para o Next.js
     environment:
       - PORT=4200
+      - PUBLIC_API_URL=http://localhost:3000/api
     # Monta um volume para o hot-reloading em modo de desenvolvimento
     volumes:
       - ./frontend:/app
