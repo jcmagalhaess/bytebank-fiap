@@ -1,10 +1,12 @@
-import type { EditTransactionModalProps } from "@/interfaces/componentProps";
+"use client";
+
 import { TransactionType } from "@/app/models/transaction";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { useState, useEffect } from "react";
+import type { EditTransactionModalProps } from "@/interfaces/componentProps";
 import { formatToBRL } from "@/utils/format";
+import { useEffect, useState } from "react";
 
 export function EditTransactionModal({
   isOpen,
