@@ -15,7 +15,7 @@ services:
     # Define as variáveis de ambiente necessárias para o Next.js
     environment:
       - PORT=4200
-      - PUBLIC_API_URL=http://localhost:3000/api
+      - PUBLIC_API_URL=http://localhost:8080
     # Monta um volume para o hot-reloading em modo de desenvolvimento
     volumes:
       - ./frontend:/app
@@ -28,12 +28,13 @@ services:
       dockerfile: Dockerfile
     # Mapeia a porta do back-end (ex: 5000) para a sua máquina
     ports:
-      - "3000:3000"
+      - "8080:8080"
     # Reinicia o container se ele falhar
     restart: always
     # Opcional: Define variáveis de ambiente para o back-end
     environment:
       - NODE_ENV=development
+      - PORT=8080
     # Opcional: Monta um volume para o hot-reloading
     volumes:
       - ./backend:/app
