@@ -7,7 +7,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    # Mapeia a porta 3000 do container para a porta 3000 da sua máquina
+    # Mapeia a porta 4200 do container para a porta 4200 da sua máquina
     ports:
       - "4200:4200"
     # Reinicia o container se ele falhar
