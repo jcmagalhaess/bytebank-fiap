@@ -1,16 +1,19 @@
 # Usa a imagem oficial do Node.js, versão 20, com a distribuição Alpine
 FROM node:20-alpine AS base
 
-# Instala as dependências de produção do Next.js
-FROM base AS deps
+# Define o diretório de trabalho dentro do container
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
 
-# Constrói o projeto em um ambiente de build separado
+# Instala as dependências de desenvolvimento e produção
 FROM base AS builder
 WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm install
+
+# Copia o restante do código do projeto
 COPY . .
+
+# Constrói o projeto para produção
 RUN npm run build
 
 # O stage final, que contém apenas os arquivos de produção
@@ -27,5 +30,4 @@ ENV PORT=4200
 EXPOSE 4200
 
 # O comando para iniciar a aplicação
-# Agora, ele executa o script start que já está configurado no Next.js
 CMD ["npm", "run", "dev"]
