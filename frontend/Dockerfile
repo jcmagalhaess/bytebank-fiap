@@ -28,4 +28,4 @@ EXPOSE 4200
 
 # O comando para iniciar a aplicação
 # Agora, ele executa o script start que já está configurado no Next.js
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]
