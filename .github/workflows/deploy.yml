@@ -66,8 +66,8 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ env.BACKEND_TASK_DEFINITION }}
-          container-name: bytebank-api-container # Nome do container na Task Definition
-          image: ${{ steps.login-ecr.outputs.registry }}/$ECR_BACKEND_REPO:$GITHUB_SHA
+          container-name: bytebank-api-container
+          image: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_BACKEND_REPO }}:${{ github.sha }}
 
       - name: Deploy backend to ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -83,8 +83,10 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ env.FRONTEND_TASK_DEFINITION }}
-          container-name: bytebank-ui-container # Nome do container na Task Definition
-          image: ${{ steps.login-ecr.outputs.registry }}/$ECR_FRONTEND_REPO:$GITHUB_SHA
+          container-name: bytebank-ui-container
+          image: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_FRONTEND_REPO }}:${{ github.sha }}
+          environment-variables: |
+            PUBLIC_API_URL=${{ secrets.PUBLIC_API_URL }}
 
       - name: Deploy frontend to ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
