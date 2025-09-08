@@ -66,6 +66,7 @@ export default function Statement({
               type={t.type}
               date={t.date.split("-").reverse().join("/")}
               amount={formatToBRL(t.amount)}
+              categoria={t.categoria}
               onEdit={() => setEditingTransaction(t)}
               onDelete={() => setDeleteId(t.id)}
             />
@@ -79,6 +80,7 @@ export default function Statement({
                 id: editingTransaction.id,
                 type: editingTransaction.type,
                 amount: editingTransaction.amount,
+                categoria: editingTransaction.categoria,
               }
             : null
         }

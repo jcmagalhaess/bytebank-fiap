@@ -180,8 +180,9 @@ sectioned: clsx(
 
           <div className="bg-backgroundPrimary rounded-lg p-4 w-full overflow-x-hidden">
 
-            <div className="hidden sm:grid grid-cols-[repeat(4,minmax(0,1fr))] gap-6 items-center text-sm font-semibold text-textPrimary mb-sm pr-sm min-w-[560px] w-[120%]">
+            <div className="hidden sm:grid grid-cols-[repeat(5,minmax(0,1fr))] gap-6 items-center text-sm font-semibold text-textPrimary mb-sm pr-md min-w-[560px] w-[120%] md:hidden lg:grid">
               <span>Transação</span>
+              <span>Categoria</span>
               <span>Data</span>
               <span>Valor (R$)</span>
               <span>Ações</span>

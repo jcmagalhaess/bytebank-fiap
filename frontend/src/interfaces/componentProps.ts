@@ -7,7 +7,7 @@ export interface StatementProps {
 }
 
 export interface NewTransactionFormProps {
-  onAdd: (newTransaction: { type: string; amount: number; date: string }) => Promise<void>;
+  onAdd: (newTransaction: { type: string; amount: number; date: string; categoria: string }) => Promise<void>;
 }
 
 export interface EditTransactionModalProps {

@@ -72,6 +72,7 @@ export default function TransactionsPage() {
                 key={t.id}
                 type={t.type}
                 date={t.date.split("-").reverse().join("/")}
+                categoria={t.categoria}
                 amount={formatToBRL(t.amount)}
                 onEdit={() => setEditingTransaction(t)}
                 onDelete={() => setDeleteId(t.id)}
@@ -86,6 +87,7 @@ export default function TransactionsPage() {
           id: editingTransaction.id,
           type: editingTransaction.type,
           amount: editingTransaction.amount,
+          categoria: editingTransaction.categoria,
         } : null}
         onClose={() => setEditingTransaction(null)}
         onSave={handleSave}
