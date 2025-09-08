@@ -27,9 +27,9 @@
       "portMappings": [
         {
           "appProtocol": "http",
-          "containerPort": 3000,
-          "hostPort": 3000,
-          "name": "bytebank-api-container-3000-tcp",
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "name": "bytebank-api-container-8080-tcp",
           "protocol": "tcp"
         }
       ],
@@ -39,7 +39,6 @@
     }
   ],
   "cpu": "512",
-  "enableFaultInjection": false,
   "executionRoleArn": "arn:aws:iam::668634973940:role/ecsTaskExecutionRole",
   "family": "bytebank-api-task-family",
   "memory": "1024",

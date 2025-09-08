@@ -115,6 +115,7 @@ export function EditTransactionModal({
           />
         </div>
 
+
         <div className="w-full flex justify-center">
           <div className="flex justify-end gap-4 w-[60%]">
             <Button variant="danger" onClick={onClose}>

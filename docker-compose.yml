@@ -7,7 +7,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    # Mapeia a porta 3000 do container para a porta 3000 da sua máquina
+    # Mapeia a porta 4200 do container para a porta 4200 da sua máquina
     ports:
       - "4200:4200"
     # Reinicia o container se ele falhar
@@ -16,6 +16,7 @@ services:
     environment:
       - PORT=4200
       - NEXT_PUBLIC_API_URL=http://localhost:3000
+      - PUBLIC_API_URL=http://localhost:8080
     # Monta um volume para o hot-reloading em modo de desenvolvimento
     volumes:
       - ./frontend:/app
@@ -31,13 +32,14 @@ services:
       dockerfile: Dockerfile
     # Mapeia a porta do back-end (ex: 5000) para a sua máquina
     ports:
-      - "3000:3000"
+      - "8080:8080"
     # Reinicia o container se ele falhar
     restart: always
     # Opcional: Define variáveis de ambiente para o back-end
     environment:
       - NODE_ENV=development
       - MONGODB_URI=mongodb://mongo:27017/bytebank
+      - PORT=8080
     # Opcional: Monta um volume para o hot-reloading
     volumes:
       - ./backend:/app
