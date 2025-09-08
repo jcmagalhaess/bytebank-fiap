@@ -43,7 +43,7 @@ export function PageContainer({
       "relative overflow-hidden"
     ),
 sectioned: clsx(
-  "bg-white/60 shadow-md rounded-xl p-4 sm:p-6 w-full",
+  "bg-white/60 shadow-md rounded-xl p-4 sm:p-6 w-full h-[100%]",
   "flex flex-col gap-md"
 ),
 

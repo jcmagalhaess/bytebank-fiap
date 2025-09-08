@@ -4,6 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { formatToBRL } from "@/utils/format";
 import { useEffect, useState } from "react";
+import { 
+  findCategoryBySynonym, 
+  getCategorySuggestions, 
+  getAllCategories 
+} from "../../config/categories-simple";
 
 // Definição da interface de props no mesmo arquivo para evitar dependências
 interface EditTransactionModalProps {
@@ -33,6 +38,8 @@ export function EditTransactionModal({
   const [amount, setAmount] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [categoria, setCategoria] = useState("");
+  const [sugestoes, setSugestoes] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const transactionOptions = [
     { label: "Depósito", value: "deposit", bold: true },
@@ -45,12 +52,28 @@ export function EditTransactionModal({
       setAmount(Math.round(transaction.amount * 100).toString());
       setCategoria(transaction.categoria || "");
       setErrorMessage(""); // Limpa a mensagem de erro ao abrir o modal
+      setSugestoes([]);
+      setShowSuggestions(false);
     }
   }, [transaction]);
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(/\D/g, "");
     setAmount(raw);
+  };
+
+  const handleCategoriaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const valor = e.target.value;
+    setCategoria(valor);
+    
+    if (valor.trim()) {
+      const sugestoesEncontradas = getCategorySuggestions(valor);
+      setSugestoes(sugestoesEncontradas);
+      setShowSuggestions(sugestoesEncontradas.length > 0);
+    } else {
+      setSugestoes([]);
+      setShowSuggestions(false);
+    }
   };
 
   function handleSave() {
@@ -61,12 +84,24 @@ export function EditTransactionModal({
       return;
     }
 
+    // Validação da categoria
+    if (categoria.trim()) {
+      const categoriaValida = findCategoryBySynonym(categoria);
+      if (!categoriaValida) {
+        setErrorMessage("Categoria inválida. Selecione uma das sugestões ou digite um sinônimo válido.");
+        return;
+      }
+    }
+
     if (transaction) {
+      // Converte sinônimo para categoria oficial se necessário
+      const categoriaFinal = categoria.trim() ? (findCategoryBySynonym(categoria) || categoria) : categoria;
+      
       onSave({
         id: transaction.id,
         type,
         amount: parsedAmount,
-        categoria,
+        categoria: categoriaFinal,
       });
     }
   }
@@ -104,15 +139,51 @@ export function EditTransactionModal({
             placeholder="Digite aqui o valor da transação"
           />
         </div>
-        <div className="mb-4">
+        <div className="mb-4 relative">
           <Input
             label="Categoria"
             type="text"
             value={categoria}
-            onChange={(e) => setCategoria(e.target.value)}
+            onChange={handleCategoriaChange}
+            onFocus={() => {
+              if (categoria.trim()) {
+                const sugestoesEncontradas = getCategorySuggestions(categoria);
+                setSugestoes(sugestoesEncontradas);
+                setShowSuggestions(sugestoesEncontradas.length > 0);
+              } else {
+                setSugestoes(getAllCategories());
+                setShowSuggestions(true);
+              }
+            }}
+            onBlur={() => {
+              // Delay para permitir clique nas sugestões
+              setTimeout(() => setShowSuggestions(false), 200);
+            }}
             className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
-            placeholder="Digite a categoria da transação"
+            placeholder="Ex: combustível, gasolina, alimentação..."
           />
+          {showSuggestions && sugestoes.length > 0 && (
+            <ul className="absolute bg-white border rounded w-full mt-1 shadow-lg z-10 max-h-48 overflow-y-auto">
+              {sugestoes.map((s) => (
+                <li
+                  key={s}
+                  className="px-3 py-2 hover:bg-gray-100 cursor-pointer border-b border-gray-100 last:border-b-0"
+                  onClick={() => {
+                    setCategoria(s);
+                    setSugestoes([]);
+                    setShowSuggestions(false);
+                  }}
+                >
+                  {s}
+                </li>
+              ))}
+            </ul>
+          )}
+          {categoria.trim() && !findCategoryBySynonym(categoria) && (
+            <div className="text-xs text-gray-500 mt-1">
+              💡 Dica: Digite sinônimos como "combustível" para "Transporte" ou "comida" para "Alimentação"
+            </div>
+          )}
         </div>
 
         <div className="w-full flex justify-center">

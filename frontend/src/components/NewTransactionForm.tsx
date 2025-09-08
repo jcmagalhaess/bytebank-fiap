@@ -7,6 +7,11 @@ import { Select } from "./ui/select";
 import { Button } from "./ui/button";
 import { formatToBRL } from "../utils/format";
 import { getTodayISO } from "../utils/date";
+import { 
+  findCategoryBySynonym, 
+  getCategorySuggestions, 
+  getAllCategories 
+} from "../config/categories-simple";
 
 interface NewTransactionFormProps {
   onAdd: (newTransaction: {
@@ -28,26 +33,21 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
   const [categoria, setCategoria] = useState<string>("");
   const [valorErro, setValorErro] = useState("");
   const [categoriaErro, setCategoriaErro] = useState("");
-
-  const todasCategorias = [
-    "Alimentação",
-    "Transporte",
-    "Lazer",
-    "Salário",
-    "Educação",
-    "Saúde",
-    "Moradia",
-  ];
   const [sugestoes, setSugestoes] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   function handleCategoriaChange(e: React.ChangeEvent<HTMLInputElement>) {
     const valor = e.target.value;
     setCategoria(valor);
-    setSugestoes(
-      todasCategorias.filter((c) =>
-        c.toLowerCase().includes(valor.toLowerCase())
-      )
-    );
+    
+    if (valor.trim()) {
+      const sugestoesEncontradas = getCategorySuggestions(valor);
+      setSugestoes(sugestoesEncontradas);
+      setShowSuggestions(sugestoesEncontradas.length > 0);
+    } else {
+      setSugestoes([]);
+      setShowSuggestions(false);
+    }
   }
 
   function validateValor(v: string) {
@@ -60,6 +60,13 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
 
   function validateCategoria(c: string) {
     if (!c) return "A categoria é obrigatória";
+    
+    // Verifica se a categoria digitada é válida (exata ou sinônimo)
+    const categoriaValida = findCategoryBySynonym(c);
+    if (!categoriaValida) {
+      return "Categoria inválida. Selecione uma das sugestões ou digite um sinônimo válido.";
+    }
+    
     return "";
   }
 
@@ -72,17 +79,22 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
     setType("deposit");
     setAmount("");
     setCategoria("");
+    setSugestoes([]);
+    setShowSuggestions(false);
   }
 
   async function confirmTransaction() {
     setLoading(true);
     setShowModal(false);
 
+    // Converte sinônimo para categoria oficial se necessário
+    const categoriaFinal = findCategoryBySynonym(categoria) || categoria;
+
     const transactionData = {
       type,
       amount: Number(amount) / 100,
       date: getTodayISO(),
-      categoria,
+      categoria: categoriaFinal,
     };
 
     await onAdd(transactionData);
@@ -122,24 +134,44 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
             type="text"
             value={categoria}
             onChange={handleCategoriaChange}
+            onFocus={() => {
+              if (categoria.trim()) {
+                const sugestoesEncontradas = getCategorySuggestions(categoria);
+                setSugestoes(sugestoesEncontradas);
+                setShowSuggestions(sugestoesEncontradas.length > 0);
+              } else {
+                setSugestoes(getAllCategories());
+                setShowSuggestions(true);
+              }
+            }}
+            onBlur={() => {
+              // Delay para permitir clique nas sugestões
+              setTimeout(() => setShowSuggestions(false), 200);
+            }}
             error={categoriaErro}
-            placeholder="Ex: Alimentação, Transporte, Lazer..."
+            placeholder="Ex: combustível, gasolina, alimentação..."
           />
-          {sugestoes.length > 0 && (
-            <ul className="absolute bg-white border rounded w-full mt-1 shadow">
+          {showSuggestions && sugestoes.length > 0 && (
+            <ul className="absolute bg-white border rounded w-full mt-1 shadow-lg z-10 max-h-48 overflow-y-auto">
               {sugestoes.map((s) => (
                 <li
                   key={s}
-                  className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  className="px-3 py-2 hover:bg-gray-100 cursor-pointer border-b border-gray-100 last:border-b-0"
                   onClick={() => {
                     setCategoria(s);
                     setSugestoes([]);
+                    setShowSuggestions(false);
                   }}
                 >
                   {s}
                 </li>
               ))}
             </ul>
+          )}
+          {categoria.trim() && !findCategoryBySynonym(categoria) && (
+            <div className="text-xs text-gray-500 mt-1">
+              💡 Dica: Digite sinônimos como "combustível" para "Transporte" ou "comida" para "Alimentação"
+            </div>
           )}
         </div>
 
