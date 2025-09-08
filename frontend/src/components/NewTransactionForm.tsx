@@ -3,7 +3,6 @@
 import { useState } from "react";
 import type { TransactionType } from "../app/models/transaction";
 import { Input } from "./ui/input";
-import { Select } from "./ui/select";
 import { Button } from "./ui/button";
 import { formatToBRL } from "../utils/format";
 import { getTodayISO } from "../utils/date";
@@ -27,8 +26,8 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const transactionOptions = [
-    { label: "Depósito", value: "deposit", bold: true },
-    { label: "Transferência", value: "transfer", bold: true },
+    { label: "Receita", value: "deposit", bold: true },
+    { label: "Despesa", value: "transfer", bold: true },
   ];
   const [categoria, setCategoria] = useState<string>("");
   const [valorErro, setValorErro] = useState("");
@@ -189,12 +188,26 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
         </div>
 
         <div className="mb-4">
-          <Select
-            label="Tipo de transação"
-            value={type}
-            onChange={(e) => setType(e.target.value as TransactionType)}
-            options={transactionOptions}
-          />
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Tipo de transação
+          </label>
+          <div className="flex gap-4">
+            {transactionOptions.map((option) => (
+              <label key={option.value} className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="transactionType"
+                  value={option.value}
+                  checked={type === option.value}
+                  onChange={(e) => setType(e.target.value as TransactionType)}
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2"
+                />
+                <span className="text-sm font-medium text-gray-700">
+                  {option.label}
+                </span>
+              </label>
+            ))}
+          </div>
         </div>
         <div className="lg:w-[195px] md:w-[195px] sm:w-[150px]">
           <Button type="submit" variant="primary" disabled={loading}>

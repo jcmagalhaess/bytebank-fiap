@@ -1,9 +1,9 @@
 export type TransactionType = 'deposit' | 'transfer';
-export type TransactionName = 'Depósito' | 'Transferência';
+export type TransactionName = 'Receita' | 'Despesa';
 
 export const TransactionTypeNameMap: Record<TransactionType, TransactionName> = {
-  deposit: 'Depósito',
-  transfer: 'Transferência',
+  deposit: 'Receita',
+  transfer: 'Despesa',
 };
 
 export class Transaction {

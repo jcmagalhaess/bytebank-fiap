@@ -1,7 +1,6 @@
 import type { TransactionType } from "@/app/models/transaction";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import { formatToBRL } from "@/utils/format";
 import { useEffect, useState } from "react";
 import { 
@@ -42,8 +41,8 @@ export function EditTransactionModal({
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const transactionOptions = [
-    { label: "Depósito", value: "deposit", bold: true },
-    { label: "Transferência", value: "transfer", bold: true },
+    { label: "Receita", value: "deposit", bold: true },
+    { label: "Despesa", value: "transfer", bold: true },
   ];
 
   useEffect(() => {
@@ -120,12 +119,26 @@ export function EditTransactionModal({
           </div>
         )}
         <div className="mb-4">
-          <Select
-            label="Tipo de transação"
-            value={type}
-            onChange={(e) => setType(e.target.value as TransactionType)}
-            options={transactionOptions}
-          />
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Tipo de transação
+          </label>
+          <div className="flex gap-4">
+            {transactionOptions.map((option) => (
+              <label key={option.value} className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="transactionType"
+                  value={option.value}
+                  checked={type === option.value}
+                  onChange={(e) => setType(e.target.value as TransactionType)}
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2"
+                />
+                <span className="text-sm font-medium text-gray-700">
+                  {option.label}
+                </span>
+              </label>
+            ))}
+          </div>
         </div>
 
         <div className="mb-4">
@@ -163,7 +176,7 @@ export function EditTransactionModal({
             placeholder="Ex: combustível, gasolina, alimentação..."
           />
           {showSuggestions && sugestoes.length > 0 && (
-            <ul className="absolute bg-white border rounded w-full mt-1 shadow-lg z-10 max-h-48 overflow-y-auto">
+            <ul className="absolute bg-white border rounded w-full mt-1 shadow-lg z-50 max-h-48 overflow-y-auto">
               {sugestoes.map((s) => (
                 <li
                   key={s}
