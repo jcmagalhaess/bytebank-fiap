@@ -15,10 +15,14 @@ services:
     # Define as variáveis de ambiente necessárias para o Next.js
     environment:
       - PORT=4200
+      - NEXT_PUBLIC_API_URL=http://localhost:3000
       - PUBLIC_API_URL=http://localhost:8080
     # Monta um volume para o hot-reloading em modo de desenvolvimento
     volumes:
       - ./frontend:/app
+    # Depende do backend estar rodando
+    depends_on:
+      - backend
 
   # Serviço para o Back-end
   backend:
@@ -34,7 +38,25 @@ services:
     # Opcional: Define variáveis de ambiente para o back-end
     environment:
       - NODE_ENV=development
+      - MONGODB_URI=mongodb://mongo:27017/bytebank
       - PORT=8080
     # Opcional: Monta um volume para o hot-reloading
     volumes:
       - ./backend:/app
+    # Depende do MongoDB estar rodando
+    depends_on:
+      - mongo
+
+  # Serviço para o MongoDB
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    restart: always
+    environment:
+      - MONGO_INITDB_DATABASE=bytebank
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

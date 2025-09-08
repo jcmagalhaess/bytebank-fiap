@@ -4,10 +4,12 @@ import { PageContainer } from '@/components/pageContainer';
 import { useEffect, useState } from 'react';
 import NewTransactionForm from '../components/NewTransactionForm';
 import Statement from '../components/Statement';
+import { useAuthContext } from '../contexts/AuthContext';
 import type { Transaction } from './models/transaction';
 import { TransactionService } from './services/transactionService';
 
 export default function HomePage() {
+  const { user, isAuthenticated } = useAuthContext();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [showNotification, setShowNotification] = useState(false);
@@ -28,11 +30,11 @@ export default function HomePage() {
     minimumFractionDigits: 2,
   });
 
-  const balance = transactions.reduce((acc, t) => {
+  const balance = Array.isArray(transactions) ? transactions.reduce((acc, t) => {
     if (t.type === 'deposit') return acc + t.amount;
     if (t.type === 'transfer') return acc - t.amount;
     return acc;
-  }, 0);
+  }, 0) : 0;
 
   async function handleAddTransaction(transaction: Omit<Transaction, 'id'>) {
     setLoading(true);
@@ -47,7 +49,7 @@ export default function HomePage() {
       {/* Card superior com saldo */}
       <PageContainer
         variant="highlight"
-        title="Olá Joana"
+        title={isAuthenticated && user ? `Olá ${user.username}` : "Olá Visitante"}
         subtitle={loading ? "Carregando..." : currencyFormatter.format(balance)}
       />
 
