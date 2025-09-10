@@ -216,6 +216,7 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
             onChange={(e) => setDescricao(e.target.value)}
             placeholder="Ex: Compra no supermercado, Pagamento de conta..."
             error={descricaoErro}
+            maxLength={50}
           />
         </div>
 

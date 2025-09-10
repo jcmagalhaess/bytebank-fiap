@@ -15,7 +15,7 @@ interface StatementProps {
 
 export default function Statement({
   transactions: propTransactions,
-  limit = 4,
+  limit = 5,
   onRefresh,
 }: StatementProps) {
   const [deleteId, setDeleteId] = useState<number | null>(null);
