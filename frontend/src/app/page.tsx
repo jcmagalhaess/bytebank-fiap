@@ -1,6 +1,7 @@
 "use client";
 
 import { PageContainer } from '@/components/pageContainer';
+import { DynamicCards } from '@/components/dynamicCards';
 import { useEffect, useState } from 'react';
 import NewTransactionForm from '../components/NewTransactionForm';
 import Statement from '../components/Statement';
@@ -45,19 +46,49 @@ export default function HomePage() {
   }
 
   return (
-    <main className="min-h-[80vh] bg-[#E6F0FA] p-6 w-full">
-      {/* Card superior com saldo */}
-      <PageContainer
-        variant="highlight"
-        title={isAuthenticated && user ? `Olá ${user.username}` : "Olá Visitante"}
-        subtitle={loading ? "Carregando..." : currencyFormatter.format(balance)}
-      />
+    <>
+      {/* Container principal com posicionamento relativo */}
+      <div className="relative">
+        {/* Card superior com saldo */}
+        <PageContainer
+          variant="highlight"
+          title={isAuthenticated && user ? `Olá, ${user.username}` : "Olá, Visitante"}
+          subtitle={loading ? "Carregando..." : currencyFormatter.format(balance)}
+        />
+        
+        {/* Div geral que engloba todos os elementos */}
+        <div className="relative">
+          {/* Cards dinâmicos sobrepostos ao fundo azul */}
+          <div className="relative mt-[-4.5rem] z-10">
+            <div className="flex gap-6 w-[50%] mx-auto">
+            {/* Card de Análise Financeira - 55% da largura */}
+            <div className="w-[55%] bg-backgroundPrimary rounded-xl shadow-md p-6">
+              <h3 className="text-h5 font-semibold text-textPrimary mb-md">Análise Financeira</h3>
+              {/* Espaço para o gráfico futuro */}
+              <div className="h-64 flex items-center justify-center text-textSecondary">
+                Gráfico será implementado aqui
+              </div>
+            </div>
+              
+              {/* Cards de despesas, receitas e total - 45% da largura */}
+              <div className="w-[45%]">
+                {!loading && <DynamicCards transactions={transactions} />}
+              </div>
+            </div>
+          </div>
 
-      {/* Grid com extrato + nova transação */}
-      <section className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] xl:gap-0 md:flex md:flex-col md:gap-0 lg:flex lg:flex-col xl:grid ">
-        {!loading && <Statement transactions={transactions} onRefresh={refreshTransactions}/>}
-        {!loading && <NewTransactionForm onAdd={handleAddTransaction} />}
-      </section>
+          {/* Main content com fundo azul claro */}
+          <main className="min-h-[80vh] bg-[#E6F0FA] p-6 w-full pt-10">
+            {/* Grid com extrato + nova transação */}
+            <section className="flex justify-center">
+              <div className="w-full max-w-7xl grid grid-cols-1 xl:grid-cols-[1fr_2fr] gap-6">
+                {!loading && <NewTransactionForm onAdd={handleAddTransaction} />}
+                {!loading && <Statement transactions={transactions} onRefresh={refreshTransactions}/>}
+              </div>
+            </section>
+          </main>
+        </div>
+      </div>
 
       {/* 🔔 Notificação visível sempre que ativa */}
       {showNotification && (
@@ -65,6 +96,6 @@ export default function HomePage() {
           Transação concluída com sucesso!
         </div>
       )}
-    </main>
+    </>
   );
 }

@@ -97,10 +97,11 @@ export class TransactionService {
       const accountId = accounts[0]._id || accounts[0].id;
       
       // Tenta criar via API primeiro
+      const apiType = t.type === 'deposit' ? 'Credit' : 'Debit';
       const newTransaction = await TransactionApiService.createTransaction({
         accountId: accountId,
         value: t.amount,
-        type: t.type === 'deposit' ? 'Credit' : 'Debit'
+        type: apiType
       });
       
       // Atualiza localStorage como backup
@@ -110,7 +111,8 @@ export class TransactionService {
         t.type,
         t.amount,
         t.date,
-        t.categoria
+        t.categoria,
+        t.descricao
       );
       transactions.push(localTransaction);
       this.saveTransactions(transactions);
@@ -126,7 +128,8 @@ export class TransactionService {
         t.type,
         t.amount,
         t.date,
-        t.categoria
+        t.categoria,
+        t.descricao
       );
       transactions.push(newTransaction);
       this.saveTransactions(transactions);
@@ -175,7 +178,6 @@ export class TransactionService {
   // Método para mapear transações da API para o formato local
   private static mapApiTransactionsToLocal(apiTransactions: any[]): Transaction[] {
     return apiTransactions.map((t: any) => {
-      
       // Preserva o tipo original se existir, senão converte da API
       let transactionType: 'deposit' | 'transfer';
       if (t.type === 'deposit' || t.type === 'transfer') {
@@ -196,7 +198,8 @@ export class TransactionService {
         transactionType,
         Number(t.value) || Number(t.amount) || 0,
         t.date || new Date().toISOString(),
-        t.from || t.to || t.categoria || 'Geral'
+        t.from || t.to || t.categoria || 'Geral',
+        t.descricao || t.anexo || 'Transação'
       );
       
       return transaction;

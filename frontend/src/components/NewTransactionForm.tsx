@@ -17,6 +17,7 @@ interface NewTransactionFormProps {
     type: TransactionType;
     amount: number;
     date: string;
+    descricao: string;
   }) => Promise<void>;
 }
 
@@ -30,8 +31,10 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
     { label: "Despesa", value: "transfer", bold: true },
   ];
   const [categoria, setCategoria] = useState<string>("");
+  const [descricao, setDescricao] = useState<string>("");
   const [valorErro, setValorErro] = useState("");
   const [categoriaErro, setCategoriaErro] = useState("");
+  const [descricaoErro, setDescricaoErro] = useState("");
   const [sugestoes, setSugestoes] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
@@ -69,6 +72,12 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
     return "";
   }
 
+  function validateDescricao(d: string) {
+    if (!d.trim()) return "A descrição é obrigatória";
+    if (d.trim().length < 3) return "A descrição deve ter pelo menos 3 caracteres";
+    return "";
+  }
+
   function handleAmountChange(e: React.ChangeEvent<HTMLInputElement>) {
     const raw = e.target.value.replace(/\D/g, "");
     setAmount(raw);
@@ -78,6 +87,7 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
     setType("deposit");
     setAmount("");
     setCategoria("");
+    setDescricao("");
     setSugestoes([]);
     setShowSuggestions(false);
   }
@@ -94,6 +104,7 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
       amount: Number(amount) / 100,
       date: getTodayISO(),
       categoria: categoriaFinal,
+      descricao: descricao.trim(),
     };
 
     await onAdd(transactionData);
@@ -101,32 +112,56 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
     resetForm();
   }
 
-  // Validação do formulário - checagem dos campos categoria e valor
+  // Validação do formulário - checagem dos campos categoria, valor e descrição
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const erroValor = validateValor(amount);
     const erroCategoria = validateCategoria(categoria);
+    const erroDescricao = validateDescricao(descricao);
 
     setValorErro(erroValor);
     setCategoriaErro(erroCategoria);
+    setDescricaoErro(erroDescricao);
 
-    if (erroValor || erroCategoria) return;
+    if (erroValor || erroCategoria || erroDescricao) return;
 
     setShowModal(true);
   }
 
   return (
-    <div className="w-full ml-auto sm:max-w-[100%] lg:max-w-[100%] xl:max-w-[90%]">
+    <div className="w-full">
       {/* Formulário */}
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-xl shadow-md relative sm:w-[100%]"
+        className="bg-white p-6 rounded-xl shadow-md relative w-full"
       >
         <h2 className="text-lg font-semibold text-[#0A2A4D] mb-4">
           Adicionar nova transação
         </h2>
 
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Tipo de transação
+          </label>
+          <div className="flex gap-4">
+            {transactionOptions.map((option) => (
+              <label key={option.value} className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="transactionType"
+                  value={option.value}
+                  checked={type === option.value}
+                  onChange={(e) => setType(e.target.value as TransactionType)}
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2"
+                />
+                <span className="text-sm font-medium text-gray-700">
+                  {option.label}
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
         <div className="mb-4 relative">
           <Input
             label="Categoria"
@@ -151,7 +186,7 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
             placeholder="Ex: combustível, gasolina, alimentação..."
           />
           {showSuggestions && sugestoes.length > 0 && (
-            <ul className="absolute bg-white border rounded w-full mt-1 shadow-lg z-10 max-h-48 overflow-y-auto">
+            <ul className="bg-white border rounded w-full mt-1 shadow-lg z-10 max-h-48 overflow-y-auto">
               {sugestoes.map((s) => (
                 <li
                   key={s}
@@ -173,6 +208,16 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
             </div>
           )}
         </div>
+        <div className="mb-4">
+          <Input
+            label="Descrição"
+            type="text"
+            value={descricao}
+            onChange={(e) => setDescricao(e.target.value)}
+            placeholder="Ex: Compra no supermercado, Pagamento de conta..."
+            error={descricaoErro}
+          />
+        </div>
 
         <div className="mb-4">
           <Input
@@ -187,28 +232,7 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
           />
         </div>
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Tipo de transação
-          </label>
-          <div className="flex gap-4">
-            {transactionOptions.map((option) => (
-              <label key={option.value} className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="transactionType"
-                  value={option.value}
-                  checked={type === option.value}
-                  onChange={(e) => setType(e.target.value as TransactionType)}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2"
-                />
-                <span className="text-sm font-medium text-gray-700">
-                  {option.label}
-                </span>
-              </label>
-            ))}
-          </div>
-        </div>
+        
         <div className="lg:w-[195px] md:w-[195px] sm:w-[150px]">
           <Button type="submit" variant="primary" disabled={loading}>
             {loading ? "Aguarde..." : "Adicionar Transação"}

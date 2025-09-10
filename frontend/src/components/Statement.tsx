@@ -60,6 +60,7 @@ export default function Statement({
                 date={t.date.split("-").reverse().join("/")}
                 amount={formattedAmount}
                 categoria={t.categoria || 'Geral'}
+                descricao={t.descricao}
                 onEdit={() => setEditingTransaction(t)}
                 onDelete={() => setDeleteId(t.id)}
               />

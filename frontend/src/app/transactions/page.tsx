@@ -85,9 +85,7 @@ export default function TransactionsPage() {
   };
 
   return (
-
     <main className="min-h-[80vh] bg-[#E6F0FA] p-6 w-full xl:justify-items-center">
-
       {/* Card superior com saldo */}
       <PageContainer
         variant="highlight"
@@ -135,6 +133,8 @@ export default function TransactionsPage() {
                   type={t.type}
                   date={t.date.split("-").reverse().join("/")}
                   categoria={t.categoria}
+                  descricao={t.descricao}
+                  showCategoria={true}
                   amount={formatToBRL(t.amount)}
                   onEdit={() => setEditingTransaction(t)}
                   onDelete={() => setDeleteId(t.id)}
@@ -169,24 +169,27 @@ export default function TransactionsPage() {
       {deleteId !== null && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
           <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full text-center">
-            <h3 className="text-lg font-semibold mb-4 text-[#0A2A4D]">Confirmar exclusão</h3>
-            <p className="mb-6">Tem certeza que deseja excluir esta transação?</p>
+            <h3 className="text-lg font-semibold mb-4 text-[#0A2A4D]">
+              Confirmar exclusão
+            </h3>
+            <p className="mb-6">
+              Tem certeza que deseja excluir esta transação?
+            </p>
             <div className="w-full flex justify-center">
-            <div className="flex justify-center gap-4 w-[60%]">
-              <Button variant="primary"
-                onClick={() => setDeleteId(null)}
-              >
-                Cancelar
-              </Button>
-              <Button variant="danger"
-                onClick={() => {
-                  if (deleteId !== null) handleDelete(deleteId);
-                }}
-              >
-                Confirmar
-              </Button>
+              <div className="flex justify-center gap-4 w-[60%]">
+                <Button variant="primary" onClick={() => setDeleteId(null)}>
+                  Cancelar
+                </Button>
+                <Button
+                  variant="danger"
+                  onClick={() => {
+                    if (deleteId !== null) handleDelete(deleteId);
+                  }}
+                >
+                  Confirmar
+                </Button>
+              </div>
             </div>
-          </div>
           </div>
         </div>
       )}

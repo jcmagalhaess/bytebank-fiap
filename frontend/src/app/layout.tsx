@@ -28,8 +28,8 @@ export default function RootLayout({
           <AuthGuard>
             <Header />
             <div className="flex">
-              <main className="p-6 w-full md:w-[70%] mx-auto justify-items-center">
-                <div className="w-full justify-items-center">
+              <main className="p-6 w-full md:w-[100%] mx-auto justify-items-center">
+                <div className="w-[100vw] justify-items-center">
                 {children}
                 </div>
                 </main>
