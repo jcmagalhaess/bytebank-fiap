@@ -62,10 +62,10 @@ export default function HomePage() {
           <div className="relative mt-[-4.5rem] z-10">
             <div className="flex gap-6 w-[50%] mx-auto">
             {/* Card de Análise Financeira - 55% da largura */}
-            <div className="w-[55%] bg-backgroundPrimary rounded-xl shadow-md p-6">
+            <div className="w-[55%] bg-backgroundPrimary rounded-xl shadow-md p-6 h-[330px] flex flex-col">
               <h3 className="text-h5 font-semibold text-textPrimary mb-md">Análise Financeira</h3>
               {/* Espaço para o gráfico futuro */}
-              <div className="h-64 flex items-center justify-center text-textSecondary">
+              <div className="flex-1 flex items-center justify-center text-textSecondary">
                 Gráfico será implementado aqui
               </div>
             </div>
@@ -80,8 +80,8 @@ export default function HomePage() {
           {/* Main content com fundo azul claro */}
           <main className="min-h-[80vh] bg-[#E6F0FA] p-6 w-full pt-10">
             {/* Grid com extrato + nova transação */}
-            <section className="flex justify-center">
-              <div className="w-full max-w-7xl grid grid-cols-1 xl:grid-cols-[1fr_2fr] gap-6">
+            <section className="flex justify-center w-[51%] mx-auto">
+              <div className="w-full max-w-7xl grid grid-cols-1 xl:grid-cols-[1fr_2fr] gap-6 items-start">
                 {!loading && <NewTransactionForm onAdd={handleAddTransaction} />}
                 {!loading && <Statement transactions={transactions} onRefresh={refreshTransactions}/>}
               </div>

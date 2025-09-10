@@ -44,7 +44,7 @@ export function PageContainer({
     ),
     sectioned: clsx(
       "bg-white/60 shadow-md rounded-xl p-4 sm:p-6 w-full h-[100%]",
-      "flex flex-col gap-md mt-6"
+      "flex flex-col gap-md"
     ),
     form: clsx("bg-backgroundPrimary rounded-xl p-4 sm:p-6 shadow-md"),
   };

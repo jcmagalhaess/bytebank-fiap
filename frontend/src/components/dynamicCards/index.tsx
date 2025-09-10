@@ -28,7 +28,7 @@ export function DynamicCards({ transactions }: DynamicCardsProps) {
   return (
     <div className="flex flex-col gap-6 w-full">
       {/* Linha superior - Receitas e Despesas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[150px]">
         {/* Card Receitas */}
         <div className="bg-backgroundPrimary rounded-xl shadow-md p-6">
           <div className="flex items-center justify-between mb-md">
@@ -73,7 +73,7 @@ export function DynamicCards({ transactions }: DynamicCardsProps) {
       </div>
 
       {/* Card Saldo Atual - Alinhado com os cards de cima */}
-      <div className="bg-backgroundPrimary rounded-xl shadow-md p-6">
+      <div className="bg-backgroundPrimary rounded-xl shadow-md p-6 content-center h-[150px]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-brandPrimary/10 rounded-lg flex items-center justify-center">
