@@ -85,14 +85,15 @@ export default function TransactionsPage() {
   };
 
   return (
-    <main className="min-h-[80vh] bg-[#E6F0FA] p-6 w-full xl:justify-items-center">
+    <main className="min-h-[80vh] bg-[#E6F0FA] w-full xl:justify-items-center mt-[-25px]">
       {/* Card superior com saldo */}
       <PageContainer
         variant="highlight"
         title="Transações e Depósitos"
         subtitle={formatToBRL(balance)}
-      />
+        />
 
+        <div className="relative mt-[-4.5rem] z-10 w-[50%] mx-auto">
       {/* Componente de Filtros */}
       <TransactionFilters
         filters={filters}
@@ -134,7 +135,6 @@ export default function TransactionsPage() {
                   date={t.date.split("-").reverse().join("/")}
                   categoria={t.categoria}
                   descricao={t.descricao}
-                  showCategoria={true}
                   amount={formatToBRL(t.amount)}
                   onEdit={() => setEditingTransaction(t)}
                   onDelete={() => setDeleteId(t.id)}
@@ -193,6 +193,7 @@ export default function TransactionsPage() {
           </div>
         </div>
       )}
+      </div>
     </main>
   );
 }

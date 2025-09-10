@@ -16,6 +16,7 @@ interface TransactionRowProps {
   date: string;
   amount: string;
   categoria?: string;
+  descricao?: string;
   onEdit?: () => void;
   onDelete?: () => void;
 }
@@ -24,6 +25,7 @@ export function TransactionRow({
   date,
   amount,
   categoria,
+  descricao,
   onEdit,
   onDelete,
 }: TransactionRowProps) {
@@ -40,11 +42,11 @@ export function TransactionRow({
             <Icon className="text-white" />
           </div>
           <div className="flex flex-col">
-            <span className="font-semibold block md:hidden">{name}</span>
+            <span className="font-semibold block md:hidden">{descricao || name}</span>
             {/* Categoria */}
             <span>
               {categoria ? (
-                <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-brandPrimary/10 text-brandPrimary">
                   {categoria}
                 </span>
               ) : (
@@ -74,12 +76,12 @@ export function TransactionRow({
           <div className="rounded-full p-2 bg-transparent">
             <Icon className="text-white" />
           </div>
-          <span className="font-semibold">{name}</span>
+          <span className="font-semibold">{descricao || name}</span>
         </div>
         {/* Categoria */}
         <span>
           {categoria ? (
-            <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+            <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-brandPrimary/10 text-brandPrimary">
               {categoria}
             </span>
           ) : (

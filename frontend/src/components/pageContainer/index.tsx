@@ -39,7 +39,7 @@ export function PageContainer({
   const variantClasses = {
     highlight: clsx(
       "text-white flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-0 sm:p-10 p-6 w-screen",
-      "bg-gradient-to-r from-brandSecondary via-brandPrimary to-brandSecondary h-[250px] mt-[-25px]",
+      "bg-gradient-to-r from-brandSecondary via-brandPrimary to-brandSecondary h-[250px]",
       "relative overflow-hidden -mx-4 sm:-mx-10"
     ),
     sectioned: clsx(

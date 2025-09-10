@@ -29,7 +29,7 @@ export default function RootLayout({
             <Header />
             <div className="flex">
               <main className="p-6 w-full md:w-[100%] mx-auto justify-items-center">
-                <div className="w-[100vw] justify-items-center">
+                <div className="w-[100vw] justify-items-center mt-[-25px]">
                 {children}
                 </div>
                 </main>
