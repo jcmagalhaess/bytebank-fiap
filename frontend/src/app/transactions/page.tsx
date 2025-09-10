@@ -89,7 +89,7 @@ export default function TransactionsPage() {
       {/* Card superior com saldo */}
       <PageContainer
         variant="highlight"
-        title="Transações e Depósitos"
+        title="Extrato de Transações"
         subtitle={formatToBRL(balance)}
         />
 
