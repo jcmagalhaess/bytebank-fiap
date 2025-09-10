@@ -9,7 +9,8 @@ export function useTransactionFilters(transactions: Transaction[]) {
     endDate: '',
     category: '',
     minValue: '',
-    maxValue: ''
+    maxValue: '',
+    search: ''
   });
 
   // Extrair categorias únicas das transações
@@ -70,6 +71,17 @@ export function useTransactionFilters(transactions: Transaction[]) {
         }
       }
 
+      // Filtro por busca (descrição ou categoria)
+      if (filters.search) {
+        const searchTerm = filters.search.toLowerCase();
+        const description = transaction.descricao?.toLowerCase() || '';
+        const category = transaction.categoria?.toLowerCase() || '';
+        
+        if (!description.includes(searchTerm) && !category.includes(searchTerm)) {
+          return false;
+        }
+      }
+
       return true;
     });
   }, [transactions, filters]);
@@ -85,7 +97,8 @@ export function useTransactionFilters(transactions: Transaction[]) {
       endDate: '',
       category: '',
       minValue: '',
-      maxValue: ''
+      maxValue: '',
+      search: ''
     });
   };
 
@@ -96,7 +109,8 @@ export function useTransactionFilters(transactions: Transaction[]) {
       filters.endDate !== '' ||
       filters.category !== '' ||
       filters.minValue !== '' ||
-      filters.maxValue !== ''
+      filters.maxValue !== '' ||
+      filters.search !== ''
     );
   };
 

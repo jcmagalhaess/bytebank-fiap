@@ -11,6 +11,7 @@ export interface FilterState {
   category: string;
   minValue: string;
   maxValue: string;
+  search: string;
 }
 
 interface TransactionFiltersProps {
@@ -40,14 +41,15 @@ export function TransactionFilters({
       filters.endDate !== '' ||
       filters.category !== '' ||
       filters.minValue !== '' ||
-      filters.maxValue !== ''
+      filters.maxValue !== '' ||
+      filters.search !== ''
     );
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 mb-6 w-full">
+    <div className="bg-backgroundPrimary rounded-xl shadow-md p-6 mb-6 w-full">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-[#0A2A4D]">
+        <h3 className="text-h5 font-semibold text-textPrimary">
           Filtrar por:
         </h3>
         {hasActiveFilters() && (
@@ -61,7 +63,18 @@ export function TransactionFilters({
         )}
       </div>
 
-      <div className="grid grid-cols-6 gap-4">
+      <div className="grid grid-cols-7 gap-4">
+        {/* Campo de Busca */}
+        <div>
+          <Input
+            label="Buscar"
+            type="text"
+            value={filters.search}
+            onChange={(e) => handleFilterChange('search', e.target.value)}
+            placeholder="Descrição ou categoria..."
+          />
+        </div>
+
         {/* Filtro por Tipo */}
         <div>
           <Select
