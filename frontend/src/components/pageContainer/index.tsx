@@ -19,6 +19,7 @@ type PageContainerProps = {
   subtitle?: string;
   exibirExtratoLink?: boolean;
   exibirBotaoVoltar?: boolean;
+  customHeader?: React.ReactNode;
 };
 
 export function PageContainer({
@@ -31,6 +32,7 @@ export function PageContainer({
   subtitle,
   exibirExtratoLink = true,
   exibirBotaoVoltar = false,
+  customHeader,
 }: PageContainerProps) {
   const router = useRouter();
   const baseClasses = "relative p-4 sm:p-10 mb-6 w-full";
@@ -43,7 +45,7 @@ export function PageContainer({
       "relative overflow-hidden -mx-4 sm:-mx-10"
     ),
     sectioned: clsx(
-      "bg-white/60 shadow-md rounded-xl p-4 sm:p-6 w-full h-[100%]",
+      "bg-[#F1F7FC] shadow-md rounded-xl p-4 sm:p-6 w-full h-[100%]",
       "flex flex-col gap-md"
     ),
     form: clsx("bg-backgroundPrimary rounded-xl p-4 sm:p-6 shadow-md"),
@@ -133,25 +135,25 @@ export function PageContainer({
             {/* Título */}
             
             <div className="flex flex-col md:flex-row justify-between items-center mb-4">
-
-              <h2 className="text-[28px] font-semibold text-[#0A2A4D]">
-                Últimas transações
-              </h2>
-              <div className="flex flex-col md:flex-row justify-between items-center">
-
-                {exibirExtratoLink && (
-                  <Link
-                    href="/transactions"
-                    className="text-sm text-blue-600 hover:underline"
-                  >
-                    Ver extrato completo →
-                  </Link>
-                )}
-
-                {exibirBotaoVoltar && (
-                  <Button variant="primary" onClick={() => router.push('/')}>Voltar para a Home</Button>
-                )}
-              </div>
+              {customHeader ? (
+                customHeader
+              ) : (
+                <>
+                  <h2 className="text-[28px] font-semibold text-[#0A2A4D]">
+                    Últimas transações
+                  </h2>
+                  <div className="flex flex-col md:flex-row justify-between items-center">
+                    {exibirExtratoLink && (
+                      <Link
+                        href="/transactions"
+                        className="text-sm text-blue-600 hover:underline"
+                      >
+                        Ver extrato completo →
+                      </Link>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Subtitle - mobile */}
@@ -192,13 +194,13 @@ export function PageContainer({
             )}
           </div>
 
-          <div className="bg-backgroundPrimary rounded-lg p-4 w-full overflow-x-hidden">
+          <div className="bg-backgroundPrimary rounded-lg px-4 py-4 w-full overflow-x-hidden">
 
-            <div className="hidden sm:grid grid-cols-[repeat(5,minmax(0,1fr))] gap-6 items-center text-sm font-semibold text-textPrimary mb-sm pr-md min-w-[560px] w-[120%] md:hidden lg:grid">
-              <span>Transação</span>
+            <div className="hidden sm:grid grid-cols-[3fr_1fr_1fr_1fr_1fr] gap-6 md:gap-0 x:gap-[50px] xl:gap-0 lg:gap-0 items-center text-sm font-semibold text-textPrimary mb-sm">
+              <span className="ml-2">Transação</span>
               <span>Categoria</span>
               <span>Data</span>
-              <span>Valor (R$)</span>
+              <span className="ml-[-10px]">Valor</span>
               <span>Ações</span>
             </div>
             {children}

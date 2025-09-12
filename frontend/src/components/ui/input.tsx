@@ -5,7 +5,7 @@ type InputProps = {
 
 export function Input({ label, error, ...props }: InputProps) {
   return (
-    <div className="flex flex-col gap-1 text-base font-inter text-ui-text-primary">
+    <div className="flex flex-col gap-1 text-base font-inter text-ui-text-primary pt-[15px]">
       {label && <label className="font-semibold">{label}</label>}
       <input
         {...props}

@@ -134,9 +134,9 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
       {/* Formulário */}
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-xl shadow-md relative w-full"
+        className="flex flex-col justify-evenly bg-white p-6 rounded-xl shadow-md relative w-full h-[550px]"
       >
-        <h2 className="text-lg font-semibold text-[#0A2A4D] mb-4">
+        <h2 className="text-lg font-semibold text-[#0A2A4D] mb-5">
           Adicionar nova transação
         </h2>
 
@@ -186,7 +186,7 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
             placeholder="Ex: combustível, gasolina, alimentação..."
           />
           {showSuggestions && sugestoes.length > 0 && (
-            <ul className="bg-white border rounded w-full mt-1 shadow-lg z-10 max-h-48 overflow-y-auto">
+            <ul className="absolute bg-white border rounded w-full mt-1 shadow-lg z-10 max-h-48 overflow-y-auto">
               {sugestoes.map((s) => (
                 <li
                   key={s}
@@ -234,7 +234,7 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
         </div>
 
         
-        <div className="lg:w-[195px] md:w-[195px] sm:w-[150px]">
+        <div className="lg:w-[195px] md:w-[195px] sm:w-[150px] pt-3 pb-5">
           <Button type="submit" variant="primary" disabled={loading}>
             {loading ? "Aguarde..." : "Adicionar Transação"}
           </Button>

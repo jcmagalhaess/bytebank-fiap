@@ -9,6 +9,7 @@ import { ArrowDownIcon } from "../icons/arrowDownIcon";
 import { ArrowUpIcon } from "../icons/arrowUpIcon";
 import { EditIcon } from "../icons/editIcon";
 import { TrashIcon } from "../icons/trashIcon";
+import { UploadIcon } from "../icons/uploadIcon";
 
 interface TransactionRowProps {
   type: TransactionType;
@@ -33,7 +34,7 @@ export function TransactionRow({
   const name: TransactionName = TransactionTypeNameMap[type];
 
   return (
-    <div className="w-full border-b border-backgroundSecondary py-4 text-xs sm:text-sm text-textPrimary font-inter">
+    <div className="w-full border-b border-backgroundSecondary py-4 px-4 text-xs sm:text-sm text-textPrimary font-inter">
       {/* Mobile layout */}
       <div className="flex flex-col sm:hidden gap-2">
         {/* Linha 1: ícone, nome e data */}
@@ -46,7 +47,7 @@ export function TransactionRow({
             {/* Categoria */}
             <span>
               {categoria ? (
-                <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-brandPrimary/10 text-brandPrimary">
+                <span id="categoria">
                   {categoria}
                 </span>
               ) : (
@@ -63,15 +64,18 @@ export function TransactionRow({
           <button onClick={onEdit}>
             <EditIcon className="text-textPrimary hover:text-feedbackInfo w-4 h-4" />
           </button>
-          <button onClick={onDelete}>
+          <button>
             <TrashIcon className="text-textPrimary hover:text-feedbackDanger w-4 h-4" />
+          </button>
+          <button onClick={onDelete}>
+            <UploadIcon className="text-textPrimary hover:text-feedbackSuccess w-4 h-4" />
           </button>
         </div>
       </div>
 
       {/* Desktop layout */}
-      <div className="hidden sm:grid grid-cols-[repeat(5,minmax(0,1fr))] gap-6 md:gap-0 x:gap-[50px] xl:gap-0 items-center w-[120%] lg:gap-0">
-        {/* Transação */}
+      <div className="hidden sm:grid grid-cols-[3fr_1fr_1fr_1fr_1fr] gap-6 md:gap-0 x:gap-[50px] xl:gap-0 items-center lg:gap-0">
+        {/* Transação - coluna mais larga */}
         <div className="flex md:flex-col lg:flex-row items-center gap-2 overflow-x-hidden">
           <div className="rounded-full p-2 bg-transparent">
             <Icon className="text-white" />
@@ -81,7 +85,7 @@ export function TransactionRow({
         {/* Categoria */}
         <span>
           {categoria ? (
-            <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-brandPrimary/10 text-brandPrimary">
+            <span id="categoria">
               {categoria}
             </span>
           ) : (
@@ -95,12 +99,15 @@ export function TransactionRow({
         <span className="font-bold">{amount}</span>
 
         {/* Ações */}
-        <div className="flex gap-2 -ml-[30px] sm:block md:hidden lg:block">
+        <div className="flex gap-2 items-center">
           <button onClick={onEdit}>
             <EditIcon className="text-textPrimary hover:text-feedbackInfo w-5 h-5" />
           </button>
-          <button onClick={onDelete}>
+          <button>
             <TrashIcon className="text-textPrimary hover:text-feedbackDanger w-5 h-5" />
+          </button>
+          <button onClick={onDelete}>
+            <UploadIcon className="text-textPrimary hover:text-feedbackSuccess w-5 h-5" />
           </button>
         </div>
       </div>

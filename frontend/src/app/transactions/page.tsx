@@ -6,6 +6,8 @@ import { TransactionRow } from '@/components/transaction/transactionRow';
 import { TransactionFilters } from '@/components/TransactionFilters';
 import { Button } from '@/components/ui/button';
 import { Pagination } from '@/components/ui/pagination';
+import { SettingIcon } from '@/components/icons/settingIcon';
+import { SearchIcon } from '@/components/icons/searchIcon';
 import { formatToBRL } from '@/utils/format';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -19,6 +21,7 @@ export default function TransactionsPage() {
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
   const router = useRouter();
 
   const ITEMS_PER_PAGE = 10;
@@ -94,16 +97,70 @@ export default function TransactionsPage() {
         />
 
         <div className="relative mt-[-4.5rem] z-10 w-[50%] mx-auto">
-      {/* Componente de Filtros */}
-      <TransactionFilters
-        filters={filters}
-        onFiltersChange={updateFilters}
-        onClearFilters={clearFilters}
-        availableCategories={availableCategories}
-      />
-
       {/* Lista de transações com TransactionRow */}
-      <PageContainer variant="sectioned" className="bg-white rounded-xl shadow-md p-6 max-w-full overflow-x-auto w-[100%]" exibirExtratoLink={false} exibirBotaoVoltar={true}>
+      <PageContainer 
+        variant="sectioned" 
+        className="max-w-full overflow-x-auto w-[100%]" 
+        exibirExtratoLink={false} 
+        exibirBotaoVoltar={true}
+        customHeader={
+          <div className="w-full">
+            {/* Barra de busca e botões */}
+            <div className="flex flex-col lg:flex-row gap-4 items-center">
+              {/* Barra de busca */}
+              <div className="flex-1 w-full lg:w-auto">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <SearchIcon className="text-textSecondary" />
+                  </div>
+                  <input
+                    id="search-transactions-input"
+                    type="text"
+                    placeholder="Buscar transação..."
+                    value={filters.search}
+                    onChange={(e) => updateFilters({ ...filters, search: e.target.value })}
+                    className="w-[40%] pl-10 pr-4 py-3 border border-backgroundSecondary rounded-lg bg-white text-textPrimary placeholder-textSecondary focus:outline-none focus:ring-2 focus:ring-brandPrimary focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              {/* Botão de Filtros */}
+              <div className="flex items-center gap-3">
+                <Button variant="tertiary"
+                  id="filters-toggle-button"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center gap-2 px-4 py-3 bg-blue-100 text-gray-700 rounded-lg shadow-sm hover:bg-blue-200 transition-colors duration-200 h-9"
+                >
+                  <SettingIcon className="text-[#0F2C59]" />
+                  Filtro
+                </Button>
+
+                {/* Botão Adicionar Transação */}
+                <Button
+                  id="add-transaction-button"
+                  variant="primary"
+                  onClick={() => router.push('/')}
+                >
+                  Adicionar Transação
+                </Button>
+              </div>
+            </div>
+
+            {/* Componente de Filtros */}
+            {showFilters && (
+              <div className="mt-4">
+                <TransactionFilters
+                  filters={filters}
+                  onFiltersChange={updateFilters}
+                  onClearFilters={clearFilters}
+                  availableCategories={availableCategories}
+                  isDropdown={true}
+                />
+              </div>
+            )}
+          </div>
+        }
+      >
         {loading ? (
           <div className="flex justify-center items-center py-8">
             <div className="text-gray-500">Carregando transações...</div>

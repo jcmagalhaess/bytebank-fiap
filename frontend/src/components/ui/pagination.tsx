@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { Button } from './button';
+import { Button } from "./button";
 
 interface PaginationProps {
   currentPage: number;
@@ -15,7 +15,7 @@ export function Pagination({
   totalPages,
   onPageChange,
   itemsPerPage,
-  totalItems
+  totalItems,
 }: PaginationProps) {
   const startItem = (currentPage - 1) * itemsPerPage + 1;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
@@ -34,7 +34,7 @@ export function Pagination({
     }
 
     if (currentPage - delta > 2) {
-      rangeWithDots.push(1, '...');
+      rangeWithDots.push(1, "...");
     } else {
       rangeWithDots.push(1);
     }
@@ -42,7 +42,7 @@ export function Pagination({
     rangeWithDots.push(...range);
 
     if (currentPage + delta < totalPages - 1) {
-      rangeWithDots.push('...', totalPages);
+      rangeWithDots.push("...", totalPages);
     } else if (totalPages > 1) {
       rangeWithDots.push(totalPages);
     }
@@ -58,49 +58,50 @@ export function Pagination({
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
       {/* Informações da página */}
       <div className="text-sm text-gray-600">
-        Mostrando {startItem} a {endItem} de {totalItems} transações
+        Mostrando <span className="font-bold">{startItem}-{endItem}</span> de <span className="font-bold">{totalItems}</span> registros
       </div>
 
       {/* Controles de paginação */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
         {/* Botão Anterior */}
-        <Button
-          variant="primary"
+        <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-3 py-1 text-sm"
+          className="px-3 py-1 text-sm rounded-lg h-10 w-10 bg-transparent text-textSecondary hover:bg-backgroundSecondary disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
         >
-          Anterior
-        </Button>
+          &lt;
+        </button>
 
         {/* Números das páginas */}
         <div className="flex items-center gap-1">
           {getVisiblePages().map((page, index) => (
             <div key={index}>
-              {page === '...' ? (
+              {page === "..." ? (
                 <span className="px-3 py-1 text-gray-500">...</span>
               ) : (
-                <Button
-                  variant={currentPage === page ? "primary" : "secondary"}
+                <button
                   onClick={() => onPageChange(page as number)}
-                  className="px-3 py-1 text-sm min-w-[40px]"
+                  className={`px-3 py-1 text-sm min-w-[40px] rounded-lg h-10 w-10 transition-colors ${
+                    currentPage === page
+                      ? "bg-brandPrimary text-white"
+                      : "bg-backgroundSecondary hover:bg-blue-200 text-textSecondary"
+                  }`}
                 >
                   {page}
-                </Button>
+                </button>
               )}
             </div>
           ))}
         </div>
 
         {/* Botão Próximo */}
-        <Button
-          variant="primary"
+        <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="px-3 py-1 text-sm"
+          className="px-3 py-1 text-sm rounded-lg h-10 w-10 bg-transparent text-textSecondary hover:bg-backgroundSecondary disabled:bg-gray-100 disabled:cursor-not-allowed transition-colors"
         >
-          Próximo
-        </Button>
+          &gt;
+        </button>
       </div>
     </div>
   );

@@ -39,33 +39,37 @@ export default function Statement({
 
   return (
     <PageContainer
+      id="statement-container"
       variant="sectioned"
-      className="bg-white p-6 rounded-xl shadow-md max-w-[1200px] w-full"
+      className="max-w-[1200px] w-full"
     >
       {propTransactions.length === 0 ? (
-        <p className="text-gray-400">Nenhuma transação encontrada.</p>
+        <p id="no-transactions-message" className="text-gray-400">Nenhuma transação encontrada.</p>
       ) : (
-        propTransactions
-          .slice()
-          .reverse()
-          .slice(0, limit)
-          .map((t) => {
-            
-            const formattedAmount = formatToBRL(t.amount);
+        <div id="transactions-list">
+          {propTransactions
+            .slice()
+            .reverse()
+            .slice(0, limit)
+            .map((t) => {
+              
+              const formattedAmount = formatToBRL(t.amount);
 
-            return (
-              <TransactionRow
-                key={t.id}
-                type={t.type}
-                date={t.date.split("-").reverse().join("/")}
-                amount={formattedAmount}
-                categoria={t.categoria || 'Geral'}
-                descricao={t.descricao}
-                onEdit={() => setEditingTransaction(t)}
-                onDelete={() => setDeleteId(t.id)}
-              />
-            );
-          })
+              return (
+                <TransactionRow
+                  key={t.id}
+                  id={`transaction-row-${t.id}`}
+                  type={t.type}
+                  date={t.date.split("-").reverse().join("/")}
+                  amount={formattedAmount}
+                  categoria={t.categoria || 'Geral'}
+                  descricao={t.descricao}
+                  onEdit={() => setEditingTransaction(t)}
+                  onDelete={() => setDeleteId(t.id)}
+                />
+              );
+            })}
+        </div>
       )}
       <EditTransactionModal
         isOpen={!!editingTransaction}
@@ -85,20 +89,21 @@ export default function Statement({
 
       {/* Modal de confirmação de exclusão */}
       {deleteId !== null && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-          <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full text-center">
-            <h3 className="text-lg font-semibold mb-4 text-[#0A2A4D]">
+        <div id="delete-confirmation-modal" className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+          <div id="delete-modal-content" className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full text-center">
+            <h3 id="delete-modal-title" className="text-lg font-semibold mb-4 text-[#0A2A4D]">
               Confirmar exclusão
             </h3>
-            <p className="mb-6">
+            <p id="delete-modal-message" className="mb-6">
               Tem certeza que deseja excluir esta transação?
             </p>
             <div className="w-full flex justify-center">
-              <div className="flex justify-center gap-4">
-                <Button variant="primary" onClick={() => setDeleteId(null)}>
+              <div id="delete-modal-buttons" className="flex justify-center gap-4">
+                <Button id="delete-cancel-button" variant="primary" onClick={() => setDeleteId(null)}>
                   Cancelar
                 </Button>
                 <Button
+                  id="delete-confirm-button"
                   variant="danger"
                   onClick={() => {
                     if (deleteId !== null) handleDelete(deleteId);
