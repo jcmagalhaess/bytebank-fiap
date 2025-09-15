@@ -37,7 +37,15 @@ export default function HomePage() {
     return acc;
   }, 0) : 0;
 
-  async function handleAddTransaction(transaction: Omit<Transaction, 'id'>) {
+  async function handleAddTransaction(transaction: {
+    type: 'deposit' | 'transfer';
+    amount: number;
+    date: string;
+    descricao: string;
+    categoria: string;
+    pdfUrl?: string;
+    pdfFileName?: string;
+  }) {
     setLoading(true);
     await TransactionService.add(transaction);
     await refreshTransactions();

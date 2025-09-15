@@ -18,6 +18,9 @@ interface NewTransactionFormProps {
     amount: number;
     date: string;
     descricao: string;
+    categoria: string;
+    pdfUrl?: string;
+    pdfFileName?: string;
   }) => Promise<void>;
 }
 
@@ -37,6 +40,11 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
   const [descricaoErro, setDescricaoErro] = useState("");
   const [sugestoes, setSugestoes] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [pdfUploading, setPdfUploading] = useState(false);
+  const [pdfUploaded, setPdfUploaded] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState<string>("");
+  const [toastMessage, setToastMessage] = useState<{type: 'success' | 'error', message: string} | null>(null);
 
   function handleCategoriaChange(e: React.ChangeEvent<HTMLInputElement>) {
     const valor = e.target.value;
@@ -100,6 +108,60 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
     setDescricao("");
     setSugestoes([]);
     setShowSuggestions(false);
+    setPdfFile(null);
+    setPdfUploaded(false);
+    setPdfUrl("");
+  }
+
+  function showToast(type: 'success' | 'error', message: string) {
+    setToastMessage({ type, message });
+    setTimeout(() => setToastMessage(null), 3000);
+  }
+
+  async function handlePdfUpload(file: File) {
+    // Validação do tipo de arquivo
+    if (file.type !== 'application/pdf') {
+      showToast('error', 'Apenas arquivos PDF são permitidos');
+      return;
+    }
+
+    // Validação do tamanho (máximo 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('error', 'O arquivo deve ter no máximo 5MB');
+      return;
+    }
+
+    setPdfUploading(true);
+    setPdfFile(file);
+
+    try {
+      // Simular upload (substitua pela sua lógica de upload real)
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Simular URL do arquivo (substitua pela URL real do seu servidor)
+      const mockUrl = URL.createObjectURL(file);
+      setPdfUrl(mockUrl);
+      setPdfUploaded(true);
+      showToast('success', 'Comprovante carregado com sucesso!');
+    } catch (error) {
+      showToast('error', 'Erro ao carregar o comprovante. Tente novamente.');
+      setPdfFile(null);
+    } finally {
+      setPdfUploading(false);
+    }
+  }
+
+  function handlePdfChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) {
+      handlePdfUpload(file);
+    }
+  }
+
+  function removePdf() {
+    setPdfFile(null);
+    setPdfUploaded(false);
+    setPdfUrl("");
   }
 
   async function confirmTransaction() {
@@ -115,6 +177,8 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
       date: getTodayISO(),
       categoria: categoriaFinal,
       descricao: descricao.trim(),
+      pdfUrl: pdfUrl || undefined,
+      pdfFileName: pdfFile?.name || undefined,
     };
 
     await onAdd(transactionData);
@@ -249,6 +313,67 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
               error={valorErro}
             />
           </div>
+
+          {/* Campo de Upload de PDF */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Comprovante (opcional)
+            </label>
+            <div className="relative">
+              <input
+                type="file"
+                accept=".pdf"
+                onChange={handlePdfChange}
+                className="hidden"
+                id="pdf-upload"
+                disabled={pdfUploading}
+              />
+              <label
+                htmlFor="pdf-upload"
+                className={`flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed rounded-lg cursor-pointer transition-colors duration-200 ${
+                  pdfUploading
+                    ? 'border-blue-300 bg-blue-50 cursor-not-allowed'
+                    : pdfUploaded
+                    ? 'border-green-300 bg-green-50'
+                    : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
+                }`}
+              >
+                {pdfUploading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                    <span className="text-sm text-blue-600">Carregando...</span>
+                  </>
+                ) : pdfUploaded ? (
+                  <>
+                    <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-sm text-green-600">{pdfFile?.name}</span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        removePdf();
+                      }}
+                      className="ml-2 text-red-500 hover:text-red-700"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <span className="text-sm text-gray-600">Anexar PDF (máx. 5MB)</span>
+                  </>
+                )}
+              </label>
+            </div>
+          </div>
         </div>
 
         <div className="lg:w-[195px] md:w-[195px] sm:w-[150px] pt-3 pb-5">
@@ -276,6 +401,28 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
                 </Button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast de notificação */}
+      {toastMessage && (
+        <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 ${
+          toastMessage.type === 'success' 
+            ? 'bg-green-500 text-white' 
+            : 'bg-red-500 text-white'
+        }`}>
+          <div className="flex items-center gap-2">
+            {toastMessage.type === 'success' ? (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            )}
+            <span className="font-medium">{toastMessage.message}</span>
           </div>
         </div>
       )}

@@ -112,7 +112,9 @@ export class TransactionService {
         t.amount,
         t.date,
         t.categoria,
-        t.descricao
+        t.descricao,
+        t.pdfUrl,
+        t.pdfFileName
       );
       transactions.push(localTransaction);
       this.saveTransactions(transactions);
@@ -129,7 +131,9 @@ export class TransactionService {
         t.amount,
         t.date,
         t.categoria,
-        t.descricao
+        t.descricao,
+        t.pdfUrl,
+        t.pdfFileName
       );
       transactions.push(newTransaction);
       this.saveTransactions(transactions);
@@ -149,6 +153,21 @@ export class TransactionService {
     let transactions = this.loadTransactions();
     transactions = transactions.filter(t => t.id !== id);
     this.saveTransactions(transactions);
+  }
+
+  static deletePdf(id: number): Transaction | undefined {
+    const transactions = this.loadTransactions();
+    const idx = transactions.findIndex(t => t.id === id);
+    if (idx > -1) {
+      transactions[idx] = { 
+        ...transactions[idx], 
+        pdfUrl: undefined, 
+        pdfFileName: undefined 
+      };
+      this.saveTransactions(transactions);
+      return transactions[idx];
+    }
+    return undefined;
   }
 
   // Método para obter contas do usuário
@@ -199,7 +218,9 @@ export class TransactionService {
         Number(t.value) || Number(t.amount) || 0,
         t.date || new Date().toISOString(),
         t.from || t.to || t.categoria || 'Geral',
-        t.descricao || t.anexo || 'Transação'
+        t.descricao || t.anexo || 'Transação',
+        t.pdfUrl,
+        t.pdfFileName
       );
       
       return transaction;

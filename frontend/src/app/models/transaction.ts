@@ -13,6 +13,8 @@ export class Transaction {
     public amount: number,
     public date: string,
     public categoria?: string,
-    public descricao?: string
+    public descricao?: string,
+    public pdfUrl?: string,
+    public pdfFileName?: string
   ) {}
 }

@@ -218,6 +218,12 @@ export default function TransactionsPage() {
                   amount={formatToBRL(t.amount)}
                   onEdit={() => setEditingTransaction(t)}
                   onDelete={() => setDeleteId(t.id)}
+                  pdfUrl={t.pdfUrl}
+                  pdfFileName={t.pdfFileName}
+                  onPdfDelete={() => {
+                    TransactionService.deletePdf(t.id);
+                    fetchTransactions(); // Recarrega as transações para atualizar a UI
+                  }}
                 />
               ))}
           </>

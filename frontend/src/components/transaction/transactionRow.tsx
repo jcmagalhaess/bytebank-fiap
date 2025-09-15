@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   TransactionName,
   TransactionType,
@@ -10,6 +11,7 @@ import { ArrowUpIcon } from "../icons/arrowUpIcon";
 import { EditIcon } from "../icons/editIcon";
 import { TrashIcon } from "../icons/trashIcon";
 import { UploadIcon } from "../icons/uploadIcon";
+import { PdfViewerModal } from "./PdfViewerModal";
 
 interface TransactionRowProps {
   type: TransactionType;
@@ -20,6 +22,9 @@ interface TransactionRowProps {
   descricao?: string;
   onEdit?: () => void;
   onDelete?: () => void;
+  pdfUrl?: string;
+  pdfFileName?: string;
+  onPdfDelete?: () => void;
 }
 export function TransactionRow({
   type,
@@ -29,9 +34,37 @@ export function TransactionRow({
   descricao,
   onEdit,
   onDelete,
+  pdfUrl,
+  pdfFileName,
+  onPdfDelete,
 }: TransactionRowProps) {
+  const [showPdfModal, setShowPdfModal] = useState(false);
   const Icon = type === "deposit" ? ArrowUpIcon : ArrowDownIcon;
   const name: TransactionName = TransactionTypeNameMap[type];
+
+  const handlePdfClick = () => {
+    if (pdfUrl && pdfFileName) {
+      setShowPdfModal(true);
+    }
+  };
+
+  const handlePdfDownload = () => {
+    if (pdfUrl) {
+      const link = document.createElement('a');
+      link.href = pdfUrl;
+      link.download = pdfFileName || 'comprovante.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
+  const handlePdfDelete = () => {
+    if (onPdfDelete) {
+      onPdfDelete();
+    }
+    setShowPdfModal(false);
+  };
 
   return (
     <div className="w-full border-b border-backgroundSecondary py-4 px-4 text-xs sm:text-sm text-textPrimary font-inter">
@@ -64,11 +97,11 @@ export function TransactionRow({
           <button onClick={onEdit}>
             <EditIcon className="text-textPrimary hover:text-feedbackInfo w-4 h-4" />
           </button>
-          <button>
+          <button onClick={onDelete}>
             <TrashIcon className="text-textPrimary hover:text-feedbackDanger w-4 h-4" />
           </button>
-          <button onClick={onDelete}>
-            <UploadIcon className="text-textPrimary hover:text-feedbackSuccess w-4 h-4" />
+          <button onClick={handlePdfClick}>
+            <UploadIcon className={`w-4 h-4 ${pdfUrl ? 'text-feedbackSuccess' : 'text-textPrimary hover:text-feedbackSuccess'}`} />
           </button>
         </div>
       </div>
@@ -103,14 +136,26 @@ export function TransactionRow({
           <button onClick={onEdit}>
             <EditIcon className="text-textPrimary hover:text-feedbackInfo w-5 h-5" />
           </button>
-          <button>
+          <button onClick={onDelete}>
             <TrashIcon className="text-textPrimary hover:text-feedbackDanger w-5 h-5" />
           </button>
-          <button onClick={onDelete}>
-            <UploadIcon className="text-textPrimary hover:text-feedbackSuccess w-5 h-5" />
+          <button onClick={handlePdfClick}>
+            <UploadIcon className={`w-5 h-5 ${pdfUrl ? 'text-feedbackSuccess' : 'text-textPrimary hover:text-feedbackSuccess'}`} />
           </button>
         </div>
       </div>
+
+      {/* Modal de visualização de PDF */}
+      {pdfUrl && pdfFileName && (
+        <PdfViewerModal
+          isOpen={showPdfModal}
+          pdfUrl={pdfUrl}
+          fileName={pdfFileName}
+          onClose={() => setShowPdfModal(false)}
+          onDelete={handlePdfDelete}
+          onDownload={handlePdfDownload}
+        />
+      )}
     </div>
   );
 }

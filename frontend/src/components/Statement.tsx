@@ -66,6 +66,12 @@ export default function Statement({
                   descricao={t.descricao}
                   onEdit={() => setEditingTransaction(t)}
                   onDelete={() => setDeleteId(t.id)}
+                  pdfUrl={t.pdfUrl}
+                  pdfFileName={t.pdfFileName}
+                  onPdfDelete={() => {
+                    TransactionService.deletePdf(t.id);
+                    onRefresh(); // Recarrega as transações para atualizar a UI
+                  }}
                 />
               );
             })}
