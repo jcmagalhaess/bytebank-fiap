@@ -8,6 +8,7 @@ import Statement from '../components/Statement';
 import { useAuthContext } from '../contexts/AuthContext';
 import type { Transaction } from './models/transaction';
 import { TransactionService } from './services/transactionService';
+import { getFirstName } from '@/utils/format';
 
 export default function HomePage() {
   const { user, isAuthenticated } = useAuthContext();
@@ -60,7 +61,7 @@ export default function HomePage() {
         {/* Card superior com saldo */}
         <PageContainer
           variant="highlight"
-          title={isAuthenticated && user ? `Olá, ${user.username}` : "Olá, Visitante"}
+          title={isAuthenticated && user ? `Olá, ${getFirstName(user.username)}` : "Olá, Visitante"}
           subtitle={loading ? "Carregando..." : currencyFormatter.format(balance)}
         />
         

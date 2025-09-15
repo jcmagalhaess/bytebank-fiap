@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useAuthContext } from "../../contexts/AuthContext";
 import { useState } from "react";
 import AuthModal from "../AuthModal";
+import { getFirstName } from "@/utils/format";
 
 export function Header() {
   const { user, isAuthenticated, logout } = useAuthContext();
@@ -34,7 +35,7 @@ export function Header() {
         <div className="flex items-center gap-xs">
           {isAuthenticated && user ? (
             <>
-              <span className="text-sm hidden sm:inline">{user.username}</span>
+              <span className="text-sm hidden sm:inline">{getFirstName(user.username)}</span>
               <div className="relative group">
                 <AvatarIcon
                   className="text-backgroundPrimary text-[26px] cursor-pointer"

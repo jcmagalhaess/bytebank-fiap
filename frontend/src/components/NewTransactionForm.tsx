@@ -93,7 +93,10 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
 
   function handleAmountChange(e: React.ChangeEvent<HTMLInputElement>) {
     const raw = e.target.value.replace(/\D/g, "");
-    setAmount(raw);
+    // Limita a 11 dígitos (máximo R$ 999.999.999,99)
+    if (raw.length <= 11) {
+      setAmount(raw);
+    }
     
     // Limpa o erro quando o usuário começa a digitar
     if (valorErro) {
@@ -311,6 +314,7 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
               inputMode="numeric"
               placeholder="Digite aqui o valor da transação"
               error={valorErro}
+              maxLength={15}
             />
           </div>
 

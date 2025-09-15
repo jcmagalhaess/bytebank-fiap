@@ -19,6 +19,7 @@ export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
@@ -59,12 +60,31 @@ export default function TransactionsPage() {
   }
 
   async function handleSave(updated: {
-    id: number;
+    id?: number;
     type: "deposit" | "transfer";
     amount: number;
+    categoria?: string;
+    descricao?: string;
+    pdfUrl?: string;
+    pdfFileName?: string;
   }) {
-    TransactionService.update(updated.id, updated);
-    setEditingTransaction(null);
+    if (updated.id) {
+      // Modo editar
+      TransactionService.update(updated.id, updated);
+      setEditingTransaction(null);
+    } else {
+      // Modo adicionar
+      await TransactionService.add({
+        type: updated.type,
+        amount: updated.amount,
+        date: new Date().toISOString().split('T')[0], // Formato YYYY-MM-DD
+        categoria: updated.categoria,
+        descricao: updated.descricao,
+        pdfUrl: updated.pdfUrl,
+        pdfFileName: updated.pdfFileName,
+      });
+      setShowAddModal(false);
+    }
     fetchTransactions();
   }
 
@@ -151,7 +171,7 @@ export default function TransactionsPage() {
                 <Button
                   id="add-transaction-button"
                   variant="primary"
-                  onClick={() => router.push('/')}
+                  onClick={() => setShowAddModal(true)}
                 >
                   Adicionar Transação
                 </Button>
@@ -212,7 +232,7 @@ export default function TransactionsPage() {
                 <TransactionRow
                   key={t.id}
                   type={t.type}
-                  date={t.date.split("-").reverse().join("/")}
+                  date={t.date.includes('T') ? t.date.split('T')[0].split("-").reverse().join("/") : t.date.split("-").reverse().join("/")}
                   categoria={t.categoria}
                   descricao={t.descricao}
                   amount={formatToBRL(t.amount)}
@@ -243,6 +263,16 @@ export default function TransactionsPage() {
         } : null}
         onClose={() => setEditingTransaction(null)}
         onSave={handleSave}
+        mode="edit"
+      />
+
+      {/* Modal de Adicionar Transação */}
+      <EditTransactionModal
+        isOpen={showAddModal}
+        transaction={null}
+        onClose={() => setShowAddModal(false)}
+        onSave={handleSave}
+        mode="add"
       />
 
       {/* Modal de confirmação de exclusão */}

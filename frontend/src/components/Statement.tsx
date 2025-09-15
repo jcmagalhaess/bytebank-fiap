@@ -64,7 +64,7 @@ export default function Statement({
                   key={t.id}
                   id={`transaction-row-${t.id}`}
                   type={t.type}
-                  date={t.date.split("-").reverse().join("/")}
+                  date={t.date.includes('T') ? t.date.split('T')[0].split("-").reverse().join("/") : t.date.split("-").reverse().join("/")}
                   amount={formattedAmount}
                   categoria={t.categoria || 'Geral'}
                   descricao={t.descricao}

@@ -3,3 +3,8 @@ export function formatToBRL(value: number | string): string {
   if (isNaN(num)) return "";
   return num.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
+
+export function getFirstName(fullName: string): string {
+  if (!fullName) return "";
+  return fullName.split(" ")[0];
+}

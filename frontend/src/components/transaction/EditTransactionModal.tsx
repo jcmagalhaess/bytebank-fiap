@@ -24,7 +24,7 @@ interface EditTransactionModalProps {
     pdfFileName?: string;
   } | null;
   onSave: (updated: {
-    id: number;
+    id?: number;
     type: TransactionType;
     amount: number;
     categoria?: string;
@@ -33,6 +33,7 @@ interface EditTransactionModalProps {
     pdfFileName?: string;
   }) => void;
   onClose: () => void;
+  mode?: 'edit' | 'add';
 }
 
 export function EditTransactionModal({
@@ -40,6 +41,7 @@ export function EditTransactionModal({
   transaction,
   onSave,
   onClose,
+  mode = 'edit',
 }: EditTransactionModalProps) {
   const [type, setType] = useState<TransactionType>("deposit");
   const [amount, setAmount] = useState("");
@@ -61,7 +63,20 @@ export function EditTransactionModal({
   ];
 
   useEffect(() => {
-    if (transaction) {
+    if (mode === 'add') {
+      // Modo adicionar - limpa todos os campos
+      setType("deposit");
+      setAmount("");
+      setDescricao("");
+      setCategoria("");
+      setPdfUrl("");
+      setPdfUploaded(false);
+      setPdfFile(null);
+      setErrorMessage("");
+      setSugestoes([]);
+      setShowSuggestions(false);
+    } else if (transaction) {
+      // Modo editar - carrega dados da transação
       setType(transaction.type);
       setAmount(Math.round(transaction.amount * 100).toString());
       setDescricao(transaction.descricao || "");
@@ -72,11 +87,14 @@ export function EditTransactionModal({
       setSugestoes([]);
       setShowSuggestions(false);
     }
-  }, [transaction]);
+  }, [transaction, mode]);
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(/\D/g, "");
-    setAmount(raw);
+    // Limita a 11 dígitos (máximo R$ 999.999.999,99)
+    if (raw.length <= 11) {
+      setAmount(raw);
+    }
   };
 
   const handleCategoriaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -143,8 +161,8 @@ export function EditTransactionModal({
     setPdfUploaded(false);
     setPdfUrl("");
     
-    // Se há uma transação sendo editada, remove o PDF dela também
-    if (transaction) {
+    // Se há uma transação sendo editada (modo edit), remove o PDF dela também
+    if (mode === 'edit' && transaction) {
       TransactionService.update(transaction.id, {
         pdfUrl: undefined,
         pdfFileName: undefined
@@ -197,10 +215,21 @@ export function EditTransactionModal({
       }
     }
 
-    if (transaction) {
-      // Converte sinônimo para categoria oficial se necessário
-      const categoriaFinal = categoria.trim() ? (findCategoryBySynonym(categoria) || categoria) : categoria;
-      
+    // Converte sinônimo para categoria oficial se necessário
+    const categoriaFinal = categoria.trim() ? (findCategoryBySynonym(categoria) || categoria) : categoria;
+    
+    if (mode === 'add') {
+      // Modo adicionar - não precisa de ID
+      onSave({
+        type,
+        amount: parsedAmount,
+        categoria: categoriaFinal,
+        descricao: descricao.trim(),
+        pdfUrl: pdfUrl || undefined,
+        pdfFileName: pdfFile?.name || undefined,
+      });
+    } else if (transaction) {
+      // Modo editar - precisa do ID
       onSave({
         id: transaction.id,
         type,
@@ -219,7 +248,7 @@ export function EditTransactionModal({
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
       <div className="bg-white rounded-xl p-6 w-full max-w-2xl shadow-lg max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-semibold mb-4 text-[#0A2A4D]">
-          Editar Transação
+          {mode === 'add' ? 'Adicionar Transação' : 'Editar Transação'}
         </h2>
         {errorMessage && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl relative mb-4">
@@ -258,6 +287,7 @@ export function EditTransactionModal({
             className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
             inputMode="numeric"
             placeholder="Digite aqui o valor da transação"
+            maxLength={15}
           />
         </div>
         <div className="mb-4 relative">
