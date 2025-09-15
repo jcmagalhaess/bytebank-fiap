@@ -20,6 +20,7 @@ type PageContainerProps = {
   exibirExtratoLink?: boolean;
   exibirBotaoVoltar?: boolean;
   customHeader?: React.ReactNode;
+  pagination?: React.ReactNode;
 };
 
 export function PageContainer({
@@ -33,6 +34,7 @@ export function PageContainer({
   exibirExtratoLink = true,
   exibirBotaoVoltar = false,
   customHeader,
+  pagination,
 }: PageContainerProps) {
   const router = useRouter();
   const baseClasses = "relative p-4 sm:p-10 mb-6 w-full";
@@ -205,6 +207,9 @@ export function PageContainer({
             </div>
             {children}
           </div>
+          
+          {/* Paginação na área azul clara */}
+          {pagination}
         </>
       ) : variant !== "highlight" ? (
         <>

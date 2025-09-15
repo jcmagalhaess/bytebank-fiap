@@ -55,7 +55,7 @@ export function Pagination({
   }
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
       {/* Informações da página */}
       <div className="text-sm text-gray-600">
         Mostrando <span className="font-bold">{startItem}-{endItem}</span> de <span className="font-bold">{totalItems}</span> registros
@@ -67,7 +67,7 @@ export function Pagination({
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-3 py-1 text-sm rounded-lg h-10 w-10 bg-transparent text-textSecondary hover:bg-backgroundSecondary disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
+          className="mx-[10px] px-3 py-1 text-sm rounded-lg h-10 w-10 bg-transparent text-textSecondary hover:text-bold disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
         >
           &lt;
         </button>
@@ -98,7 +98,7 @@ export function Pagination({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="px-3 py-1 text-sm rounded-lg h-10 w-10 bg-transparent text-textSecondary hover:bg-backgroundSecondary disabled:bg-gray-100 disabled:cursor-not-allowed transition-colors"
+          className="px-3 py-1 text-sm rounded-lg h-10 w-10 bg-transparent text-textSecondary hover:text-bold disabled:bg-gray-100 disabled:cursor-not-allowed transition-colors"
         >
           &gt;
         </button>

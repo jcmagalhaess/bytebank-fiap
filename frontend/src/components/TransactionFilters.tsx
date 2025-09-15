@@ -83,6 +83,7 @@ export function TransactionFilters({
       </div>
       )}
 
+
       {/* Filtros essenciais - sempre visíveis */}
       <div id="essential-filters-row" className="flex flex-col lg:flex-row gap-4 mb-4">
         {/* Busca - só mostra se não for dropdown */}
@@ -144,6 +145,27 @@ export function TransactionFilters({
             ]}
           />
         </div>
+
+        {/* Botão Limpar Filtros - sempre visível no dropdown */}
+        {isDropdown && (
+          <div className="w-20 space-y-2">
+            <label className="text-sm font-medium text-textSecondary opacity-0">
+              Limpar
+            </label>
+            <Button
+              id="clear-filters-dropdown-button"
+              variant="secondary"
+              onClick={onClearFilters}
+              disabled={!hasActiveFilters()}
+              className="w-full flex items-center justify-center gap-1 px-2 py-2 bg-backgroundSecondary hover:bg-backgroundSecondary/80 text-textSecondary text-xs font-medium rounded-lg border border-backgroundSecondary transition-colors duration-200 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-200"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Limpar
+            </Button>
+          </div>
+        )}
 
         {/* Botão Mais Filtros - só mostra se não for dropdown */}
         {!isDropdown && (

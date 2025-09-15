@@ -109,7 +109,7 @@ export default function TransactionsPage() {
             <div className="flex flex-col lg:flex-row gap-4 items-center">
               {/* Barra de busca */}
               <div className="flex-1 w-full lg:w-auto">
-                <div className="relative">
+                <div className="relative w-[40%]">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <SearchIcon className="text-textSecondary" />
                   </div>
@@ -119,8 +119,20 @@ export default function TransactionsPage() {
                     placeholder="Buscar transação..."
                     value={filters.search}
                     onChange={(e) => updateFilters({ ...filters, search: e.target.value })}
-                    className="w-[40%] pl-10 pr-4 py-3 border border-backgroundSecondary rounded-lg bg-white text-textPrimary placeholder-textSecondary focus:outline-none focus:ring-2 focus:ring-brandPrimary focus:border-transparent"
+                    className="w-full pl-10 pr-10 py-3 border border-backgroundSecondary rounded-lg bg-white text-textPrimary placeholder-textSecondary focus:outline-none focus:ring-2 focus:ring-brandPrimary focus:border-transparent"
                   />
+                  {/* Botão X para limpar busca - só aparece quando há texto */}
+                  {filters.search && (
+                    <button
+                      type="button"
+                      onClick={() => updateFilters({ ...filters, search: '' })}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-textSecondary hover:text-textPrimary transition-colors duration-200 z-10"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -160,6 +172,17 @@ export default function TransactionsPage() {
             )}
           </div>
         }
+        pagination={
+          !loading && Array.isArray(transactions) && transactions.length > 0 && filteredTransactions.length > 0 ? (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              itemsPerPage={ITEMS_PER_PAGE}
+              totalItems={filteredTransactions.length}
+            />
+          ) : null
+        }
       >
         {loading ? (
           <div className="flex justify-center items-center py-8">
@@ -197,15 +220,6 @@ export default function TransactionsPage() {
                   onDelete={() => setDeleteId(t.id)}
                 />
               ))}
-            
-            {/* Componente de paginação */}
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-              itemsPerPage={ITEMS_PER_PAGE}
-              totalItems={filteredTransactions.length}
-            />
           </>
         )}
       </PageContainer>
