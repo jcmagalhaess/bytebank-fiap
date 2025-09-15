@@ -6,6 +6,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { formatToBRL } from "../utils/format";
 import { getTodayISO } from "../utils/date";
+import { PdfUploadLoader } from "./ui/loader";
 import { 
   findCategoryBySynonym, 
   getCategorySuggestions, 
@@ -343,10 +344,7 @@ export default function NewTransactionForm({ onAdd }: NewTransactionFormProps) {
                 }`}
               >
                 {pdfUploading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                    <span className="text-sm text-blue-600">Carregando...</span>
-                  </>
+                  <PdfUploadLoader />
                 ) : pdfUploaded ? (
                   <>
                     <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

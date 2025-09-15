@@ -10,6 +10,7 @@ import {
 } from "../../config/categories-simple";
 import { PdfViewerModal } from "./PdfViewerModal";
 import { TransactionService } from "@/app/services/transactionService";
+import { PdfUploadLoader } from "../ui/loader";
 
 // Definição da interface de props no mesmo arquivo para evitar dependências
 interface EditTransactionModalProps {
@@ -407,10 +408,7 @@ export function EditTransactionModal({
                 }`}
               >
                 {pdfUploading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                    <span className="text-sm text-blue-600">Carregando...</span>
-                  </>
+                  <PdfUploadLoader />
                 ) : (
                   <>
                     <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
