@@ -237,6 +237,9 @@ export default function TransactionsPage() {
           type: editingTransaction.type,
           amount: editingTransaction.amount,
           categoria: editingTransaction.categoria,
+          descricao: editingTransaction.descricao,
+          pdfUrl: editingTransaction.pdfUrl,
+          pdfFileName: editingTransaction.pdfFileName,
         } : null}
         onClose={() => setEditingTransaction(null)}
         onSave={handleSave}

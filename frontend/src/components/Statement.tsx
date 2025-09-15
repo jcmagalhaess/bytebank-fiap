@@ -31,6 +31,10 @@ export default function Statement({
     id: number;
     type: "deposit" | "transfer";
     amount: number;
+    categoria?: string;
+    descricao?: string;
+    pdfUrl?: string;
+    pdfFileName?: string;
   }) {
     TransactionService.update(updated.id, updated);
     setEditingTransaction(null);
@@ -86,6 +90,9 @@ export default function Statement({
                 type: editingTransaction.type,
                 amount: editingTransaction.amount,
                 categoria: editingTransaction.categoria,
+                descricao: editingTransaction.descricao,
+                pdfUrl: editingTransaction.pdfUrl,
+                pdfFileName: editingTransaction.pdfFileName,
               }
             : null
         }

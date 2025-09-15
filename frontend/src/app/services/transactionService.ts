@@ -22,7 +22,18 @@ export class TransactionService {
     const storageKey = this.getStorageKey();
     const data = localStorage.getItem(storageKey);
     if (!data) return [];
-    return JSON.parse(data);
+    const parsedData = JSON.parse(data);
+    // Converte os objetos JSON de volta para instâncias da classe Transaction
+    return parsedData.map((t: any) => new Transaction(
+      t.id,
+      t.type,
+      t.amount,
+      t.date,
+      t.categoria,
+      t.descricao || '', // Garante que descricao seja string
+      t.pdfUrl || '', // Garante que pdfUrl seja string
+      t.pdfFileName || '' // Garante que pdfFileName seja string
+    ));
   }
 
   static saveTransactions(transactions: Transaction[]) {
@@ -144,7 +155,20 @@ export class TransactionService {
   static update(id: number, data: Partial<Transaction>): Transaction | undefined {
     const transactions = this.loadTransactions();
     const idx = transactions.findIndex(t => t.id === id);
-    if (idx > -1) transactions[idx] = { ...transactions[idx], ...data };
+    if (idx > -1) {
+      const existingTransaction = transactions[idx];
+      // Cria uma nova instância da classe Transaction com os dados atualizados
+      transactions[idx] = new Transaction(
+        existingTransaction.id,
+        data.type || existingTransaction.type,
+        data.amount !== undefined ? data.amount : existingTransaction.amount,
+        data.date || existingTransaction.date,
+        data.categoria !== undefined ? data.categoria : existingTransaction.categoria,
+        data.descricao !== undefined ? data.descricao : existingTransaction.descricao,
+        data.pdfUrl !== undefined ? data.pdfUrl : existingTransaction.pdfUrl,
+        data.pdfFileName !== undefined ? data.pdfFileName : existingTransaction.pdfFileName
+      );
+    }
     this.saveTransactions(transactions);
     return transactions[idx];
   }
