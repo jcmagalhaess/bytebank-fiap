@@ -238,7 +238,7 @@ export function EditTransactionModal({
         categoria: categoriaFinal,
         descricao: descricao.trim(),
         pdfUrl: pdfUrl || undefined,
-        pdfFileName: pdfFile?.name || transaction.pdfFileName || undefined,
+        pdfFileName: pdfUrl ? (pdfFile?.name || transaction.pdfFileName) : undefined,
       });
     }
   }
@@ -357,7 +357,7 @@ export function EditTransactionModal({
           </label>
           
           {/* PDF existente */}
-          {(pdfUploaded && pdfUrl) || (transaction?.pdfUrl && transaction?.pdfFileName && pdfUrl !== "") ? (
+          {((pdfUploaded && pdfUrl && pdfUrl !== "") || (transaction?.pdfUrl && transaction?.pdfFileName && pdfUrl !== "")) ? (
             <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -389,7 +389,7 @@ export function EditTransactionModal({
           ) : null}
 
           {/* Upload de novo PDF - só aparece se não há PDF existente */}
-          {!((pdfUploaded && pdfUrl) || (transaction?.pdfUrl && transaction?.pdfFileName && pdfUrl !== "")) && (
+          {!((pdfUploaded && pdfUrl && pdfUrl !== "") || (transaction?.pdfUrl && transaction?.pdfFileName && pdfUrl !== "")) && (
             <div className="relative">
               <input
                 type="file"

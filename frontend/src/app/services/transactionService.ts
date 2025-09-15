@@ -157,6 +157,10 @@ export class TransactionService {
     const idx = transactions.findIndex(t => t.id === id);
     if (idx > -1) {
       const existingTransaction = transactions[idx];
+      
+      // Se pdfUrl e pdfFileName são explicitamente undefined, remove o PDF
+      const shouldRemovePdf = data.pdfUrl === undefined && data.pdfFileName === undefined;
+      
       // Cria uma nova instância da classe Transaction com os dados atualizados
       transactions[idx] = new Transaction(
         existingTransaction.id,
@@ -165,8 +169,8 @@ export class TransactionService {
         data.date || existingTransaction.date,
         data.categoria !== undefined ? data.categoria : existingTransaction.categoria,
         data.descricao !== undefined ? data.descricao : existingTransaction.descricao,
-        data.pdfUrl !== undefined ? data.pdfUrl : existingTransaction.pdfUrl,
-        data.pdfFileName !== undefined ? data.pdfFileName : existingTransaction.pdfFileName
+        shouldRemovePdf ? undefined : (data.pdfUrl !== undefined ? data.pdfUrl : existingTransaction.pdfUrl),
+        shouldRemovePdf ? undefined : (data.pdfFileName !== undefined ? data.pdfFileName : existingTransaction.pdfFileName)
       );
     }
     this.saveTransactions(transactions);
@@ -183,11 +187,18 @@ export class TransactionService {
     const transactions = this.loadTransactions();
     const idx = transactions.findIndex(t => t.id === id);
     if (idx > -1) {
-      transactions[idx] = { 
-        ...transactions[idx], 
-        pdfUrl: undefined, 
-        pdfFileName: undefined 
-      };
+      const existingTransaction = transactions[idx];
+      // Cria uma nova instância da classe Transaction sem os dados do PDF
+      transactions[idx] = new Transaction(
+        existingTransaction.id,
+        existingTransaction.type,
+        existingTransaction.amount,
+        existingTransaction.date,
+        existingTransaction.categoria,
+        existingTransaction.descricao,
+        undefined, // pdfUrl
+        undefined  // pdfFileName
+      );
       this.saveTransactions(transactions);
       return transactions[idx];
     }
