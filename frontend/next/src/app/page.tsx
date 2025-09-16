@@ -41,7 +41,7 @@ export default function HomePage() {
     await TransactionService.add(transaction);
     await refreshTransactions();
     setShowNotification(true);
-    setTimeout(() => setShowNotification(false), 3000);
+    setTimeout(() => setShowNotification(false), 8080);
   }
 
   return (
