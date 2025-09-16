@@ -5,16 +5,16 @@ services:
   frontend:
     # Use o Dockerfile na pasta 'frontend' para construir a imagem
     build:
-      context: ./frontend
+      context: ./frontend/next
       dockerfile: Dockerfile
     # Mapeia a porta 4200 do container para a porta 4200 da sua máquina
     ports:
-      - "4200:4200"
+      - "4201:4201"
     # Reinicia o container se ele falhar
     restart: always
     # Define as variáveis de ambiente necessárias para o Next.js
     environment:
-      - PORT=4200
+      - PORT=4201
       - NEXT_PUBLIC_API_URL=http://localhost:3000
       - PUBLIC_API_URL=http://localhost:8080
     # Monta um volume para o hot-reloading em modo de desenvolvimento

@@ -1,5 +1,5 @@
 # Usa a imagem oficial do Node.js, versão 20, com a distribuição Alpine
-FROM node:20-alpine AS base
+FROM node:22-alpine AS base
 
 # Define o diretório de trabalho dentro do container
 WORKDIR /app
@@ -23,7 +23,7 @@ WORKDIR /app
 ENV NODE_ENV production
 
 # Define a porta que o servidor vai usar
-ENV PORT 4200
+ENV PORT 4201
 
 # Copia apenas os arquivos de produção do stage anterior
 COPY --from=builder /app/.next/standalone ./
@@ -31,7 +31,7 @@ COPY --from=builder /app/package.json ./
 COPY --from=builder /app/.next/static ./.next/static
 
 # Expõe a porta que o servidor vai usar
-EXPOSE 4200
+EXPOSE 4201
 
 # O comando para iniciar a aplicação em produção
 CMD ["npm", "run", "dev"]
