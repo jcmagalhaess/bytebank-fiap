@@ -1,0 +1,20 @@
+<div class="flex flex-col items-center justify-center gap-2" [class]="class">
+  <!-- Loader principal com múltiplas animações -->
+  <div class="relative">
+    <!-- Círculo externo -->
+    <div [class]="sizeClasses + ' rounded-full border-2 border-gray-200'"></div>
+
+    <!-- Círculo animado -->
+    <div [class]="'absolute top-0 left-0 ' + sizeClasses + ' rounded-full border-2 ' + colorClasses + ' border-t-transparent animate-spin'"></div>
+
+    <!-- Círculo interno pulsante -->
+    <div [class]="'absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ' + innerCircleSize + ' rounded-full ' + colorClasses + ' animate-pulse'"></div>
+  </div>
+
+  <!-- Texto opcional -->
+  @if (text) {
+    <span [class]="textSizeClasses + ' text-gray-600 font-medium animate-pulse'">
+      {{ text }}
+    </span>
+  }
+</div>
