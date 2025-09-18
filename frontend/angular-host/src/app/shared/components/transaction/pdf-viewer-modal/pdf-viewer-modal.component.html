@@ -2,18 +2,18 @@
   <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
     <div class="bg-white rounded-xl shadow-lg max-w-4xl w-full mx-4 max-h-[90vh] flex flex-col">
       <!-- Header -->
-      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+      <div class="flex items-center justify-between p-6 border-b border-backgroundSecondary">
         <div class="flex items-center gap-3">
-          <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-6 h-6 text-feedbackDanger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
           </svg>
-          <h3 class="text-lg font-semibold text-gray-900 truncate">
+          <h3 class="text-h6 font-semibold text-textPrimary truncate">
             {{ fileName }}
           </h3>
         </div>
         <button
           (click)="onClose()"
-          class="text-gray-400 hover:text-gray-600 transition-colors">
+          class="text-textSecondary hover:text-textPrimary transition-colors">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -22,7 +22,7 @@
 
       <!-- PDF Preview -->
       <div class="flex-1 p-6">
-        <div class="w-full h-full border border-gray-200 rounded-lg overflow-hidden">
+        <div class="w-full h-full border border-backgroundSecondary rounded-lg overflow-hidden">
           <iframe
             [src]="pdfUrl"
             class="w-full h-full"
@@ -32,7 +32,7 @@
       </div>
 
       <!-- Footer com botões -->
-      <div class="flex items-center justify-center p-6 border-t border-gray-200 bg-gray-50 rounded-b-xl">
+      <div class="flex items-center justify-center p-6 border-t border-backgroundSecondary bg-backgroundSecondary rounded-b-xl">
         <div class="flex items-center gap-4">
           <app-button
             variant="secondary"
