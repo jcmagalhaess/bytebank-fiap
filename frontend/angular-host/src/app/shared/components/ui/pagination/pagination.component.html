@@ -1,0 +1,47 @@
+@if (shouldShowPagination) {
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+    <!-- Informações da página -->
+    <div class="text-sm text-gray-600">
+      Mostrando <span class="font-bold">{{ startItem }}-{{ endItem }}</span> de <span class="font-bold">{{ totalItems }}</span> registros
+    </div>
+
+    <!-- Controles de paginação -->
+    <div class="flex items-center gap-3">
+      <!-- Botão Anterior -->
+      <button
+        (click)="onPreviousPage()"
+        [disabled]="!canGoPrevious"
+        class="mx-[10px] px-3 py-1 text-sm rounded-lg h-10 w-10 bg-transparent text-textSecondary hover:text-bold disabled:text-gray-400 disabled:cursor-not-allowed transition-colors">
+        &lt;
+      </button>
+
+      <!-- Números das páginas -->
+      <div class="flex items-center gap-3">
+        @for (page of visiblePages; track $index) {
+          <div>
+            @if (isDots(page)) {
+              <span class="px-3 py-1 text-gray-500">...</span>
+            } @else {
+              <button
+                (click)="onPageChange(getPageNumber(page))"
+                [class]="'px-3 py-1 text-sm min-w-[40px] rounded-lg h-10 w-10 transition-colors ' +
+                  (isCurrentPage(page)
+                    ? 'bg-brandPrimary text-white'
+                    : 'bg-backgroundSecondary hover:bg-blue-200 text-textSecondary')">
+                {{ page }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Botão Próximo -->
+      <button
+        (click)="onNextPage()"
+        [disabled]="!canGoNext"
+        class="px-3 py-1 text-sm rounded-lg h-10 w-10 bg-transparent text-textSecondary hover:text-bold disabled:bg-gray-100 disabled:cursor-not-allowed transition-colors">
+        &gt;
+      </button>
+    </div>
+  </div>
+}
