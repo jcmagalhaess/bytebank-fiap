@@ -1,0 +1,39 @@
+<div class="relative">
+  @if (label) {
+    <label class="font-semibold mb-1 block">{{ label }}</label>
+  }
+
+  <div class="relative">
+    <select
+      [value]="value"
+      [disabled]="disabled"
+      [required]="required"
+      [class]="selectClasses"
+      (change)="onSelectChange($event)"
+      (blur)="onBlur($event)">
+
+      @if (placeholder) {
+        <option value="" disabled>{{ placeholder }}</option>
+      }
+
+      @for (option of options; track option.value) {
+        <option
+          [value]="option.value"
+          [class]="option.bold ? 'font-bold text-sm md:text-base' : 'text-sm md:text-base'">
+          {{ option.label }}
+        </option>
+      }
+    </select>
+
+    <!-- Ícone da seta -->
+    <div class="pointer-events-none absolute right-3 top-[52%] transform -translate-y-1/2">
+      <span class="material-symbols-outlined text-textSecondary text-base">
+        expand_more
+      </span>
+    </div>
+  </div>
+
+  @if (error) {
+    <span class="text-sm text-feedbackDanger mt-1 block">{{ error }}</span>
+  }
+</div>
