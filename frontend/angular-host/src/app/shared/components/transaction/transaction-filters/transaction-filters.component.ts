@@ -1,8 +1,8 @@
 import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ButtonComponent } from '../ui/button/button.component';
-import { InputComponent } from '../ui/input/input.component';
-import { SelectComponent } from '../ui/select/select.component';
+import { ButtonComponent } from '../../ui/button/button.component';
+import { InputComponent } from '../../ui/input/input.component';
+import { SelectComponent } from '../../ui/select/select.component';
 
 export interface FilterState {
   type: 'all' | 'deposit' | 'transfer';

@@ -47,8 +47,12 @@ export class ButtonComponent {
   }
 
   onButtonClick(event: Event): void {
+    console.log('🔘 Button clicked!', event);
     if (!this.disabled) {
+      console.log('🔘 Emitting click event');
       this.click.emit(event);
+    } else {
+      console.log('🔘 Button is disabled');
     }
   }
 }

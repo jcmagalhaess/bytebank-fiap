@@ -17,7 +17,7 @@ import { IconProps } from './icon-props.interface';
   standalone: true
 })
 export class ArrowDownIconComponent implements IconProps {
-  @Input() className: string = '';
+  @Input() className: string = 'text-white';
   @Input() bgColor: string = 'bg-feedbackAction';
   @Input() size?: string;
 }

@@ -16,6 +16,7 @@ export interface Transaction {
   descricao?: string;
   pdfUrl?: string;
   pdfFileName?: string;
+  date?: string;
 }
 
 export interface ToastMessage {
@@ -43,6 +44,11 @@ export class EditTransactionModalComponent implements OnInit, OnChanges {
   descricao: string = '';
   categoria: string = '';
   errorMessage: string = '';
+
+  // Estados de validação
+  amountError: string = '';
+  categoriaError: string = '';
+  descricaoError: string = '';
 
   // Estados do PDF
   pdfFile: File | null = null;
@@ -87,6 +93,10 @@ export class EditTransactionModalComponent implements OnInit, OnChanges {
       this.errorMessage = '';
       this.sugestoes = [];
       this.showSuggestions = false;
+      // Limpar erros de validação
+      this.amountError = '';
+      this.categoriaError = '';
+      this.descricaoError = '';
     } else if (this.transaction) {
       // Modo editar - carrega dados da transação
       this.type = this.transaction.type;
@@ -98,6 +108,10 @@ export class EditTransactionModalComponent implements OnInit, OnChanges {
       this.errorMessage = '';
       this.sugestoes = [];
       this.showSuggestions = false;
+      // Limpar erros de validação
+      this.amountError = '';
+      this.categoriaError = '';
+      this.descricaoError = '';
     }
   }
 
@@ -106,11 +120,26 @@ export class EditTransactionModalComponent implements OnInit, OnChanges {
     // Limita a 11 dígitos (máximo R$ 999.999.999,99)
     if (raw.length <= 11) {
       this.amount = raw;
+      this.amountError = ''; // Limpar erro quando valor é válido
     }
+  }
+
+  onAmountKeyPress(event: KeyboardEvent): boolean {
+    // Permitir apenas números, backspace, delete, tab, escape, enter
+    const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter'];
+    const isNumber = event.key >= '0' && event.key <= '9';
+
+    if (allowedKeys.includes(event.key) || isNumber) {
+      return true;
+    }
+
+    event.preventDefault();
+    return false;
   }
 
   onCategoriaChange(value: string): void {
     this.categoria = value;
+    this.categoriaError = ''; // Limpar erro quando categoria é alterada
 
     if (value.trim()) {
       const sugestoesEncontradas = this.getCategorySuggestions(value);
@@ -220,22 +249,44 @@ export class EditTransactionModalComponent implements OnInit, OnChanges {
   }
 
   onSave(): void {
-    const parsedAmount = Number(this.amount) / 100;
+    // Limpar erros anteriores
+    this.amountError = '';
+    this.categoriaError = '';
+    this.descricaoError = '';
+    this.errorMessage = '';
 
-    if (isNaN(parsedAmount) || parsedAmount <= 0) {
-      this.errorMessage = 'Por favor, informe um valor válido maior que zero.';
-      return;
+    let hasErrors = false;
+
+    // Validação do valor
+    const parsedAmount = Number(this.amount) / 100;
+    if (!this.amount.trim() || isNaN(parsedAmount) || parsedAmount <= 0) {
+      this.amountError = 'Por favor, informe um valor válido maior que zero.';
+      hasErrors = true;
     }
 
     // Validação da categoria
-    if (this.categoria.trim()) {
+    if (!this.categoria.trim()) {
+      this.categoriaError = 'Por favor, informe uma categoria.';
+      hasErrors = true;
+    } else {
       const categoriaValida = this.findCategoryBySynonym(this.categoria);
       const isOfficialCategory = this.getAllCategories().includes(this.categoria);
 
       if (!categoriaValida && !isOfficialCategory) {
-        this.errorMessage = 'Categoria inválida. Selecione uma das sugestões ou digite um sinônimo válido.';
-        return;
+        this.categoriaError = 'Categoria inválida. Selecione uma das sugestões ou digite um sinônimo válido.';
+        hasErrors = true;
       }
+    }
+
+    // Validação da descrição
+    if (!this.descricao.trim()) {
+      this.descricaoError = 'Por favor, informe uma descrição.';
+      hasErrors = true;
+    }
+
+    // Se há erros, não prosseguir
+    if (hasErrors) {
+      return;
     }
 
     // Converte sinônimo para categoria oficial se necessário

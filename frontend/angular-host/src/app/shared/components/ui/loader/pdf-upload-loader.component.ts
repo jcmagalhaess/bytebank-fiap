@@ -10,3 +10,4 @@ import { CommonModule } from '@angular/common';
 export class PdfUploadLoaderComponent {
   @Input() class: string = '';
 }
+

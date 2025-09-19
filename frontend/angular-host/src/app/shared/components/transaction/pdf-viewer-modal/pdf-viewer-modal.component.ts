@@ -29,3 +29,4 @@ export class PdfViewerModalComponent {
     this.download.emit();
   }
 }
+

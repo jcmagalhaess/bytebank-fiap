@@ -1,47 +1,44 @@
-<div class="w-full border-b border-backgroundSecondary py-sm px-sm text-caption sm:text-sm text-textPrimary font-inter">
+<div class="w-full border-b border-backgroundSecondary py-4 px-4 text-xs sm:text-sm text-textPrimary font-inter">
   <!-- Mobile layout -->
   <div class="flex flex-col sm:hidden gap-2">
     <!-- Linha 1: ícone, nome e data -->
     <div class="flex items-center gap-2">
-      @if (isDeposit) {
-        <app-arrow-up-icon className="text-white" bgColor="bg-feedbackSuccess"></app-arrow-up-icon>
+      @if (type === 'deposit') {
+        <app-arrow-up-icon></app-arrow-up-icon>
       } @else {
-        <app-arrow-down-icon className="text-white" bgColor="bg-feedbackAction"></app-arrow-down-icon>
+        <app-arrow-down-icon></app-arrow-down-icon>
       }
       <div class="flex flex-col">
-        <span class="font-semibold block md:hidden">{{ descricao || transactionName }}</span>
+        <span class="font-semibold block md:hidden">{{ descricao || (type === 'deposit' ? 'Receita' : 'Despesa') }}</span>
         <!-- Categoria -->
         <span>
           @if (categoria) {
-            <span id="categoria">
-              {{ categoria }}
-            </span>
+            <span id="categoria">{{ categoria }}</span>
           } @else {
             -
           }
         </span>
-        <span class="text-caption">{{ date }}</span>
+        <span class="text-xs">{{ date }}</span>
       </div>
     </div>
 
     <!-- Linha 2: valor + ações (lado a lado) -->
     <div class="flex items-center ml-[10px] gap-3">
       <span class="font-bold">{{ amount }}</span>
-      <button (click)="onEdit()" class="hover:opacity-70 transition-opacity">
-        <svg class="w-4 h-4 text-textPrimary hover:text-feedbackInfo" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      <button (click)="onEdit()">
+        <svg class="text-textPrimary hover:text-feedbackInfo w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
         </svg>
       </button>
-      <button (click)="onDelete()" class="hover:opacity-70 transition-opacity">
-        <svg class="w-4 h-4 text-textPrimary hover:text-feedbackDanger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+      <button (click)="onDelete()">
+        <svg class="text-textPrimary hover:text-feedbackDanger w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
         </svg>
       </button>
-      <button (click)="onPdfClick()" class="hover:opacity-70 transition-opacity">
-        <app-upload-icon
-          [className]="hasPdf ? 'text-feedbackSuccess' : 'text-textPrimary hover:text-feedbackSuccess'"
-          size="w-4 h-4">
-        </app-upload-icon>
+      <button (click)="onPdfDelete()">
+        <svg class="w-4 h-4" [class]="pdfUrl ? 'text-feedbackSuccess' : 'text-textPrimary hover:text-feedbackSuccess'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+        </svg>
       </button>
     </div>
   </div>
@@ -50,19 +47,17 @@
   <div class="hidden sm:grid grid-cols-[3fr_1fr_1fr_1fr_1fr] gap-6 md:gap-0 x:gap-[50px] xl:gap-0 items-center lg:gap-0">
     <!-- Transação - coluna mais larga -->
     <div class="flex md:flex-col lg:flex-row items-center gap-2 overflow-x-hidden">
-      @if (isDeposit) {
-        <app-arrow-up-icon className="text-white" bgColor="bg-feedbackSuccess"></app-arrow-up-icon>
+      @if (type === 'deposit') {
+        <app-arrow-up-icon></app-arrow-up-icon>
       } @else {
-        <app-arrow-down-icon className="text-white" bgColor="bg-feedbackAction"></app-arrow-down-icon>
+        <app-arrow-down-icon></app-arrow-down-icon>
       }
-      <span class="font-semibold">{{ descricao || transactionName }}</span>
+      <span class="font-semibold">{{ descricao || (type === 'deposit' ? 'Receita' : 'Despesa') }}</span>
     </div>
     <!-- Categoria -->
     <span>
       @if (categoria) {
-        <span id="categoria">
-          {{ categoria }}
-        </span>
+        <span id="categoria">{{ categoria }}</span>
       } @else {
         -
       }
@@ -75,34 +70,21 @@
 
     <!-- Ações -->
     <div class="flex gap-2 items-center">
-      <button (click)="onEdit()" class="hover:opacity-70 transition-opacity">
-        <svg class="w-5 h-5 text-textPrimary hover:text-feedbackInfo" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      <button (click)="onEdit()">
+        <svg class="text-textPrimary hover:text-feedbackInfo w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
         </svg>
       </button>
-      <button (click)="onDelete()" class="hover:opacity-70 transition-opacity">
-        <svg class="w-5 h-5 text-textPrimary hover:text-feedbackDanger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+      <button (click)="onDelete()">
+        <svg class="text-textPrimary hover:text-feedbackDanger w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
         </svg>
       </button>
-      <button (click)="onPdfClick()" class="hover:opacity-70 transition-opacity">
-        <app-upload-icon
-          [className]="hasPdf ? 'text-feedbackSuccess' : 'text-textPrimary hover:text-feedbackSuccess'"
-          size="w-5 h-5">
-        </app-upload-icon>
+      <button (click)="onPdfDelete()">
+        <svg class="w-5 h-5" [class]="pdfUrl ? 'text-feedbackSuccess' : 'text-textPrimary hover:text-feedbackSuccess'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+        </svg>
       </button>
     </div>
   </div>
-
-  <!-- Modal de visualização de PDF -->
-  @if (hasPdf) {
-    <app-pdf-viewer-modal
-      [isOpen]="showPdfModal()"
-      [pdfUrl]="pdfUrl!"
-      [fileName]="pdfFileName!"
-      (close)="closePdfModal()"
-      (delete)="onPdfDelete()"
-      (download)="onPdfDownload()">
-    </app-pdf-viewer-modal>
-  }
 </div>

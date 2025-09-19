@@ -10,3 +10,4 @@ import { CommonModule } from '@angular/common';
 export class PageLoaderComponent {
   @Input() text: string = 'Carregando...';
 }
+

@@ -26,15 +26,15 @@ export class PageContainerComponent {
   @Output() onVoltarClick = new EventEmitter<void>();
 
   get baseClasses(): string {
-    return 'relative p-4 sm:p-10 mb-6 w-full';
+    return 'relative p-4 sm:p-10 mb-6';
   }
 
   get variantClasses(): { [key in PageContainerVariant]: string } {
     return {
       highlight: [
-        'text-backgroundPrimary flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-0 sm:p-10 p-6 w-screen',
+        'text-backgroundPrimary flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-0 sm:p-10 p-6',
         'bg-gradient-to-r from-brandSecondary via-brandPrimary to-brandSecondary h-[250px]',
-        'relative overflow-hidden -mx-4 sm:-mx-10'
+        'relative overflow-hidden -mx-4 sm:-mx-10 m-0 p-0'
       ].join(' '),
       sectioned: [
         'bg-backgroundSecondary shadow-md rounded-xl p-4 sm:p-6 w-full h-[100%]',

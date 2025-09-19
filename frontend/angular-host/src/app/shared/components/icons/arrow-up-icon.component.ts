@@ -17,7 +17,7 @@ import { IconProps } from './icon-props.interface';
   standalone: true
 })
 export class ArrowUpIconComponent implements IconProps {
-  @Input() className: string = '';
+  @Input() className: string = 'text-white';
   @Input() bgColor: string = 'bg-feedbackSuccess';
   @Input() size?: string;
 }

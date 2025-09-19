@@ -36,11 +36,11 @@ export class InputComponent implements ControlValueAccessor {
   private onTouched = () => {};
 
   get inputClasses(): string {
-    const baseClasses = 'px-4 py-3 border rounded-xl font-inter text-sm md:text-base text-textPrimary placeholder-textSecondary focus:outline-none focus:ring-2';
+    const baseClasses = 'px-sm py-3 border rounded-xl font-inter text-sm md:text-base text-textPrimary placeholder-textSecondary focus:outline-none focus:ring-2';
 
     const errorClasses = this.error
-      ? 'border-feedbackDanger ring-red-200'
-      : 'border-brandPrimary ring-blue-200';
+      ? 'border-feedbackDanger ring-feedbackDanger'
+      : 'border-backgroundSecondary ring-brandPrimary';
 
     const disabledClasses = this.disabled ? 'bg-backgroundSecondary cursor-not-allowed' : '';
 

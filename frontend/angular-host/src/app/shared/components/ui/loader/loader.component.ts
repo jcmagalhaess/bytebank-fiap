@@ -52,3 +52,4 @@ export class LoaderComponent {
     return innerSizeMap[this.size];
   }
 }
+
