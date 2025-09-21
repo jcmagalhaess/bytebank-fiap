@@ -1,0 +1,21 @@
+$component-name: 'dashboard__menu';
+
+.#{$component-name} {
+  @apply text-gray-400;
+  display: flex;
+  align-items: end;
+  li {
+    display: flex;
+  }
+  &-item {
+    padding-block: 10px;
+    padding-inline: 20px;
+    border-block-end: 2px solid rgb(156 163 175 / var(--tw-text-opacity, 1));
+    transition: all 0.3s ease-in-out;
+    &:hover,
+    &--active {
+      @apply text-white;
+      border-color: #ffffff;
+    }
+  }
+}

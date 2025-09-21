@@ -1,15 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
 
 /* Tailwind CSS */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+// @tailwind base;
+// @tailwind components;
+// @tailwind utilities;
+@use './assets/scss/main.scss';
 
 /* Material Symbols Configuration */
 .material-symbols-outlined {
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 400,
-  'GRAD' 0,
-  'opsz' 24
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
