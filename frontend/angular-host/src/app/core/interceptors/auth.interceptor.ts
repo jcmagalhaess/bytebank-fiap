@@ -1,47 +1,27 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Injectable, Optional } from '@angular/core';
-import {
-  OAuthModuleConfig,
-  OAuthResourceServerErrorHandler,
-  OAuthStorage,
-} from 'angular-oauth2-oidc';
+import { HttpEvent, HttpHandlerFn, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { AuthService } from '../services/auth.service';
+import { API_CONFIG } from '../config/api.config';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class MapsAuthInterceptor implements HttpInterceptor {
-  constructor(
-    private service: AuthService,
-    private readonly oauthStorage: OAuthStorage,
-    private readonly errorHandler: OAuthResourceServerErrorHandler,
-    @Optional() private readonly moduleConfig: OAuthModuleConfig
-  ) {}
+/**
+ * Intercepta as requisições HTTP para adicionar o token de autenticação JWT
+ * no cabeçalho 'Authorization' para chamadas destinadas à API.
+ * @param req A requisição HTTP a ser interceptada.
+ * @param next O próximo manipulador na cadeia de interceptores.
+ * @returns Um Observable do evento HTTP.
+ */
+export const authInterceptor: HttpInterceptorFn = (
+  req: HttpRequest<unknown>,
+  next: HttpHandlerFn
+): Observable<HttpEvent<unknown>> => {
+  const token = localStorage.getItem('auth_token');
+  const isApiUrl = req.url.startsWith(API_CONFIG.BASE_URL);
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // if (this.service.config.auth.disabled)
-    //   return next.handle(req).pipe(catchError((err) => this.errorHandler.handleError(err)));
-
-    // const token = this.oauthStorage.getItem('access_token');
-    const token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IklzcmFlbCAyIiwiZW1haWwiOiJ0ZXN0ZUBnbWFpbC5jb20iLCJwYXNzd29yZCI6InRlc3RlcyIsImlkIjoiNjhjZmZhZDE0NzczY2NmZjdjYzgzZjNjIiwiaWF0IjoxNzU4NDYzMjA5LCJleHAiOjE3NTg1MDY0MDl9.WbPsGXol0z_dpgYc1oK_bnhANxHbVis5f20_5aQRSqs';
-
-    const allowedUrls = this.moduleConfig.resourceServer.allowedUrls;
-
-    const authReq =
-      allowedUrls?.map((url) => req.url.endsWith(url)).some((value) => value === true) ||
-      token === null
-        ? // token === 'null'
-          req.clone({
-            url: req.url,
-          })
-        : req.clone({
-            headers: req.headers.set('Authorization', `Bearer ${token}`),
-            url: req.url,
-          });
-
-    return next.handle(authReq).pipe(catchError((err) => this.errorHandler.handleError(err)));
+  if (token && isApiUrl) {
+    const authReq = req.clone({
+      headers: req.headers.set('Authorization', token),
+    });
+    return next(authReq);
   }
-}
+
+  return next(req);
+};
