@@ -1,0 +1,188 @@
+<div class="w-full">
+  <!-- Formulário -->
+  <form
+    (ngSubmit)="onSubmit($event)"
+    class="flex flex-col justify-between bg-backgroundPrimary p-lg rounded-xl shadow-md relative w-full min-h-[550px]">
+
+    <div class="flex-1">
+      <h2 class="text-h6 font-semibold text-brandSecondary mb-lg">
+        Adicionar nova transação
+      </h2>
+
+      <div class="mb-md">
+        <label class="block text-sm font-medium text-textPrimary mb-2">
+          Tipo de transação
+        </label>
+        <div class="flex gap-4">
+          @for (option of transactionOptions; track option.value) {
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="transactionType"
+                [value]="option.value"
+                [checked]="type === option.value"
+                (change)="onTypeChange($event)"
+                class="w-4 h-4 text-brandPrimary bg-backgroundSecondary border-backgroundSecondary focus:ring-brandPrimary focus:ring-2">
+              <span class="text-sm font-medium text-textPrimary">
+                {{ option.label }}
+              </span>
+            </label>
+          }
+        </div>
+      </div>
+
+      <div class="mb-md relative">
+        <app-input
+          label="Categoria"
+          type="text"
+          [value]="categoria"
+          (input)="onCategoriaChange($event)"
+          (focus)="onCategoriaFocus()"
+          (blur)="onCategoriaBlur()"
+          [error]="categoriaErro"
+          placeholder="Ex: combustível, gasolina, alimentação...">
+        </app-input>
+
+        @if (showSuggestions && sugestoes.length > 0) {
+          <ul class="absolute bg-backgroundPrimary border border-backgroundSecondary rounded w-full mt-1 shadow-lg z-10 max-h-48 overflow-y-auto">
+            @for (s of sugestoes; track s) {
+              <li
+                class="px-3 py-2 hover:bg-backgroundSecondary cursor-pointer border-b border-backgroundSecondary last:border-b-0"
+                (click)="selectSuggestion(s)">
+                {{ s }}
+              </li>
+            }
+          </ul>
+        }
+
+        @if (categoria.trim() && !findCategoryBySynonym(categoria) && !getAllCategories().includes(categoria)) {
+          <div class="text-caption text-textSecondary mt-1">
+            💡 Dica: Digite sinônimos como "combustível" para "Transporte" ou "comida" para "Alimentação"
+          </div>
+        }
+      </div>
+
+      <div class="mb-md">
+        <app-input
+          label="Descrição"
+          type="text"
+          [value]="descricao"
+          (input)="onDescricaoChange($event)"
+          placeholder="Ex: Compra no supermercado, Pagamento de conta..."
+          [error]="descricaoErro"
+          [maxlength]="50">
+        </app-input>
+      </div>
+
+      <div class="mb-md">
+        <app-input
+          label="Valor"
+          type="text"
+          [value]="formatAmountToBRL(amount)"
+          (input)="onAmountChange($event)"
+          (keypress)="onAmountKeyPress($event)"
+          inputMode="numeric"
+          placeholder="Digite aqui o valor da transação"
+          [error]="valorErro"
+          [maxlength]="12">
+        </app-input>
+      </div>
+
+      <!-- Campo de Upload de PDF -->
+      <div class="mb-md">
+        <label class="block text-sm font-medium text-textPrimary mb-2">
+          Comprovante (opcional)
+        </label>
+        <div class="relative">
+          <input
+            type="file"
+            accept=".pdf"
+            (change)="onPdfChange($event)"
+            class="hidden"
+            id="pdf-upload"
+            [disabled]="pdfUploading">
+          <label
+            for="pdf-upload"
+            [class]="'flex items-center justify-center gap-2 px-sm py-3 border-2 border-dashed rounded-lg cursor-pointer transition-colors duration-200 ' +
+              (pdfUploading
+                ? 'border-brandPrimary bg-backgroundSecondary cursor-not-allowed'
+                : pdfUploaded
+                ? 'border-feedbackSuccess bg-backgroundSecondary'
+                : 'border-backgroundSecondary hover:border-brandPrimary hover:bg-backgroundSecondary')">
+
+            @if (pdfUploading) {
+              <app-pdf-upload-loader></app-pdf-upload-loader>
+            } @else if (pdfUploaded) {
+              <svg class="w-4 h-4 text-feedbackSuccess" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span class="text-sm text-feedbackSuccess">{{ pdfFile?.name }}</span>
+              <button
+                type="button"
+                (click)="removePdf()"
+                class="ml-2 text-feedbackDanger hover:text-red-700">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            } @else {
+              <svg class="w-4 h-4 text-textSecondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <span class="text-sm text-textSecondary">Anexar PDF (máx. 5MB)</span>
+            }
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="lg:w-[195px] md:w-[195px] sm:w-[150px] pt-3 pb-lg">
+      <app-button type="submit" variant="primary" [disabled]="loading">
+        {{ loading ? "Aguarde..." : "Adicionar Transação" }}
+      </app-button>
+    </div>
+  </form>
+
+  <!-- Modal de Confirmação -->
+  @if (showModal) {
+    <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+      <div class="bg-backgroundPrimary p-lg rounded-xl shadow-lg max-w-sm w-full text-center">
+        <h3 class="text-h6 font-semibold mb-md text-brandSecondary">Confirmar transação</h3>
+        <p class="mb-lg text-textPrimary">
+          Tem certeza que deseja adicionar esta transação?
+        </p>
+        <div class="w-full flex justify-center">
+          <div class="flex justify-center gap-sm w-[60%]">
+            <app-button variant="danger" (click)="showModal = false">
+              Cancelar
+            </app-button>
+            <app-button variant="primary" (click)="confirmTransaction()">
+              Confirmar
+            </app-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Toast de notificação -->
+  @if (toastMessage) {
+    <div [class]="'fixed top-4 right-4 z-50 p-sm rounded-lg shadow-lg transition-all duration-300 ' +
+      (toastMessage.type === 'success'
+        ? 'bg-feedbackSuccess text-backgroundPrimary'
+        : 'bg-feedbackDanger text-backgroundPrimary')">
+      <div class="flex items-center gap-2">
+        @if (toastMessage.type === 'success') {
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        } @else {
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        }
+        <span class="font-semibold">{{ toastMessage.message }}</span>
+      </div>
+    </div>
+  }
+</div>

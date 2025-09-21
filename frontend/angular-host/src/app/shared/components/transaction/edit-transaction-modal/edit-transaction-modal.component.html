@@ -1,0 +1,204 @@
+@if (isOpen) {
+  <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+    <div class="bg-backgroundPrimary rounded-xl p-6 w-full max-w-2xl shadow-lg max-h-[90vh] overflow-y-auto">
+      <h2 class="text-h5 font-semibold mb-md text-brandSecondary">
+        {{ mode === 'add' ? 'Adicionar Transação' : 'Editar Transação' }}
+      </h2>
+
+      @if (errorMessage) {
+        <div class="bg-feedbackDanger bg-opacity-10 border border-feedbackDanger text-feedbackDanger px-sm py-3 rounded-xl relative mb-md">
+          <span class="block sm:inline">{{ errorMessage }}</span>
+        </div>
+      }
+
+      <div class="mb-md">
+        <label class="block text-sm font-medium text-textPrimary mb-2">
+          Tipo de transação
+        </label>
+        <div class="flex gap-4">
+          @for (option of transactionOptions; track option.value) {
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="transactionType"
+                [value]="option.value"
+                [checked]="type === option.value"
+                (change)="onTypeChange($event)"
+                class="w-4 h-4 text-brandPrimary bg-backgroundSecondary border-backgroundSecondary focus:ring-brandPrimary focus:ring-2">
+              <span class="text-sm font-medium text-textPrimary">
+                {{ option.label }}
+              </span>
+            </label>
+          }
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <app-input
+          label="Valor *"
+          type="text"
+          [value]="amount ? formatToBRL(amount) : ''"
+          (valueChange)="onAmountChange($event)"
+          (keypress)="onAmountKeyPress($event)"
+          inputMode="numeric"
+          placeholder="Digite aqui o valor da transação">
+        </app-input>
+        @if (amountError) {
+          <div class="text-xs text-feedbackDanger mt-1">{{ amountError }}</div>
+        }
+      </div>
+
+      <div class="mb-4 relative">
+        <app-input
+          label="Categoria *"
+          type="text"
+          [value]="categoria"
+          (valueChange)="onCategoriaChange($event)"
+          (focus)="onCategoriaFocus()"
+          (blur)="onCategoriaBlur()"
+          placeholder="Ex: combustível, gasolina, alimentação...">
+        </app-input>
+        @if (categoriaError) {
+          <div class="text-xs text-feedbackDanger mt-1">{{ categoriaError }}</div>
+        }
+
+        @if (showSuggestions && sugestoes.length > 0) {
+          <ul class="absolute bg-backgroundPrimary border border-backgroundSecondary rounded w-full mt-1 shadow-lg z-50 max-h-48 overflow-y-auto">
+            @for (s of sugestoes; track s) {
+              <li
+                class="px-3 py-2 hover:bg-backgroundSecondary cursor-pointer border-b border-backgroundSecondary last:border-b-0"
+                (click)="onSuggestionClick(s)">
+                {{ s }}
+              </li>
+            }
+          </ul>
+        }
+
+        @if (isInvalidCategory()) {
+          <div class="text-xs text-textSecondary mt-1">
+            💡 Dica: Digite sinônimos como "combustível" para "Transporte" ou "comida" para "Alimentação"
+          </div>
+        }
+      </div>
+
+      <!-- Campo de Descrição -->
+      <div class="mb-4">
+        <app-input
+          label="Descrição *"
+          type="text"
+          [value]="descricao"
+          (valueChange)="descricao = $event"
+          placeholder="Ex: Compra no supermercado, Pagamento de conta...">
+        </app-input>
+        @if (descricaoError) {
+          <div class="text-xs text-feedbackDanger mt-1">{{ descricaoError }}</div>
+        }
+      </div>
+
+      <!-- Seção de PDF -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-textPrimary mb-2">
+          Comprovante
+        </label>
+
+        <!-- PDF existente -->
+        @if ((pdfUploaded && pdfUrl && pdfUrl !== "") || (transaction?.pdfUrl && transaction?.pdfFileName && pdfUrl !== "")) {
+          <div class="mb-3 p-3 bg-feedbackSuccess bg-opacity-10 border border-feedbackSuccess rounded-lg">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-feedbackSuccess" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="text-sm text-feedbackSuccess font-medium">
+                  {{ transaction?.pdfFileName || pdfFile?.name || 'comprovante.pdf' }}
+                </span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button
+                  type="button"
+                  (click)="onPdfClick()"
+                  class="text-brandPrimary hover:text-brandPrimaryHover text-sm">
+                  Visualizar
+                </button>
+                <button
+                  type="button"
+                  (click)="removePdf()"
+                  class="text-feedbackDanger hover:text-feedbackDanger text-sm">
+                  Remover
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Upload de novo PDF - só aparece se não há PDF existente -->
+        @if (!((pdfUploaded && pdfUrl && pdfUrl !== "") || (transaction?.pdfUrl && transaction?.pdfFileName && pdfUrl !== ""))) {
+          <div class="relative">
+            <input
+              type="file"
+              accept=".pdf"
+              (change)="onPdfChange($event)"
+              class="hidden"
+              id="pdf-upload-edit"
+              [disabled]="pdfUploading">
+            <label
+              for="pdf-upload-edit"
+              [class]="'flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed rounded-lg cursor-pointer transition-colors duration-200 ' +
+                (pdfUploading ? 'border-brandPrimary bg-backgroundSecondary cursor-not-allowed' : 'border-backgroundSecondary hover:border-brandPrimary hover:bg-backgroundSecondary')">
+              @if (pdfUploading) {
+                <app-pdf-upload-loader />
+              } @else {
+                <svg class="w-4 h-4 text-textSecondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                <span class="text-sm text-textSecondary">Anexar PDF (máx. 5MB)</span>
+              }
+            </label>
+          </div>
+        }
+      </div>
+
+      <div class="w-full flex justify-center">
+        <div class="flex justify-center gap-4 w-[60%]">
+          <app-button variant="danger" (click)="onClose()">
+            Cancelar
+          </app-button>
+          <app-button variant="primary" (click)="onSave()">
+            Salvar
+          </app-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de visualização de PDF -->
+    @if ((pdfUrl || transaction?.pdfUrl) && (transaction?.pdfFileName || pdfFile?.name)) {
+      <app-pdf-viewer-modal
+        [isOpen]="showPdfModal"
+        [pdfUrl]="pdfUrl || transaction?.pdfUrl || ''"
+        [fileName]="transaction?.pdfFileName || pdfFile?.name || ''"
+        (close)="showPdfModal = false"
+        (delete)="onPdfDelete()"
+        (download)="onPdfDownload()">
+      </app-pdf-viewer-modal>
+    }
+
+    <!-- Toast de notificação -->
+    @if (toastMessage) {
+      <div [class]="'fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 ' +
+        (toastMessage.type === 'success' ? 'bg-feedbackSuccess text-backgroundPrimary' : 'bg-feedbackDanger text-backgroundPrimary')">
+        <div class="flex items-center gap-2">
+          @if (toastMessage.type === 'success') {
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          } @else {
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          }
+          <span class="font-medium">{{ toastMessage.message }}</span>
+        </div>
+      </div>
+    }
+  </div>
+}

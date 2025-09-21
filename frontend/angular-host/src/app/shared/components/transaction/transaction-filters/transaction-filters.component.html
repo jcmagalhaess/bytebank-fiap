@@ -1,0 +1,241 @@
+<div id="transaction-filters-container" class="bg-backgroundPrimary rounded-xl shadow-md p-6 mb-6 w-full">
+  <!-- Header com título e botão de limpar - só mostra se não for dropdown -->
+  @if (!isDropdown) {
+    <div id="filters-header" class="flex items-center justify-between mb-6">
+      <div id="filters-title-section" class="flex items-center gap-3">
+        <div id="filters-icon-container" class="w-8 h-8 bg-brandPrimary/10 rounded-lg flex items-center justify-center">
+          <svg id="filters-icon" class="w-5 h-5 text-brandPrimary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
+          </svg>
+        </div>
+        <h3 id="filters-title" class="text-h5 font-semibold text-textPrimary">
+          Filtros de Transações
+        </h3>
+      </div>
+      @if (hasActiveFilters() && !isDropdown) {
+        <app-button
+          id="clear-filters-button"
+          variant="secondary"
+          (click)="onClearFilters()"
+          class="text-sm px-4 py-2">
+          <svg id="clear-filters-icon" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          Limpar Filtros
+        </app-button>
+      }
+    </div>
+  }
+
+  <!-- Filtros essenciais - sempre visíveis -->
+  <div id="essential-filters-row" class="flex flex-col lg:flex-row gap-4 mb-4 items-end">
+    <!-- Busca - só mostra se não for dropdown -->
+    @if (!isDropdown) {
+      <div id="search-filter-container" class="flex-1 space-y-2">
+        <label id="search-filter-label" class="text-sm font-medium text-textSecondary flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          Buscar
+        </label>
+        <app-input
+          id="search-filter-input"
+          type="text"
+          [value]="filters.search"
+          (input)="onInputChange('search', $event)"
+          placeholder="Descrição ou categoria..."
+          class="w-full">
+        </app-input>
+      </div>
+    }
+
+    <!-- Tipo -->
+    <div id="type-filter-container" class="flex-1 space-y-2">
+      <label id="type-filter-label" class="text-sm font-medium text-textSecondary flex items-center gap-2">
+        <svg id="type-filter-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+        </svg>
+        Tipo
+      </label>
+      <app-select
+        id="type-filter-select"
+        [value]="filters.type"
+        [options]="typeOptions"
+        (valueChange)="onFilterChange('type', $event)">
+      </app-select>
+    </div>
+
+    <!-- Categoria -->
+    <div id="category-filter-container" class="flex-1 space-y-2">
+      <label id="category-filter-label" class="text-sm font-medium text-textSecondary flex items-center gap-2">
+        <svg id="category-filter-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+        Categoria
+      </label>
+      <app-select
+        id="category-filter-select"
+        [value]="filters.category"
+        [options]="categoryOptions"
+        (valueChange)="onFilterChange('category', $event)">
+      </app-select>
+    </div>
+
+    <!-- Botão Limpar Filtros - sempre visível no dropdown -->
+    @if (isDropdown) {
+      <div class="w-20 flex items-end">
+        <app-button
+          id="clear-filters-dropdown-button"
+          variant="secondary"
+          (click)="onClearFilters()"
+          [disabled]="!hasActiveFilters()"
+          class="w-full text-xs">
+          Limpar
+        </app-button>
+      </div>
+    }
+
+    <!-- Botão Mais Filtros - só mostra se não for dropdown -->
+    @if (!isDropdown) {
+      <div id="more-filters-button-container" class="flex items-end">
+        <button
+          id="more-filters-button"
+          (click)="toggleAdvancedFilters()"
+          class="px-6 py-2 h-10 text-sm font-medium bg-brandPrimary text-white hover:bg-brandPrimary/90 border-0 rounded-lg shadow-sm transition-all duration-200 hover:shadow-md flex items-center justify-center relative overflow-hidden">
+          <svg id="more-filters-icon" [class]="'w-4 h-4 mr-2 transition-transform ' + (showAdvancedFilters() ? 'rotate-180' : '')" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+          {{ showAdvancedFilters() ? 'Menos filtros' : 'Mais filtros' }}
+          <!-- Faixa vertical azul clara na direita -->
+          <div class="absolute right-0 top-0 bottom-0 w-1 bg-blue-300 flex items-center justify-center">
+            <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </button>
+      </div>
+    }
+  </div>
+
+  <!-- Filtros avançados - colapsáveis ou sempre visíveis no dropdown -->
+  @if (showAdvancedFilters() || isDropdown) {
+    <div id="advanced-filters-section" class="pt-4 border-t border-backgroundSecondary">
+      <div id="advanced-filters-row" class="flex flex-col xl:flex-row gap-4">
+        <!-- Data inicial -->
+        <div id="start-date-filter-container" class="flex-1 space-y-2">
+          <label id="start-date-filter-label" class="text-sm font-medium text-textSecondary flex items-center gap-2">
+            <svg id="start-date-filter-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Data inicial
+          </label>
+          <app-input
+            id="start-date-filter-input"
+            type="date"
+            [value]="filters.startDate"
+            (input)="onInputChange('startDate', $event)"
+            class="w-full">
+          </app-input>
+        </div>
+
+        <!-- Data final -->
+        <div id="end-date-filter-container" class="flex-1 space-y-2">
+          <label id="end-date-filter-label" class="text-sm font-medium text-textSecondary flex items-center gap-2">
+            <svg id="end-date-filter-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Data final
+          </label>
+          <app-input
+            id="end-date-filter-input"
+            type="date"
+            [value]="filters.endDate"
+            (input)="onInputChange('endDate', $event)"
+            class="w-full">
+          </app-input>
+        </div>
+
+        <!-- Valor mínimo -->
+        <div id="min-value-filter-container" class="flex-1 space-y-2">
+          <label id="min-value-filter-label" class="text-sm font-medium text-textSecondary flex items-center gap-2">
+            <svg id="min-value-filter-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+            </svg>
+            Valor mínimo
+          </label>
+          <app-input
+            id="min-value-filter-input"
+            type="number"
+            [value]="filters.minValue"
+            (input)="onInputChange('minValue', $event)"
+            placeholder="0,00"
+            step="0.01"
+            min="0"
+            class="w-full">
+          </app-input>
+        </div>
+
+        <!-- Valor máximo -->
+        <div id="max-value-filter-container" class="flex-1 space-y-2">
+          <label id="max-value-filter-label" class="text-sm font-medium text-textSecondary flex items-center gap-2">
+            <svg id="max-value-filter-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+            </svg>
+            Valor máximo
+          </label>
+          <app-input
+            id="max-value-filter-input"
+            type="number"
+            [value]="filters.maxValue"
+            (input)="onInputChange('maxValue', $event)"
+            placeholder="0,00"
+            step="0.01"
+            min="0"
+            class="w-full">
+          </app-input>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Resumo dos filtros ativos -->
+  @if (hasActiveFilters()) {
+    <div id="active-filters-summary" class="mt-4 p-3 bg-blue-50 rounded-lg">
+      <h4 id="active-filters-title" class="text-sm font-medium text-blue-800 mb-2">
+        Filtros Ativos:
+      </h4>
+      <div id="active-filters-tags" class="flex flex-wrap gap-2">
+        @if (filters.type !== 'all') {
+          <span id="active-filter-type" class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+            Tipo: {{ filters.type === 'deposit' ? 'Depósito' : 'Transferência' }}
+          </span>
+        }
+        @if (filters.startDate) {
+          <span id="active-filter-start-date" class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+            De: {{ formatDate(filters.startDate) }}
+          </span>
+        }
+        @if (filters.endDate) {
+          <span id="active-filter-end-date" class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+            Até: {{ formatDate(filters.endDate) }}
+          </span>
+        }
+        @if (filters.category) {
+          <span id="active-filter-category" class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+            Categoria: {{ filters.category }}
+          </span>
+        }
+        @if (filters.minValue) {
+          <span id="active-filter-min-value" class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+            Mín: R$ {{ formatCurrency(filters.minValue) }}
+          </span>
+        }
+        @if (filters.maxValue) {
+          <span id="active-filter-max-value" class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+            Máx: R$ {{ formatCurrency(filters.maxValue) }}
+          </span>
+        }
+      </div>
+    </div>
+  }
+</div>

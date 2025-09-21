@@ -1,0 +1,22 @@
+<div class="flex flex-col gap-1 text-base font-inter text-textPrimary">
+  @if (label) {
+    <label class="font-semibold">{{ label }}</label>
+  }
+
+  <input
+    [type]="type"
+    [placeholder]="placeholder"
+    [disabled]="disabled"
+    [required]="required"
+    [attr.maxlength]="maxlength"
+    [value]="value"
+    [class]="inputClasses"
+    (input)="onInput($event)"
+    (blur)="onBlur($event)"
+    (focus)="onFocus($event)"
+  />
+
+  @if (error) {
+    <span class="text-sm text-feedbackDanger">{{ error }}</span>
+  }
+</div>

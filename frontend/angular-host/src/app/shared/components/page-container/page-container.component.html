@@ -1,0 +1,138 @@
+<div [class]="containerClasses">
+
+  <!-- Variant: highlight -->
+  @if (variant === 'highlight') {
+    <!-- Background noise pattern -->
+    @if (withBackgroundPattern) {
+      <div class="absolute inset-0 z-0 opacity-50 bg-[url('/Noise.png')] bg-center pointer-events-none"></div>
+    }
+
+    <!-- Highlight content -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-6 w-[50%] mx-auto">
+      <div class="flex flex-col gap-sm z-10">
+        <h1 class="text-xl sm:text-h1 font-bold text-backgroundPrimary font-jakarta">
+          {{ title }}
+        </h1>
+        @if (currentPath === '/') {
+          <p class="text-base sm:text-h4 text-backgroundPrimary font-jakarta -mt-2">
+            Seja bem-vindo(a) de volta
+          </p>
+        }
+      </div>
+
+      <!-- Navigation links -->
+      <nav class="flex z-10 relative">
+        <a
+          routerLink="/"
+          [class]="'font-jakarta transition-colors relative pb-2 px-6 ' +
+            (currentPath === '/' ? 'text-backgroundPrimary' : 'text-textSecondary hover:text-backgroundPrimary')">
+          Home
+          <div [class]="'absolute bottom-0 left-0 right-0 h-0.5 ' +
+            (currentPath === '/' ? 'bg-backgroundPrimary' : 'bg-textSecondary')"></div>
+        </a>
+        <a
+          routerLink="/transactions"
+          [class]="'font-jakarta transition-colors relative pb-2 px-6 ' +
+            (currentPath === '/transactions' ? 'text-backgroundPrimary' : 'text-textSecondary hover:text-backgroundPrimary')">
+          Transações
+          <div [class]="'absolute bottom-0 left-0 right-0 h-0.5 ' +
+            (currentPath === '/transactions' ? 'bg-backgroundPrimary' : 'bg-textSecondary')"></div>
+        </a>
+        <a
+          routerLink="/budget"
+          [class]="'font-jakarta transition-colors relative pb-2 px-6 ' +
+            (currentPath === '/budget' ? 'text-backgroundPrimary' : 'text-textSecondary hover:text-backgroundPrimary')">
+          Orçamento
+          <div [class]="'absolute bottom-0 left-0 right-0 h-0.5 ' +
+            (currentPath === '/budget' ? 'bg-backgroundPrimary' : 'bg-textSecondary')"></div>
+        </a>
+      </nav>
+    </div>
+  }
+
+  <!-- Variant: sectioned -->
+  @if (variant === 'sectioned') {
+    <div>
+      <!-- Header -->
+      <div class="flex flex-col md:flex-row justify-between items-center mb-4">
+        @if (customHeader) {
+          <ng-container [ngTemplateOutlet]="customHeader"></ng-container>
+        } @else {
+          <h2 class="text-[28px] font-semibold text-brandSecondary">
+            Últimas transações
+          </h2>
+          <div class="flex flex-col md:flex-row justify-between items-center">
+            @if (exibirExtratoLink) {
+              <a
+                routerLink="/transactions"
+                class="text-sm text-brandPrimary hover:underline"
+                (click)="onExtratoLinkClickHandler()">
+                Ver extrato completo →
+              </a>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Subtitle - mobile -->
+      @if (subtitle) {
+        <div class="block sm:hidden">
+          <a
+            href="#"
+            class="flex items-center gap-xxs text-sm text-brandPrimary font-inter">
+            <span class="hover:underline">{{ subtitle }}</span>
+            <span class="inline-flex w-4 h-4 items-center justify-center group-hover:no-underline">
+              <svg class="text-brandPrimary text-base" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </span>
+          </a>
+        </div>
+      }
+
+      <!-- Subtitle - desktop -->
+      @if (subtitle) {
+        <div class="hidden sm:flex justify-between items-center">
+          <div></div>
+          <a
+            href="#"
+            class="flex items-center gap-xxs text-sm text-brandPrimary font-inter">
+            <span class="hover:underline">{{ subtitle }}</span>
+            <span class="inline-flex w-4 h-4 items-center justify-center group-hover:no-underline">
+              <svg class="text-brandPrimary text-base" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </span>
+          </a>
+        </div>
+      }
+    </div>
+
+    <div class="bg-backgroundPrimary rounded-lg px-4 py-4 w-full overflow-x-hidden">
+      <!-- Table header -->
+      <div class="hidden sm:grid grid-cols-[3fr_1fr_1fr_1fr_1fr] gap-6 md:gap-0 x:gap-[50px] xl:gap-0 lg:gap-0 items-center text-sm font-semibold text-textPrimary mb-sm">
+        <span class="ml-2">Transação</span>
+        <span>Categoria</span>
+        <span>Data</span>
+        <span class="ml-[-10px]">Valor</span>
+        <span>Ações</span>
+      </div>
+
+      <!-- Content -->
+      <ng-content></ng-content>
+    </div>
+
+    <!-- Pagination -->
+    @if (pagination) {
+      <ng-container [ngTemplateOutlet]="pagination"></ng-container>
+    }
+  }
+
+  <!-- Default variant (form or custom) -->
+  @if (variant !== 'highlight' && variant !== 'sectioned') {
+    @if (title) {
+      <h2 class="text-h5 font-bold mb-4">{{ title }}</h2>
+    }
+    <ng-content></ng-content>
+  }
+</div>

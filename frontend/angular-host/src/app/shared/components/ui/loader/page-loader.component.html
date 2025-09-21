@@ -1,0 +1,59 @@
+<div class="min-h-screen bg-[#E6F0FA] flex items-center justify-center">
+  <div class="text-center">
+    <!-- Logo com animação -->
+    <div class="relative mb-8">
+      <!-- Círculo de fundo sutil -->
+      <div class="absolute inset-0 w-24 h-24 rounded-full bg-white/20 mx-auto animate-pulse"></div>
+
+      <!-- Logo principal -->
+      <div class="relative w-24 h-24 mx-auto flex items-center justify-center">
+        <img
+          src="/logo_bytebank_cropped.png"
+          alt="ByteBank"
+          class="w-10 h-10 object-contain animate-bounce"
+          style="animation-duration: 2s;"
+        />
+      </div>
+
+      <!-- Círculo de progresso ao redor do logo -->
+      <div class="absolute inset-0 w-24 h-24 mx-auto">
+        <svg class="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
+          <!-- Círculo de fundo -->
+          <circle
+            cx="50"
+            cy="50"
+            r="45"
+            stroke="#E5E7EB"
+            stroke-width="3"
+            fill="none"
+          />
+          <!-- Círculo de progresso animado -->
+          <circle
+            cx="50"
+            cy="50"
+            r="45"
+            stroke="#3B82F6"
+            stroke-width="3"
+            fill="none"
+            stroke-linecap="round"
+            stroke-dasharray="283"
+            stroke-dashoffset="70"
+            class="animate-spin"
+            style="animation-duration: 3s;"
+          />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Texto -->
+    <p class="text-[#0A2A4D] text-lg font-semibold mb-2">{{ text }}</p>
+
+    <!-- Pontos de carregamento -->
+    <div class="flex justify-center space-x-1">
+      <div class="w-2 h-2 bg-[#3B82F6] rounded-full animate-bounce"></div>
+      <div class="w-2 h-2 bg-[#3B82F6] rounded-full animate-bounce" style="animation-delay: 0.1s;"></div>
+      <div class="w-2 h-2 bg-[#3B82F6] rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+    </div>
+  </div>
+</div>
+
