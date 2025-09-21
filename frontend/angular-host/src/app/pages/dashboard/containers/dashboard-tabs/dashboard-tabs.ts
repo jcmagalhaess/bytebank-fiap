@@ -13,6 +13,7 @@ import { getFirstName } from '../../../../shared/utils/format';
 export class DashboardTabs {
   private readonly _authService = inject(AuthService);
   public username = computed(() => getFirstName(this._authService.user()?.username ?? ''));
+
   public navLinks: INav[] = [
     { name: 'Dashboard', path: '/' },
     { name: 'Transações', path: '/transactions' },

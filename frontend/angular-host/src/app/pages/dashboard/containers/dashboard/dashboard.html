@@ -1,10 +1,15 @@
 <div class="grid grid-cols-2 gap-4">
   <app-analysis-card label="Análise Financeira" />
   <div class="grid grid-cols-2 gap-4">
-    <app-analysis-card label="Receitas" type="income" [price]="5000" />
-    <app-analysis-card label="Despesas" type="expense" [price]="2000" />
+    <app-analysis-card label="Receitas" type="income" [price]="userCredits" />
+    <app-analysis-card label="Despesas" type="expense" [price]="userDebits" />
     <div class="col-span-2">
-      <app-analysis-card label="Saldo atual" type="balance" [price]="3000" alignment="horizontal" />
+      <app-analysis-card
+        label="Saldo atual"
+        type="balance"
+        [price]="userBalance"
+        alignment="horizontal"
+      />
     </div>
   </div>
 </div>

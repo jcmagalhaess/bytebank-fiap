@@ -1,26 +1,17 @@
-import { HttpEvent, HttpHandlerFn, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { API_CONFIG } from '../config/api.config';
+import { HttpInterceptorFn } from '@angular/common/http';
 
 /**
- * Intercepta as requisições HTTP para adicionar o token de autenticação JWT
- * no cabeçalho 'Authorization' para chamadas destinadas à API.
- * @param req A requisição HTTP a ser interceptada.
- * @param next O próximo manipulador na cadeia de interceptores.
- * @returns Um Observable do evento HTTP.
+ * Interceptor que adiciona o token JWT de autenticação
+ * a todas as requisições HTTP enviadas para a API.
  */
-export const authInterceptor: HttpInterceptorFn = (
-  req: HttpRequest<unknown>,
-  next: HttpHandlerFn
-): Observable<HttpEvent<unknown>> => {
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = localStorage.getItem('auth_token');
-  const isApiUrl = req.url.startsWith(API_CONFIG.BASE_URL);
 
-  if (token && isApiUrl) {
-    const authReq = req.clone({
-      headers: req.headers.set('Authorization', token),
+  if (token) {
+    const clonedReq = req.clone({
+      headers: req.headers.set('Authorization', `Bearer ${token}`),
     });
-    return next(authReq);
+    return next(clonedReq);
   }
 
   return next(req);
