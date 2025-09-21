@@ -28,6 +28,10 @@ export interface User {
   email: string;
 }
 
+/**
+ * Serviço responsável por gerenciar a autenticação do usuário,
+ * incluindo login, logout e o estado da sessão.
+ */
 @Injectable({
   providedIn: 'root',
 })
@@ -35,11 +39,22 @@ export class AuthService {
   private _router = inject(Router);
   private _http = inject(HttpClient);
 
+  /** Sinal que armazena as informações do usuário autenticado, ou nulo se não autenticado. */
   user = signal<User | null>(null);
+  /** Sinal que indica se o usuário está atualmente autenticado. */
   isAuthenticated = signal<boolean>(false);
+  /** Sinal que indica se um processo relacionado à autenticação está em andamento. */
   isLoading = signal<boolean>(true);
+  /** Sinal que armazena a última mensagem de erro de autenticação, se houver. */
   error = signal<string | null>(null);
 
+  /**
+   * Processa um novo token de autenticação.
+   * Armazena o token, decodifica-o para obter informações do usuário, atualiza o estado de autenticação
+   * e navega para a página principal.
+   * @param token A string do token JWT.
+   * @private
+   */
   private handleNewToken(token: string) {
     if (token) {
       localStorage.setItem('auth_token', token);
@@ -51,22 +66,28 @@ export class AuthService {
     this.isLoading.set(false);
   }
 
+  /**
+   * Verifica a existência de um token de autenticação no armazenamento local ao iniciar a aplicação.
+   * Se um token for encontrado, valida a sessão.
+   */
   public async checkAuth(): Promise<void> {
     this.isLoading.set(true);
     const token = localStorage.getItem('auth_token');
     if (token) {
-      // Aqui você poderia adicionar uma chamada à API para validar o token no backend
-      // Por enquanto, apenas decodificamos e confiamos que ele existe.
       this.handleNewToken(token);
     } else {
       this.isLoading.set(false);
     }
   }
 
+  /**
+   * Tenta autenticar o usuário com as credenciais fornecidas.
+   * Em caso de sucesso, armazena o token e atualiza o estado de autenticação.
+   * @param credentials O email e a senha do usuário.
+   */
   public async loginWithCredentials(credentials: LoginRequest): Promise<void> {
     this.isLoading.set(true);
     this.error.set(null);
-    console.log('aqui');
 
     try {
       const response = await lastValueFrom(
@@ -77,8 +98,6 @@ export class AuthService {
       );
 
       if (response && response.result && response.result.token) {
-        console.log(response.result.token);
-
         this.handleNewToken(response.result.token);
       } else {
         throw new Error('Token não recebido do servidor.');
@@ -90,10 +109,18 @@ export class AuthService {
     }
   }
 
+  /**
+   * Desconecta o usuário limpando os dados da sessão e redirecionando para a página de login.
+   */
   public logout() {
     this.handleLogout();
   }
 
+  /**
+   * Limpa o token de autenticação do armazenamento, redefine os sinais de usuário e autenticação,
+   * e navega para a página de login.
+   * @private
+   */
   private handleLogout() {
     localStorage.clear();
     this.user.set(null);
@@ -101,6 +128,12 @@ export class AuthService {
     this._router.navigate(['/login']);
   }
 
+  /**
+   * Decodifica um token JWT para extrair as informações do usuário.
+   * @param token A string do token JWT.
+   * @returns Um objeto `User` com as informações decodificadas, ou `null` se a decodificação falhar.
+   * @private
+   */
   private decodeJWTToken(token: string): User | null {
     try {
       const payload = jwtDecode<any>(token);

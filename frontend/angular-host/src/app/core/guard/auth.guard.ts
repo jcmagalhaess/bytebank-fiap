@@ -3,7 +3,11 @@ import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 /**
- * AuthGuard como uma função, que é a abordagem moderna no Angular.
+ * Um guard que permite a ativação apenas para usuários autenticados.
+ * Se o usuário não estiver autenticado, ele o redireciona para a página de login.
+ * @param route O snapshot da rota ativada.
+ * @param state O snapshot do estado do roteador.
+ * @returns `true` se o usuário estiver autenticado, caso contrário `false` após o redirecionamento.
  */
 export const AuthGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
@@ -13,7 +17,6 @@ export const AuthGuard: CanActivateFn = (route, state) => {
     return true;
   }
 
-  // Redireciona para a página de login se não estiver autenticado
   router.navigate(['/login']);
   return false;
 };
