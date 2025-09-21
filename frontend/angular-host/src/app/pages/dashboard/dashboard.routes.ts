@@ -5,6 +5,11 @@ export const DASHBOARD_ROUTES: Routes = [
   {
     path: '',
     component: DashboardTabs,
-    children: [],
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./containers/dashboard/dashboard').then((c) => c.Dashboard),
+      },
+    ],
   },
 ];
