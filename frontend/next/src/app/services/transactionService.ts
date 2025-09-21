@@ -22,7 +22,18 @@ export class TransactionService {
     const storageKey = this.getStorageKey();
     const data = localStorage.getItem(storageKey);
     if (!data) return [];
-    return JSON.parse(data);
+    const parsedData = JSON.parse(data);
+    // Converte os objetos JSON de volta para instâncias da classe Transaction
+    return parsedData.map((t: any) => new Transaction(
+      t.id,
+      t.type,
+      t.amount,
+      t.date,
+      t.categoria,
+      t.descricao || '', // Garante que descricao seja string
+      t.pdfUrl || '', // Garante que pdfUrl seja string
+      t.pdfFileName || '' // Garante que pdfFileName seja string
+    ));
   }
 
   static saveTransactions(transactions: Transaction[]) {
@@ -97,10 +108,11 @@ export class TransactionService {
       const accountId = accounts[0]._id || accounts[0].id;
       
       // Tenta criar via API primeiro
+      const apiType = t.type === 'deposit' ? 'Credit' : 'Debit';
       const newTransaction = await TransactionApiService.createTransaction({
         accountId: accountId,
         value: t.amount,
-        type: t.type === 'deposit' ? 'Credit' : 'Debit'
+        type: apiType
       });
       
       // Atualiza localStorage como backup
@@ -110,7 +122,10 @@ export class TransactionService {
         t.type,
         t.amount,
         t.date,
-        t.categoria
+        t.categoria,
+        t.descricao,
+        t.pdfUrl,
+        t.pdfFileName
       );
       transactions.push(localTransaction);
       this.saveTransactions(transactions);
@@ -126,7 +141,10 @@ export class TransactionService {
         t.type,
         t.amount,
         t.date,
-        t.categoria
+        t.categoria,
+        t.descricao,
+        t.pdfUrl,
+        t.pdfFileName
       );
       transactions.push(newTransaction);
       this.saveTransactions(transactions);
@@ -137,7 +155,24 @@ export class TransactionService {
   static update(id: number, data: Partial<Transaction>): Transaction | undefined {
     const transactions = this.loadTransactions();
     const idx = transactions.findIndex(t => t.id === id);
-    if (idx > -1) transactions[idx] = { ...transactions[idx], ...data };
+    if (idx > -1) {
+      const existingTransaction = transactions[idx];
+      
+      // Se pdfUrl e pdfFileName são explicitamente undefined, remove o PDF
+      const shouldRemovePdf = data.pdfUrl === undefined && data.pdfFileName === undefined;
+      
+      // Cria uma nova instância da classe Transaction com os dados atualizados
+      transactions[idx] = new Transaction(
+        existingTransaction.id,
+        data.type || existingTransaction.type,
+        data.amount !== undefined ? data.amount : existingTransaction.amount,
+        data.date || existingTransaction.date,
+        data.categoria !== undefined ? data.categoria : existingTransaction.categoria,
+        data.descricao !== undefined ? data.descricao : existingTransaction.descricao,
+        shouldRemovePdf ? undefined : (data.pdfUrl !== undefined ? data.pdfUrl : existingTransaction.pdfUrl),
+        shouldRemovePdf ? undefined : (data.pdfFileName !== undefined ? data.pdfFileName : existingTransaction.pdfFileName)
+      );
+    }
     this.saveTransactions(transactions);
     return transactions[idx];
   }
@@ -146,6 +181,28 @@ export class TransactionService {
     let transactions = this.loadTransactions();
     transactions = transactions.filter(t => t.id !== id);
     this.saveTransactions(transactions);
+  }
+
+  static deletePdf(id: number): Transaction | undefined {
+    const transactions = this.loadTransactions();
+    const idx = transactions.findIndex(t => t.id === id);
+    if (idx > -1) {
+      const existingTransaction = transactions[idx];
+      // Cria uma nova instância da classe Transaction sem os dados do PDF
+      transactions[idx] = new Transaction(
+        existingTransaction.id,
+        existingTransaction.type,
+        existingTransaction.amount,
+        existingTransaction.date,
+        existingTransaction.categoria,
+        existingTransaction.descricao,
+        undefined, // pdfUrl
+        undefined  // pdfFileName
+      );
+      this.saveTransactions(transactions);
+      return transactions[idx];
+    }
+    return undefined;
   }
 
   // Método para obter contas do usuário
@@ -175,7 +232,6 @@ export class TransactionService {
   // Método para mapear transações da API para o formato local
   private static mapApiTransactionsToLocal(apiTransactions: any[]): Transaction[] {
     return apiTransactions.map((t: any) => {
-      
       // Preserva o tipo original se existir, senão converte da API
       let transactionType: 'deposit' | 'transfer';
       if (t.type === 'deposit' || t.type === 'transfer') {
@@ -196,7 +252,10 @@ export class TransactionService {
         transactionType,
         Number(t.value) || Number(t.amount) || 0,
         t.date || new Date().toISOString(),
-        t.from || t.to || t.categoria || 'Geral'
+        t.from || t.to || t.categoria || 'Geral',
+        t.descricao || t.anexo || 'Transação',
+        t.pdfUrl,
+        t.pdfFileName
       );
       
       return transaction;
