@@ -1,0 +1,25 @@
+<div class="pt-16 pb-24 w-full dashboard__header">
+  <div class="flex w-3/4 m-auto justify-between relative z-10">
+    <div class="text-white">
+      <h2 class="text-5xl font-bold">Olá, Joana!</h2>
+      <p>Seja bem-vindo (a) de volta.</p>
+    </div>
+    <ul class="dashboard__menu">
+      @for (item of navLinks; track item.path) {
+      <li>
+        <a
+          class="dashboard__menu-item"
+          [routerLink]="item.path"
+          routerLinkActive="dashboard__menu-item--active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          {{ item.name }}
+        </a>
+      </li>
+      }
+    </ul>
+  </div>
+</div>
+<div class="w-3/4 m-auto relative -top-16">
+  <router-outlet />
+</div>
