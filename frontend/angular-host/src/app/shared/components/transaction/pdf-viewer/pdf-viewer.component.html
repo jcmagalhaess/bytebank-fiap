@@ -1,0 +1,85 @@
+<div class="w-full h-full flex flex-col">
+  @if (loading) {
+    <div class="flex items-center justify-center h-full">
+      <div class="text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+        <p class="text-textSecondary">Carregando PDF...</p>
+      </div>
+    </div>
+  } @else if (error) {
+    <div class="flex items-center justify-center h-full">
+      <div class="text-center p-6">
+        <svg class="w-16 h-16 mx-auto mb-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">Erro ao carregar PDF</h3>
+        <p class="text-sm text-gray-600 mb-4">{{ error }}</p>
+        <button
+          (click)="loadPdf()"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Tentar novamente
+        </button>
+      </div>
+    </div>
+  } @else if (totalPages > 0) {
+    <!-- Controles de navegação -->
+    <div class="flex items-center justify-between p-4 bg-gray-50 border-b">
+      <div class="flex items-center gap-4">
+        <button
+          (click)="previousPage()"
+          [disabled]="currentPage <= 1"
+          class="flex items-center gap-2 px-3 py-1 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          Anterior
+        </button>
+
+        <span class="text-sm text-gray-600">
+          Página {{ currentPage }} de {{ totalPages }}
+        </span>
+
+        <button
+          (click)="nextPage()"
+          [disabled]="currentPage >= totalPages"
+          class="flex items-center gap-2 px-3 py-1 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+          Próxima
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <label class="text-sm text-gray-600">Ir para:</label>
+        <input
+          type="number"
+          [value]="currentPage"
+          (change)="goToPage(+$any($event.target).value)"
+          [min]="1"
+          [max]="totalPages"
+          class="w-16 px-2 py-1 border border-gray-300 rounded text-sm">
+      </div>
+    </div>
+
+    <!-- Canvas do PDF -->
+    <div #container class="flex-1 overflow-auto bg-gray-100">
+      <div class="flex justify-center p-4">
+        <canvas #canvas class="shadow-lg"></canvas>
+      </div>
+    </div>
+  } @else {
+    <div class="flex items-center justify-center h-full">
+      <div class="text-center p-6">
+        <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+        </svg>
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">Nenhum PDF carregado</h3>
+        <p class="text-sm text-gray-600">Selecione um arquivo PDF para visualizar</p>
+      </div>
+    </div>
+  }
+</div>

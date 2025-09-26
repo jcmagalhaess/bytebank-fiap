@@ -114,12 +114,7 @@
                 </span>
               </div>
               <div class="flex items-center gap-2">
-                <button
-                  type="button"
-                  (click)="onPdfClick()"
-                  class="text-brandPrimary hover:text-brandPrimaryHover text-sm">
-                  Visualizar
-                </button>
+
                 <button
                   type="button"
                   (click)="removePdf()"
@@ -146,7 +141,15 @@
               [class]="'flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed rounded-lg cursor-pointer transition-colors duration-200 ' +
                 (pdfUploading ? 'border-brandPrimary bg-backgroundSecondary cursor-not-allowed' : 'border-backgroundSecondary hover:border-brandPrimary hover:bg-backgroundSecondary')">
               @if (pdfUploading) {
-                <app-pdf-upload-loader />
+                <div class="flex items-center gap-2">
+                  <app-pdf-upload-loader />
+                  <button
+                    type="button"
+                    (click)="cancelPdfUpload()"
+                    class="text-feedbackDanger hover:text-red-700 text-sm">
+                    Cancelar
+                  </button>
+                </div>
               } @else {
                 <svg class="w-4 h-4 text-textSecondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -160,11 +163,18 @@
 
       <div class="w-full flex justify-center">
         <div class="flex justify-center gap-4 w-[60%]">
-          <app-button variant="danger" (click)="onClose()">
+          <app-button variant="danger" (pressed)="onClose()">
             Cancelar
           </app-button>
-          <app-button variant="primary" (click)="onSave()">
-            Salvar
+          <app-button
+            variant="primary"
+            (pressed)="onSave()"
+            [disabled]="pdfUploading">
+            @if (pdfUploading) {
+              Carregando PDF...
+            } @else {
+              Salvar
+            }
           </app-button>
         </div>
       </div>
@@ -185,15 +195,21 @@
     <!-- Toast de notificação -->
     @if (toastMessage) {
       <div [class]="'fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 ' +
-        (toastMessage.type === 'success' ? 'bg-feedbackSuccess text-backgroundPrimary' : 'bg-feedbackDanger text-backgroundPrimary')">
+        (toastMessage.type === 'success' ? 'bg-feedbackSuccess text-backgroundPrimary' :
+         toastMessage.type === 'error' ? 'bg-feedbackDanger text-backgroundPrimary' :
+         'bg-blue-500 text-white')">
         <div class="flex items-center gap-2">
           @if (toastMessage.type === 'success') {
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-          } @else {
+          } @else if (toastMessage.type === 'error') {
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          } @else {
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           }
           <span class="font-medium">{{ toastMessage.message }}</span>

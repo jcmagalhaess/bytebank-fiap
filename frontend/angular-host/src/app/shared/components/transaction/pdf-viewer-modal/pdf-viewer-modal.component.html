@@ -23,11 +23,33 @@
       <!-- PDF Preview -->
       <div class="flex-1 p-6">
         <div class="w-full h-full border border-backgroundSecondary rounded-lg overflow-hidden">
-          <iframe
-            [src]="pdfUrl"
-            class="w-full h-full"
-            title="PDF Preview">
-          </iframe>
+          @if (pdfUrl) {
+            <div class="w-full h-full flex flex-col">
+              <!-- Debug info -->
+              <div class="bg-yellow-100 p-2 text-xs text-gray-700 mb-2">
+                Debug: PDF URL = {{ pdfUrl }}
+              </div>
+
+              <!-- Iframe simples como no Next.js -->
+              <div class="w-full h-full border border-gray-200 rounded-lg overflow-hidden">
+                <iframe
+                  #pdfIframe
+                  class="w-full h-full"
+                  title="PDF Preview">
+                </iframe>
+              </div>
+            </div>
+          } @else {
+            <div class="flex items-center justify-center h-full text-textSecondary">
+              <div class="text-center">
+                <svg class="w-12 h-12 mx-auto mb-4 text-textSecondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                <p class="text-sm">PDF não disponível para visualização</p>
+                <p class="text-xs text-textSecondary mt-1">Use o botão de download para acessar o arquivo</p>
+              </div>
+            </div>
+          }
         </div>
       </div>
 
