@@ -10,6 +10,7 @@ import { SettingIconComponent } from '../../shared/components/icons/setting-icon
 import { EditTransactionModalComponent } from '../../shared/components/transaction/edit-transaction-modal/edit-transaction-modal.component';
 import { PdfViewerModalComponent } from '../../shared/components/transaction/pdf-viewer-modal/pdf-viewer-modal.component';
 import { PdfUploadModalComponent, PdfUploadResult } from '../../shared/components/transaction/pdf-upload-modal/pdf-upload-modal.component';
+import { PaginationComponent } from '../../shared/components/ui/pagination/pagination.component';
 import { TransactionService } from '../../core/services/transaction.service';
 import { Transaction } from '../../shared/interfaces/transaction.interface';
 import { formatToBRL } from '../../shared/utils/format';
@@ -28,10 +29,10 @@ import { formatToBRL } from '../../shared/utils/format';
     SettingIconComponent,
     EditTransactionModalComponent,
     PdfViewerModalComponent,
-    PdfUploadModalComponent
+    PdfUploadModalComponent,
+    PaginationComponent
   ],
-  templateUrl: './transactions.component.html',
-  styleUrl: './transactions.component.scss'
+  templateUrl: './transactions.component.html'
 })
 export class TransactionsComponent implements OnInit {
   // Signals para estado reativo
@@ -44,6 +45,9 @@ export class TransactionsComponent implements OnInit {
   deleteId = signal<number | null>(null);
   currentPage = signal<number>(1);
   searchTerm = signal<string>('');
+
+  // Paginação
+  itemsPerPage = 10;
 
   // PDF viewer
   showPdfModal = signal<boolean>(false);
@@ -85,6 +89,19 @@ export class TransactionsComponent implements OnInit {
     const f = this.filters();
     return f.type !== 'all' || f.startDate !== '' || f.endDate !== '' ||
            f.category !== '' || f.minValue !== '' || f.maxValue !== '' || f.search !== '';
+  });
+
+  // Computed para paginação
+  totalPages = computed(() => Math.ceil(this.filteredTransactions().length / this.itemsPerPage));
+
+  startIndex = computed(() => (this.currentPage() - 1) * this.itemsPerPage);
+
+  endIndex = computed(() => this.startIndex() + this.itemsPerPage);
+
+  currentTransactions = computed(() => {
+    const start = this.startIndex();
+    const end = this.endIndex();
+    return this.filteredTransactions().slice(start, end);
   });
 
 
@@ -188,6 +205,12 @@ export class TransactionsComponent implements OnInit {
       search: ''
     });
     this.applyFilters();
+  }
+
+  onPageChange(page: number) {
+    this.currentPage.set(page);
+    // Scroll para o topo da lista
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   onSearchChange(searchTerm: string) {

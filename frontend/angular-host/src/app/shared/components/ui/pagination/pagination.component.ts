@@ -1,11 +1,11 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-pagination',
-  templateUrl: './pagination.component.html',
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule],
+  templateUrl: './pagination.component.html'
 })
 export class PaginationComponent {
   @Input() currentPage: number = 1;
@@ -15,15 +15,11 @@ export class PaginationComponent {
 
   @Output() pageChange = new EventEmitter<number>();
 
-  get startItem(): number {
-    return (this.currentPage - 1) * this.itemsPerPage + 1;
-  }
+  // Computed properties
+  startItem = computed(() => (this.currentPage - 1) * this.itemsPerPage + 1);
+  endItem = computed(() => Math.min(this.currentPage * this.itemsPerPage, this.totalItems));
 
-  get endItem(): number {
-    return Math.min(this.currentPage * this.itemsPerPage, this.totalItems);
-  }
-
-  get visiblePages(): (number | string)[] {
+  visiblePages = computed(() => {
     const delta = 2;
     const range: number[] = [];
     const rangeWithDots: (number | string)[] = [];
@@ -51,47 +47,23 @@ export class PaginationComponent {
     }
 
     return rangeWithDots;
-  }
+  });
 
-  get shouldShowPagination(): boolean {
-    return this.totalPages > 1;
-  }
-
-  get canGoPrevious(): boolean {
-    return this.currentPage > 1;
-  }
-
-  get canGoNext(): boolean {
-    return this.currentPage < this.totalPages;
-  }
+  shouldShowPagination = computed(() => this.totalItems > 0);
 
   onPageChange(page: number): void {
-    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
-      this.pageChange.emit(page);
-    }
+    this.pageChange.emit(page);
   }
 
   onPreviousPage(): void {
-    if (this.canGoPrevious) {
+    if (this.currentPage > 1) {
       this.onPageChange(this.currentPage - 1);
     }
   }
 
   onNextPage(): void {
-    if (this.canGoNext) {
+    if (this.currentPage < this.totalPages) {
       this.onPageChange(this.currentPage + 1);
     }
-  }
-
-  isCurrentPage(page: number | string): boolean {
-    return page === this.currentPage;
-  }
-
-  isDots(page: number | string): boolean {
-    return page === '...';
-  }
-
-  getPageNumber(page: number | string): number {
-    return typeof page === 'number' ? page : 1;
   }
 }
