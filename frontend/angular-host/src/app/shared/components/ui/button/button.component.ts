@@ -14,7 +14,11 @@ export class ButtonComponent {
   @Input() disabled: boolean = false;
   @Input() type: 'button' | 'submit' | 'reset' = 'button';
   @Input() class: string = '';
+  // Quando fornecido, substitui completamente as classes calculadas
+  @Input() overrideClass: string | null = null;
   @Output() click = new EventEmitter<Event>();
+  // Evento alternativo para evitar conflitos com (click) nativo
+  @Output() pressed = new EventEmitter<void>();
 
   get buttonClasses(): string {
     const base = 'px-5 py-2 rounded-lg font-semibold transition-all duration-200 font-inter text-sm leading-5';
@@ -41,8 +45,12 @@ export class ButtonComponent {
       action: 'bg-gray-200 text-gray-500 cursor-not-allowed',
     };
 
-    const variantClasses = this.disabled ? disabledStyles[this.variant] : variants[this.variant];
+    // Se overrideClass for fornecido, usar somente ela
+    if (this.overrideClass) {
+      return this.overrideClass.trim();
+    }
 
+    const variantClasses = this.disabled ? disabledStyles[this.variant] : variants[this.variant];
     return `${base} ${variantClasses} ${this.class}`.trim();
   }
 
@@ -51,6 +59,7 @@ export class ButtonComponent {
     if (!this.disabled) {
       console.log('🔘 Emitting click event');
       this.click.emit(event);
+      this.pressed.emit();
     } else {
       console.log('🔘 Button is disabled');
     }

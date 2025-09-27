@@ -2,11 +2,12 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ArrowUpIconComponent } from '../../icons/arrow-up-icon.component';
 import { ArrowDownIconComponent } from '../../icons/arrow-down-icon.component';
+import { UploadIconComponent } from '../../icons/upload-icon.component';
 
 @Component({
   selector: 'app-transaction-row',
   standalone: true,
-  imports: [CommonModule, ArrowUpIconComponent, ArrowDownIconComponent],
+  imports: [CommonModule, ArrowUpIconComponent, ArrowDownIconComponent, UploadIconComponent],
   templateUrl: './transaction-row.component.html',
 })
 export class TransactionRowComponent {
@@ -18,8 +19,11 @@ export class TransactionRowComponent {
   @Input() pdfUrl?: string;
   @Input() pdfFileName?: string;
 
+
   @Output() edit = new EventEmitter<void>();
   @Output() delete = new EventEmitter<void>();
+  @Output() pdfView = new EventEmitter<void>();
+  @Output() pdfUpload = new EventEmitter<void>();
   @Output() pdfDelete = new EventEmitter<void>();
 
   onEdit(): void {
@@ -28,6 +32,14 @@ export class TransactionRowComponent {
 
   onDelete(): void {
     this.delete.emit();
+  }
+
+  onPdfView(): void {
+    this.pdfView.emit();
+  }
+
+  onPdfUpload(): void {
+    this.pdfUpload.emit();
   }
 
   onPdfDelete(): void {

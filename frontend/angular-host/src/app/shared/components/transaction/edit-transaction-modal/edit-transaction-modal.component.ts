@@ -20,7 +20,7 @@ export interface Transaction {
 }
 
 export interface ToastMessage {
-  type: 'success' | 'error';
+  type: 'success' | 'error' | 'info';
   message: string;
 }
 
@@ -220,6 +220,15 @@ export class EditTransactionModalComponent implements OnInit, OnChanges {
     this.pdfUrl = '';
   }
 
+  cancelPdfUpload(): void {
+    console.log('🚫 Cancelando upload de PDF');
+    this.pdfUploading = false;
+    this.pdfFile = null;
+    this.pdfUploaded = false;
+    this.pdfUrl = '';
+    this.showToast('info', 'Upload de PDF cancelado.');
+  }
+
   onPdfClick(): void {
     const currentPdfUrl = this.pdfUrl || this.transaction?.pdfUrl;
     const currentPdfFileName = this.transaction?.pdfFileName || this.pdfFile?.name;
@@ -249,6 +258,12 @@ export class EditTransactionModalComponent implements OnInit, OnChanges {
   }
 
   onSave(): void {
+    // Verificar se há upload em andamento
+    if (this.pdfUploading) {
+      this.errorMessage = 'Aguarde o carregamento do PDF ser concluído antes de salvar.';
+      return;
+    }
+
     // Limpar erros anteriores
     this.amountError = '';
     this.categoriaError = '';
@@ -312,7 +327,7 @@ export class EditTransactionModalComponent implements OnInit, OnChanges {
     this.close.emit();
   }
 
-  showToast(type: 'success' | 'error', message: string): void {
+  showToast(type: 'success' | 'error' | 'info', message: string): void {
     this.toastMessage = { type, message };
     setTimeout(() => this.toastMessage = null, 3000);
   }
