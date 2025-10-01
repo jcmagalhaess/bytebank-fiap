@@ -28,7 +28,7 @@
   }
 
   <!-- Filtros essenciais - sempre visíveis -->
-  <div id="essential-filters-row" class="flex flex-col lg:flex-row gap-4 mb-4 items-end">
+  <div id="essential-filters-row" class="flex flex-col sm:flex-row lg:flex-row gap-4 mb-4 items-end">
     <!-- Busca - só mostra se não for dropdown -->
     @if (!isDropdown) {
       <div id="search-filter-container" class="flex-1 space-y-2">
@@ -120,7 +120,7 @@
   <!-- Filtros avançados - colapsáveis ou sempre visíveis no dropdown -->
   @if (showAdvancedFilters() || isDropdown) {
     <div id="advanced-filters-section" class="pt-4 border-t border-backgroundSecondary">
-      <div id="advanced-filters-row" class="flex flex-col xl:flex-row gap-4">
+      <div id="advanced-filters-row" class="flex flex-col sm:flex-row xl:flex-row gap-4">
         <!-- Data inicial -->
         <div id="start-date-filter-container" class="flex-1 space-y-2">
           <label id="start-date-filter-label" class="text-sm font-medium text-textSecondary flex items-center gap-2">

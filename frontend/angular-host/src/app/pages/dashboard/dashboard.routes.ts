@@ -10,6 +10,10 @@ export const DASHBOARD_ROUTES: Routes = [
         path: '',
         loadComponent: () => import('./containers/dashboard/dashboard').then((c) => c.Dashboard),
       },
+      {
+        path: 'transactions',
+        loadChildren: () => import('../transactions/transactions.routes').then((m) => m.TRANSACTIONS_ROUTES),
+      },
     ],
   },
 ];
