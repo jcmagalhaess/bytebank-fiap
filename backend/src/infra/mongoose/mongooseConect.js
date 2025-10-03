@@ -1,23 +1,35 @@
 const mongoose = require("mongoose");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 
+/**
+ * Cache de conexão global para ser reutilizado entre as invocações de funções serverless.
+ */
+let cachedConnection = null;
+
 async function connectDB() {
   try {
+    // Para desenvolvimento local, usa o banco em memória.
     if (process.env.NODE_ENV === "development") {
-      // Iniciar MongoDB em memória para desenvolvimento
       const mongod = await MongoMemoryServer.create();
       const mongoUri = mongod.getUri();
       await mongoose.connect(mongoUri);
       console.log("Conectado ao MongoDB em memória");
-    } else {
-      // Conectar ao MongoDB real em produção
-      await mongoose.connect(
-        "mongodb+srv://bytebank-fiap:q8l3VKdIXvWvUYmU@cluster0.gylk9nh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-      );
-      console.log("Conectado ao MongoDB");
+      return;
     }
+
+    // Para produção (Vercel), reutiliza a conexão em cache.
+    if (cachedConnection) {
+      console.log("Usando conexão de banco de dados em cache.");
+      return cachedConnection;
+    }
+
+    console.log("Criando uma nova conexão com o banco de dados.");
+    cachedConnection = await mongoose.connect(process.env.MONGO_URI);
+    console.log("Conectado ao MongoDB na nuvem (Vercel).");
+    return cachedConnection;
   } catch (error) {
     console.error("Erro ao conectar ao MongoDB:", error);
+    process.exit(1); // Encerra o processo em caso de falha na conexão inicial
   }
 }
 
