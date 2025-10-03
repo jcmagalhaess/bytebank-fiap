@@ -12,3 +12,10 @@
     background-image: url('../../../../../assets/img/Noise.png');
   }
 }
+
+// Garantir que o container de conteúdo tenha posicionamento consistente
+.dashboard__content {
+  position: relative;
+  top: -4rem; // -top-16 equivalente
+  z-index: 10;
+}

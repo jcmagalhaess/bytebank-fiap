@@ -1,6 +1,6 @@
 @if (isOpen) {
-  <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-    <div class="bg-backgroundPrimary rounded-xl p-6 w-full max-w-2xl shadow-lg max-h-[90vh] overflow-y-auto">
+  <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 p-4">
+    <div class="bg-backgroundPrimary rounded-xl p-4 sm:p-6 w-full max-w-2xl shadow-lg max-h-[90vh] overflow-y-auto">
       <h2 class="text-h5 font-semibold mb-md text-brandSecondary">
         {{ mode === 'add' ? 'Adicionar Transação' : 'Editar Transação' }}
       </h2>
@@ -15,7 +15,7 @@
         <label class="block text-sm font-medium text-textPrimary mb-2">
           Tipo de transação
         </label>
-        <div class="flex gap-4">
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
           @for (option of transactionOptions; track option.value) {
             <label class="flex items-center gap-2 cursor-pointer">
               <input
@@ -162,14 +162,15 @@
       </div>
 
       <div class="w-full flex justify-center">
-        <div class="flex justify-center gap-4 w-[60%]">
-          <app-button variant="danger" (pressed)="onClose()">
+        <div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 w-full sm:w-[80%]">
+          <app-button variant="danger" (pressed)="onClose()" class="w-full sm:w-auto">
             Cancelar
           </app-button>
           <app-button
             variant="primary"
             (pressed)="onSave()"
-            [disabled]="pdfUploading">
+            [disabled]="pdfUploading"
+            class="w-full sm:w-auto">
             @if (pdfUploading) {
               Carregando PDF...
             } @else {
