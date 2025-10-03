@@ -1,0 +1,48 @@
+<div class="login-page">
+  <!-- Seção da Esquerda (Boas-vindas) -->
+  <section class="welcome-section">
+    <div class="logo-container">
+      <!-- TODO: Substituir com o SVG ou IMG real do logo -->
+      <div class="logo-placeholder"></div>
+    </div>
+    <!-- Usamos <br> para a quebra de linha, conforme o design -->
+    <h1>Bem-vindo(a) ao<br />Bytebank!</h1>
+    <h4>Sua jornada financeira começa agora. Acesse sua conta.</h4>
+  </section>
+
+  <!-- Seção da Direita (Formulário) -->
+  <section class="form-section">
+    <div class="login-form-container">
+      <div class="signup-link">
+        @if (login()) {
+        <p>Deseja criar uma conta? <a href="#">Cadastre-se</a></p>
+        } @else {
+        <p>Deseja criar uma conta? <a href="#">Acesse aqui</a></p>
+        }
+      </div>
+
+      <div class="header-text">
+        <h2>{{ titulo() }}</h2>
+        <p>{{ descricao() }}</p>
+      </div>
+
+      <ng-content></ng-content>
+      <!-- Conecta o formulário ao nosso loginForm e chama onSubmit ao submeter -->
+      <!-- <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <input type="email" id="email" placeholder="Endereço de e-mail" formControlName="email" />
+        </div>
+
+        <div class="form-group">
+          <input type="password" id="password" placeholder="Senha" formControlName="password" />
+        </div>
+
+        <div class="forgot-password-link">
+          <a href="#">Esqueceu sua senha?</a>
+        </div>
+
+        <button type="submit" class="btn-login" [disabled]="loginForm.invalid">Entrar</button>
+      </form> -->
+    </div>
+  </section>
+</div>

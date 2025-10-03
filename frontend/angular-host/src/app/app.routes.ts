@@ -3,11 +3,25 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
-    path: 'login', // O caminho da URL para sua rota
-    loadComponent: () =>
-      loadRemoteModule({
-        remoteName: 'angular-authentication',
-        exposedModule: './LoginUser', // O nome do módulo que você expôs no seu remote
-      }).then((m) => m.LoginUserIndex), // O nome da classe do seu módulo remoto
+    // Redireciona a raiz do site para a página de login
+    path: '',
+    redirectTo: 'auth/login',
+    pathMatch: 'full',
+  },
+  {
+    // Agrupa todas as rotas de autenticação
+    path: 'auth',
+    children: [
+      {
+        path: 'login',
+        loadComponent: () =>
+          loadRemoteModule({
+            remoteName: 'angular-authentication',
+            exposedModule: './LoginUser',
+          }).then((m) => m.LoginUserIndex),
+      },
+      // Futuramente, a rota de cadastro pode ser adicionada aqui
+      // { path: 'register', loadComponent: () => ... }
+    ],
   },
 ];
