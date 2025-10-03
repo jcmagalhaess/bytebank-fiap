@@ -1,4 +1,4 @@
-import { Component, WritableSignal, inject, signal } from '@angular/core';
+import { Component, HostListener, WritableSignal, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { filter } from 'rxjs';
@@ -15,6 +15,7 @@ import {
   TrashIconComponent,
   UploadIconComponent,
 } from './shared/components/icons';
+import { AuthService } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -39,6 +40,7 @@ import {
 export class App {
   protected readonly title = signal('angular-host');
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
   readonly showHeader: WritableSignal<boolean> = signal(false);
 
   constructor() {
@@ -49,5 +51,25 @@ export class App {
         // Esconde o header se a URL começar com /auth
         this.showHeader.set(!event.urlAfterRedirects.startsWith('/auth'));
       });
+  }
+
+  // Escuta o evento de login vindo do remote
+  @HostListener('window:loginRequest', ['$event'])
+  async onLoginRequest(event: Event) {
+    try {
+      // Acessamos a propriedade 'detail' do evento customizado
+      await this.authService.login((event as CustomEvent).detail);
+      // Em caso de sucesso, o host redireciona
+      this.router.navigate(['/dashboard']); // Redireciona para o dashboard
+    } catch (error: any) {
+      // Em caso de falha, o host envia um evento de resposta com o erro
+      const responseEvent = new CustomEvent('loginResponse', {
+        detail: {
+          success: false,
+          error: error.message,
+        },
+      });
+      window.dispatchEvent(responseEvent);
+    }
   }
 }

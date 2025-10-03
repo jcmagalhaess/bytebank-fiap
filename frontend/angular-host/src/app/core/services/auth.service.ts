@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { ApiService } from './api.service';
 import { API_CONFIG } from '../config/api.config';
+import { Router } from '@angular/router';
 
 export interface LoginRequest {
   email: string;
@@ -29,7 +30,7 @@ export interface User {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private _user = signal<User | null>(null);
@@ -37,7 +38,7 @@ export class AuthService {
   private _isLoading = signal<boolean>(false);
   private _error = signal<string | null>(null);
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService, private router: Router) {}
 
   // Getters
   get user() {
@@ -63,10 +64,9 @@ export class AuthService {
       this._error.set(null);
 
       // Chama a API real
-      const response = await this.apiService.post<any>(
-        API_CONFIG.ENDPOINTS.LOGIN,
-        credentials
-      ).toPromise();
+      const response = await this.apiService
+        .post<any>(API_CONFIG.ENDPOINTS.LOGIN, credentials)
+        .toPromise();
 
       // O ApiService.handleResponse já extrai o 'result', então o token está diretamente em response.token
       if (!response?.token) {
@@ -86,10 +86,10 @@ export class AuthService {
 
       this._isLoading.set(false);
 
-          return {
-            token: response.token,
-            user: user || undefined
-          };
+      return {
+        token: response.token,
+        user: user || undefined,
+      };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro no login';
       this._error.set(errorMessage);
@@ -103,16 +103,15 @@ export class AuthService {
       this._isLoading.set(true);
       this._error.set(null);
 
-      const response = await this.apiService.post<any>(
-        API_CONFIG.ENDPOINTS.REGISTER,
-        userData
-      ).toPromise();
+      const response = await this.apiService
+        .post<any>(API_CONFIG.ENDPOINTS.REGISTER, userData)
+        .toPromise();
 
       this._isLoading.set(false);
 
       return {
         token: '',
-        user: response?.result
+        user: response?.result,
       };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro no registro';
@@ -129,6 +128,8 @@ export class AuthService {
 
     this._user.set(null);
     this._isAuthenticated.set(false);
+    // Redireciona para a página de login
+    this.router.navigate(['']);
   }
 
   isAuthenticatedCheck(): boolean {
@@ -150,7 +151,7 @@ export class AuthService {
 
       // Decodifica o payload primeiro
       const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-      const paddedBase64 = base64 + '='.repeat((4 - base64.length % 4) % 4);
+      const paddedBase64 = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
 
       const binaryString = atob(paddedBase64);
       const bytes = new Uint8Array(binaryString.length);
@@ -208,7 +209,7 @@ export class AuthService {
       return {
         id: payload.id || 'unknown',
         username: cleanUsername,
-        email: payload.email || 'usuario@exemplo.com'
+        email: payload.email || 'usuario@exemplo.com',
       };
     } catch (error) {
       console.error('Erro ao decodificar token:', error);

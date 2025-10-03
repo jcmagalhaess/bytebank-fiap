@@ -62,3 +62,12 @@ $text-light: #ffffff;
     cursor: not-allowed;
   }
 }
+
+.server-error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}

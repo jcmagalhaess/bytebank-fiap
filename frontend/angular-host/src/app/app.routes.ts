@@ -1,5 +1,6 @@
 import { loadRemoteModule } from '@angular-architects/native-federation';
 import { Routes } from '@angular/router';
+import { authGuard } from './auth.guard';
 
 export const routes: Routes = [
   {
@@ -23,5 +24,13 @@ export const routes: Routes = [
       // Futuramente, a rota de cadastro pode ser adicionada aqui
       // { path: 'register', loadComponent: () => ... }
     ],
+  },
+  {
+    path: 'dashboard',
+    canActivate: [authGuard], // Protege esta rota
+    loadComponent: () =>
+      import('./shared/components/page-container/page-container.component').then(
+        (m) => m.PageContainerComponent
+      ),
   },
 ];
