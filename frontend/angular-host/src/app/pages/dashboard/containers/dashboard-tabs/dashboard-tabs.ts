@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { AuthService } from '../../../../core/services/auth.service';
 import { INav } from '../../../../shared/interfaces/nav.interface';
+import { getFirstName } from '../../../../shared/utils/format';
 
 @Component({
   selector: 'app-dashboard-tabs',
@@ -9,6 +11,9 @@ import { INav } from '../../../../shared/interfaces/nav.interface';
   styleUrl: './dashboard-tabs.scss',
 })
 export class DashboardTabs {
+  private readonly _authService = inject(AuthService);
+  public username = computed(() => getFirstName(this._authService.user()?.username ?? ''));
+
   public navLinks: INav[] = [
     { name: 'Dashboard', path: '/' },
     { name: 'Transações', path: '/transactions' },

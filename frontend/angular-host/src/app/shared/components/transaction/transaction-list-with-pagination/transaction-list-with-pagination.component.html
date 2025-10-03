@@ -1,34 +1,21 @@
-@if (!hasTransactions) {
+@if (!hasTransactions()) {
   <p class="text-textSecondary text-center py-8">
     Nenhuma transação encontrada.
   </p>
 } @else {
-  <div class="space-y-4">
+  <div class="space-y-2">
     <!-- Lista de transações -->
-    <div class="space-y-2">
-      @for (transaction of currentTransactions(); track $index) {
-        <app-transaction-row
-          [type]="transaction.type"
-          [date]="formatDate(transaction.date)"
-          [categoria]="transaction.categoria"
-          [amount]="formatToBRL(transaction.amount)"
-          [descricao]="transaction.descricao"
-          [pdfUrl]="transaction.pdfUrl"
-          [pdfFileName]="transaction.pdfFileName"
-          (edit)="handleEdit(transaction)"
-          (delete)="handleDelete(transaction.id || 0)"
-        />
-      }
-    </div>
-
-    <!-- Paginação -->
-    @if (totalPages() > 1) {
-      <app-pagination
-        [currentPage]="currentPage()"
-        [totalPages]="totalPages()"
-        [itemsPerPage]="itemsPerPage"
-        [totalItems]="transactions.length"
-        (pageChange)="handlePageChange($event)"
+    @for (transaction of currentTransactions(); track $index) {
+      <app-transaction-row
+        [type]="transaction.type"
+        [date]="formatDate(transaction.date)"
+        [categoria]="transaction.categoria"
+        [amount]="formatToBRL(transaction.amount)"
+        [descricao]="transaction.descricao"
+        [pdfUrl]="transaction.pdfUrl"
+        [pdfFileName]="transaction.pdfFileName"
+        (edit)="handleEdit(transaction)"
+        (delete)="handleDelete(transaction.id)"
       />
     }
   </div>

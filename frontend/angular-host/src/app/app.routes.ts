@@ -1,14 +1,18 @@
 import { loadRemoteModule } from '@angular-architects/native-federation';
 import { Routes } from '@angular/router';
+import { AuthGuard } from './core/guard/auth.guard';
+import { NoAuthGuard } from './core/guard/no-auth.guard';
 
 export const routes: Routes = [
   {
     path: '', // O caminho da URL para sua rota
+    canActivate: [AuthGuard],
     loadChildren: () =>
       import('./pages/dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTES), // O nome da classe do seu módulo remoto
   },
   {
     path: 'login', // O caminho da URL para sua rota
+    canActivate: [NoAuthGuard],
     loadComponent: () =>
       loadRemoteModule({
         remoteName: 'angular-authentication',

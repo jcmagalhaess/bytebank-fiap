@@ -1,0 +1,209 @@
+<!-- Quadro principal de transações -->
+<div class="bg-[#F1F7FC] flex flex-col gap-md h-[100%] max-w-full mb-6 overflow-x-auto p-4 relative rounded-xl shadow-md sm:p-6 w-full">
+  <!-- Header com busca e botões -->
+  <div class="flex flex-col md:flex-row justify-between items-center mb-4">
+    <div class="w-full">
+      <div class="flex flex-col lg:flex-row gap-4 items-center">
+        <!-- Barra de busca -->
+        <div class="flex-1 w-full lg:w-auto">
+          <div class="relative w-[40%]">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <app-search-icon class="text-textSecondary" />
+            </div>
+            <input
+              id="search-transactions-input"
+              type="text"
+              placeholder="Buscar transação..."
+              [value]="filters().search"
+              (input)="onSearchChange($event.target.value)"
+              class="w-full pl-10 pr-10 py-3 border border-backgroundSecondary rounded-lg bg-white text-textPrimary placeholder-textSecondary focus:outline-none focus:ring-2 focus:ring-brandPrimary focus:border-transparent"
+            />
+            <!-- Botão X para limpar busca -->
+            @if (filters().search) {
+              <button
+                type="button"
+                (click)="onSearchChange('')"
+                class="absolute inset-y-0 right-0 pr-3 flex items-center text-textSecondary hover:text-textPrimary transition-colors duration-200 z-10"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Botões -->
+        <div class="flex items-center gap-3">
+          <app-button
+            variant="tertiary"
+            id="filters-toggle-button"
+            (pressed)="toggleFilters()"
+            [overrideClass]="'flex items-center gap-2 px-4 py-3 bg-[#CDEBFC] text-gray-700 rounded-lg shadow-sm hover:bg-blue-200 transition-colors duration-200 h-9'"
+          >
+            <app-setting-icon class="text-[#0F2C59]" />
+            Filtro
+          </app-button>
+
+          <!-- Botão Adicionar Transação -->
+          <app-button
+            id="add-transaction-button"
+            variant="primary"
+            (pressed)="onAddTransaction()"
+          >
+            Adicionar Transação
+          </app-button>
+        </div>
+      </div>
+
+      <!-- Componente de Filtros -->
+      @if (showFilters()) {
+        <div class="mt-4">
+          <app-transaction-filters
+            [filters]="filters()"
+            [availableCategories]="availableCategories()"
+            (filtersChange)="onFiltersChange($event)"
+            (clearFilters)="onClearFilters()"
+            [isDropdown]="true"
+          />
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Conteúdo principal -->
+  @if (loading()) {
+    <div class="flex justify-center items-center py-8">
+      <div class="text-gray-500">Carregando transações...</div>
+    </div>
+  } @else if (transactions().length === 0) {
+    <p class="text-gray-400">Nenhuma transação encontrada.</p>
+  } @else if (filteredTransactions().length === 0) {
+    <p class="text-gray-400">Nenhuma transação encontrada com os filtros aplicados.</p>
+  } @else {
+    <!-- Indicador de resultados filtrados -->
+    @if (hasActiveFilters()) {
+      <div class="mb-4 p-3 bg-blue-50 rounded-lg">
+        <p class="text-sm text-blue-800">
+          Mostrando {{ filteredTransactions().length }} de {{ transactions().length }} transações
+          @if (filteredTransactions().length !== transactions().length) {
+            (filtradas)
+          }
+        </p>
+      </div>
+    }
+
+    <!-- Cabeçalho da tabela -->
+    <div class="bg-backgroundPrimary rounded-lg px-4 py-4 w-full overflow-x-hidden">
+      <div class="hidden sm:grid grid-cols-[3fr_1fr_1fr_1fr_1fr] gap-6 md:gap-0 x:gap-[50px] xl:gap-0 lg:gap-0 items-center text-sm font-semibold text-textPrimary mb-sm">
+        <span class="ml-2">Transação</span>
+        <span>Categoria</span>
+        <span>Data</span>
+        <span class="ml-[-10px]">Valor</span>
+        <span>Ações</span>
+      </div>
+
+      <!-- Lista de transações -->
+      <div class="space-y-0">
+        @for (transaction of currentTransactions(); track transaction.id) {
+          <app-transaction-row
+            [type]="transaction.type"
+            [date]="formatDate(transaction.date)"
+            [categoria]="transaction.categoria"
+            [amount]="formatToBRL(transaction.amount)"
+            [descricao]="transaction.descricao"
+            [pdfUrl]="transaction.pdfUrl"
+            [pdfFileName]="transaction.pdfFileName"
+            (edit)="onEditTransaction(transaction)"
+            (delete)="onDeleteTransaction(transaction.id)"
+            (pdfView)="onViewPdf(transaction)"
+            (pdfUpload)="onPdfUpload(transaction)"
+          />
+        }
+      </div>
+    </div>
+
+    <!-- Componente de Paginação -->
+    <div class="mt-6">
+      <app-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        [itemsPerPage]="itemsPerPage"
+        [totalItems]="filteredTransactions().length"
+        (pageChange)="onPageChange($event)"
+      />
+    </div>
+  }
+</div>
+
+
+  <!-- Modal de Edição -->
+  @if (editingTransaction()) {
+    <app-edit-transaction-modal
+      [isOpen]="!!editingTransaction()"
+      [transaction]="editingTransaction()"
+      (close)="onCloseModal()"
+      (save)="onSaveTransaction($event)"
+      mode="edit"
+    />
+  }
+
+  <!-- Modal de Adicionar Transação -->
+  @if (showAddModal()) {
+    <app-edit-transaction-modal
+      [isOpen]="showAddModal()"
+      [transaction]="null"
+      (close)="onCloseModal()"
+      (save)="onSaveTransaction($event)"
+      mode="add"
+    />
+  }
+
+  <!-- Modal de visualização de PDF -->
+  @if (showPdfModal() && viewingPdf()) {
+    <app-pdf-viewer-modal
+      [isOpen]="showPdfModal()"
+      [pdfUrl]="viewingPdf()?.pdfUrl || ''"
+      [fileName]="viewingPdf()?.pdfFileName || ''"
+      (close)="onClosePdfModal()"
+      (delete)="onDeletePdf()"
+      (download)="onDownloadPdf()"
+    />
+  }
+
+  <!-- Modal de upload de PDF -->
+  @if (showPdfUploadModal() && uploadingToTransaction()) {
+    <app-pdf-upload-modal
+      [isOpen]="showPdfUploadModal()"
+      [transactionId]="uploadingToTransaction()?.id"
+      (close)="onClosePdfUploadModal()"
+      (upload)="onPdfUploaded($event)"
+    />
+  }
+
+  <!-- Modal de confirmação de exclusão -->
+  @if (deleteId() !== null) {
+    <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+      <div class="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full text-center">
+        <h3 class="text-lg font-semibold mb-4 text-[#0A2A4D]">
+          Confirmar exclusão
+        </h3>
+        <p class="mb-6">
+          Tem certeza que deseja excluir esta transação?
+        </p>
+        <div class="w-full flex justify-center">
+          <div class="flex justify-center gap-4 w-[60%]">
+            <app-button variant="primary" (click)="cancelDelete()">
+              Cancelar
+            </app-button>
+            <app-button
+              variant="danger"
+              (click)="confirmDelete()"
+            >
+              Confirmar
+            </app-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }

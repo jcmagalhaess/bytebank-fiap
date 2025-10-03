@@ -1,0 +1,18 @@
+<div
+  class="bg-white rounded-3xl shadow-md flex relative"
+  [ngClass]="{ 'flex-row gap-10 px-7 py-14': isHorizontal(), 'flex-col gap-5 p-7': isVertical() }"
+>
+  <div class="flex gap-3 items-center">
+    <div class="w-16 h-16 rounded-2xl {{ color() }} flex items-center justify-center">
+      @if (urlImage()) {
+      <img [src]="urlImage()" alt="" />
+      }
+    </div>
+    <h4 class="text-[#B3B3B3]">{{ label() }}</h4>
+  </div>
+  <div class="flex gap-3 items-center">
+    <h5 class="text-3xl">
+      <strong>{{ price() | currency : 'BRL' }}</strong>
+    </h5>
+  </div>
+</div>
