@@ -12,6 +12,11 @@
       <input type="password" id="password" placeholder="Senha" formControlName="password" />
     </div>
 
+    <!-- Bloco para exibir a mensagem de sucesso vinda do cadastro -->
+    @if (successMessage) {
+    <div class="server-success-message">{{ successMessage }}</div>
+    }
+
     <!-- Bloco para exibir a mensagem de erro vinda do host -->
     @if (errorMessage) {
     <div class="server-error-message">{{ errorMessage }}</div>

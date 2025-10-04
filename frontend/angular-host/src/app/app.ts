@@ -80,7 +80,7 @@ export class App {
       // Acessamos a propriedade 'detail' do evento customizado
       await this.authService.register((event as CustomEvent).detail);
       // Em caso de sucesso, o host redireciona para o login para que o usuário possa entrar
-      this.router.navigate(['/auth/login']);
+      this.router.navigate(['/auth/login'], { queryParams: { registered: 'success' } });
     } catch (error: any) {
       // Em caso de falha, o host envia um evento de resposta com o erro
       const responseEvent = new CustomEvent('registrationResponse', {

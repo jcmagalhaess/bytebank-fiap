@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { AuthContainer } from '../../../../shared/auth-container/auth-container';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-login-user-index',
@@ -18,9 +19,11 @@ import { CommonModule } from '@angular/common';
 export class LoginUserIndex implements OnInit, OnDestroy {
   private readonly formBuilder = inject(FormBuilder);
   private readonly renderer = inject(Renderer2);
+  private readonly route = inject(ActivatedRoute);
 
   protected readonly loginForm: FormGroup;
   protected errorMessage: string | null = null;
+  protected successMessage: string | null = null;
   private unlisten: (() => void) | null = null;
 
   constructor() {
@@ -31,6 +34,11 @@ export class LoginUserIndex implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Verifica se há um parâmetro 'registered' na URL
+    if (this.route.snapshot.queryParamMap.get('registered') === 'success') {
+      this.successMessage = 'Cadastro realizado com sucesso! Faça o login para continuar.';
+    }
+
     // Ouve a resposta do host
     this.unlisten = this.renderer.listen(window, 'loginResponse', (event: CustomEvent) => {
       if (!event.detail.success) {
@@ -44,6 +52,7 @@ export class LoginUserIndex implements OnInit, OnDestroy {
    */
   onSubmit(): void {
     this.errorMessage = null;
+    this.successMessage = null; // Limpa a mensagem de sucesso ao tentar logar
     if (this.loginForm.valid) {
       // Dispara um evento customizado para o host ouvir
       const loginEvent = new CustomEvent('loginRequest', {

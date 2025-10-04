@@ -14,6 +14,7 @@ Sistema de controle financeiro desenvolvido com Next.js (frontend) e Node.js/Exp
 ## 🛠️ Tecnologias
 
 ### Frontend
+
 - Next.js 15
 - React 19
 - TypeScript
@@ -21,6 +22,7 @@ Sistema de controle financeiro desenvolvido com Next.js (frontend) e Node.js/Exp
 - Context API para gerenciamento de estado
 
 ### Backend
+
 - Node.js
 - Express.js
 - MongoDB
@@ -28,6 +30,7 @@ Sistema de controle financeiro desenvolvido com Next.js (frontend) e Node.js/Exp
 - Swagger para documentação da API
 
 ### Infraestrutura
+
 - Docker & Docker Compose
 - MongoDB (containerizado)
 
@@ -39,20 +42,23 @@ Sistema de controle financeiro desenvolvido com Next.js (frontend) e Node.js/Exp
 ## 🚀 Como executar
 
 ### 1. Clone o repositório
+
 ```bash
 git clone <url-do-repositorio>
 cd bytebank-fiap
 ```
 
 ### 2. Execute com Docker Compose
+
 ```bash
 docker-compose up --build
 ```
 
 ### 3. Acesse a aplicação
+
 - **Frontend**: http://localhost:4200
-- **Backend API**: http://localhost:3000
-- **Documentação da API**: http://localhost:3000/docs
+- **Backend API**: http://localhost:8080
+- **Documentação da API**: http://localhost:8080/docs
 - **MongoDB**: localhost:27017
 
 ## 🔧 Configuração
@@ -69,6 +75,7 @@ O projeto está configurado para funcionar automaticamente com Docker. As variá
 Se quiser rodar localmente sem Docker:
 
 1. **Backend**:
+
 ```bash
 cd backend
 npm install
@@ -76,6 +83,7 @@ npm run dev
 ```
 
 2. **Frontend**:
+
 ```bash
 cd frontend
 npm install
@@ -87,16 +95,19 @@ npm run dev
 ## 📱 Como usar
 
 ### 1. Criar uma conta
+
 - Acesse http://localhost:4200
 - Clique em "Entrar" no header
 - Mude para "Criar Conta"
 - Preencha os dados e crie sua conta
 
 ### 2. Fazer login
+
 - Use o email e senha criados
 - Após o login, você será redirecionado para o dashboard
 
 ### 3. Gerenciar transações
+
 - **Dashboard**: Visualize seu saldo e transações recentes
 - **Nova transação**: Adicione depósitos ou transferências
 - **Extrato**: Veja o histórico completo de transações
@@ -134,25 +145,30 @@ bytebank-fiap/
 ## 🐛 Solução de Problemas
 
 ### Erro de conexão com a API
+
 - Verifique se o backend está rodando na porta 3000
 - Confirme se a variável `NEXT_PUBLIC_API_URL` está correta
 
 ### Erro de conexão com MongoDB
+
 - Verifique se o container do MongoDB está rodando
 - Confirme se a variável `MONGODB_URI` está correta
 
 ### Problemas de build
+
 - Execute `docker-compose down` e `docker-compose up --build` para rebuildar
 - Verifique se não há conflitos de porta
 
 ## 📝 API Endpoints
 
 ### Autenticação
+
 - `POST /user/auth` - Login
 - `POST /user` - Registro
 - `GET /user` - Listar usuários
 
 ### Contas e Transações
+
 - `GET /account` - Obter dados da conta
 - `POST /account/transaction` - Criar transação
 - `GET /account/statement` - Obter extrato
