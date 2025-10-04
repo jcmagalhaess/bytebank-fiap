@@ -5,8 +5,8 @@ module.exports = withNativeFederation({
 
   // Coloque aqui todos os components que deseja expor
   exposes: {
-    './Component': './src/app/app.ts',
     './LoginUser': './src/app/pages/login-user/containers/login-user-index/login-user-index.ts',
+    './UserRegistration': './src/app/pages/user-registration/user-registration.ts',
   },
 
   shared: {

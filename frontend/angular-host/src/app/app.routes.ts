@@ -1,12 +1,12 @@
 import { loadRemoteModule } from '@angular-architects/native-federation';
 import { Routes } from '@angular/router';
-import { authGuard } from './auth.guard';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
-    // Redireciona a raiz do site para a página de login
+    // A rota raiz agora redireciona para o dashboard
     path: '',
-    redirectTo: 'auth/login',
+    redirectTo: 'dashboard',
     pathMatch: 'full',
   },
   {
@@ -17,12 +17,18 @@ export const routes: Routes = [
         path: 'login',
         loadComponent: () =>
           loadRemoteModule({
-            remoteName: 'angular-authentication',
+            remoteName: 'angular-remote',
             exposedModule: './LoginUser',
           }).then((m) => m.LoginUserIndex),
       },
-      // Futuramente, a rota de cadastro pode ser adicionada aqui
-      // { path: 'register', loadComponent: () => ... }
+      {
+        path: 'register',
+        loadComponent: () =>
+          loadRemoteModule({
+            remoteName: 'angular-remote',
+            exposedModule: './UserRegistration',
+          }).then((m) => m.UserRegistration),
+      },
     ],
   },
   {
