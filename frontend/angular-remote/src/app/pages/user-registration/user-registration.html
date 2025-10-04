@@ -1,0 +1,48 @@
+<app-auth-container
+  titulo="Criar conta"
+  descricao="Preencha os campos abaixo para criar a sua conta."
+  [login]="true"
+>
+  <form class="login-form" [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <input type="text" id="username" placeholder="Nome completo" formControlName="username" />
+      @if (registrationForm.get('username')?.invalid && registrationForm.get('username')?.touched) {
+      <div class="error-message">O nome é obrigatório.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <input type="email" id="email" placeholder="Endereço de e-mail" formControlName="email" />
+      @if (registrationForm.get('email')?.invalid && registrationForm.get('email')?.touched) {
+      <div class="error-message">Por favor, insira um e-mail válido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <input type="password" id="password" placeholder="Senha" formControlName="password" />
+      @if (registrationForm.get('password')?.hasError('minlength') &&
+      registrationForm.get('password')?.touched) {
+      <div class="error-message">A senha deve ter no mínimo 6 caracteres.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <input
+        type="password"
+        id="confirmPassword"
+        placeholder="Repetir senha"
+        formControlName="confirmPassword"
+      />
+      @if (registrationForm.hasError('passwordMismatch') &&
+      registrationForm.get('confirmPassword')?.touched) {
+      <div class="error-message">As senhas não coincidem.</div>
+      }
+    </div>
+
+    @if (errorMessage) {
+    <div class="server-error-message">{{ errorMessage }}</div>
+    }
+
+    <button type="submit" class="btn-login" [disabled]="registrationForm.invalid">Cadastrar</button>
+  </form>
+</app-auth-container>
