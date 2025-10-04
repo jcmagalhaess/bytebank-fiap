@@ -129,7 +129,7 @@ export class AuthService {
     this._user.set(null);
     this._isAuthenticated.set(false);
     // Redireciona para a página de login
-    this.router.navigate(['']);
+    this.router.navigate(['/auth/login']);
   }
 
   isAuthenticatedCheck(): boolean {
