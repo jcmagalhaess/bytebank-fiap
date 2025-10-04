@@ -1,7 +1,9 @@
-import { Injectable, signal } from '@angular/core';
-import { ApiService } from './api.service';
-import { API_CONFIG } from '../config/api.config';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
+import { lastValueFrom } from 'rxjs';
+import { API_CONFIG } from '../config/api.config';
 
 export interface LoginRequest {
   email: string;
@@ -15,11 +17,9 @@ export interface RegisterRequest {
 }
 
 export interface AuthResponse {
-  token: string;
-  user?: {
-    id: string;
-    username: string;
-    email: string;
+  message: string;
+  result: {
+    token: string;
   };
 }
 
@@ -29,256 +29,139 @@ export interface User {
   email: string;
 }
 
+/**
+ * Serviço responsável por gerenciar a autenticação do usuário,
+ * incluindo login, logout e o estado da sessão.
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private _user = signal<User | null>(null);
-  private _isAuthenticated = signal<boolean>(false);
-  private _isLoading = signal<boolean>(false);
-  private _error = signal<string | null>(null);
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
 
-  constructor(private apiService: ApiService, private router: Router) {}
+  // Sinais privados para controle interno do estado
+  private readonly _user = signal<User | null>(null);
+  private readonly _isAuthenticated = signal<boolean>(false);
+  private readonly _isLoading = signal<boolean>(false);
+  private readonly _error = signal<string | null>(null);
 
-  // Getters
-  get user() {
-    return this._user.asReadonly();
-  }
+  // Sinais públicos (somente leitura)
+  public readonly user = this._user.asReadonly();
+  public readonly isAuthenticated = this._isAuthenticated.asReadonly();
+  public readonly isLoading = this._isLoading.asReadonly();
+  public readonly error = this._error.asReadonly();
 
-  get isAuthenticated() {
-    return this._isAuthenticated.asReadonly();
-  }
+  /**
+   * Processa um novo token de autenticação.
+   * Armazena o token, decodifica-o para obter informações do usuário, atualiza o estado de autenticação
+   * e navega para a página principal.
+   * @param token A string do token JWT.
+   * @private
+   */
+  private handleNewToken(token: string) {
+    if (token) {
+      localStorage.setItem('auth_token', token);
+      // Decodifica o token usando uma tipagem forte para mais segurança
+      const decodedToken: JwtPayload & User = jwtDecode(token);
 
-  get isLoading() {
-    return this._isLoading.asReadonly();
-  }
-
-  get error() {
-    return this._error.asReadonly();
-  }
-
-  // Métodos de autenticação - usando API real
-  async login(credentials: LoginRequest): Promise<AuthResponse> {
-    try {
-      this._isLoading.set(true);
-      this._error.set(null);
-
-      // Chama a API real
-      const response = await this.apiService
-        .post<any>(API_CONFIG.ENDPOINTS.LOGIN, credentials)
-        .toPromise();
-
-      // O ApiService.handleResponse já extrai o 'result', então o token está diretamente em response.token
-      if (!response?.token) {
-        throw new Error('Token não recebido do servidor');
-      }
-
-      // Salva o token no localStorage
-      this.apiService.setAuthToken(response.token);
-
-      // Decodifica o JWT para obter dados do usuário
-      const user = this.decodeJWTToken(response.token);
-
-      if (user) {
-        this._user.set(user);
-        this._isAuthenticated.set(true);
-      }
-
-      this._isLoading.set(false);
-
-      return {
-        token: response.token,
-        user: user || undefined,
+      const user: User = {
+        id: decodedToken.id,
+        username: decodedToken.username,
+        email: decodedToken.email,
       };
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Erro no login';
-      this._error.set(errorMessage);
+
+      this._user.set(user);
+      this._isAuthenticated.set(true);
+    }
+    this._isLoading.set(false);
+  }
+
+  /**
+   * Verifica a existência de um token de autenticação no armazenamento local ao iniciar a aplicação.
+   * Se um token for encontrado, valida a sessão.
+   */
+  public async checkAuth(): Promise<void> {
+    this._isLoading.set(true);
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      this.handleNewToken(token);
+    } else {
       this._isLoading.set(false);
-      throw error;
     }
   }
 
-  async register(userData: RegisterRequest): Promise<AuthResponse> {
+  /**
+   * Tenta autenticar o usuário com as credenciais fornecidas.
+   * @param credentials O email e a senha do usuário.
+   */
+  public async login(credentials: LoginRequest): Promise<void> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
     try {
-      this._isLoading.set(true);
-      this._error.set(null);
+      const response = await lastValueFrom(
+        this.http.post<AuthResponse>(
+          `${API_CONFIG.BASE_URL}/${API_CONFIG.ENDPOINTS.LOGIN}`,
+          credentials
+        )
+      );
 
-      const response = await this.apiService
-        .post<any>(API_CONFIG.ENDPOINTS.REGISTER, userData)
-        .toPromise();
-
-      this._isLoading.set(false);
-
-      return {
-        token: '',
-        user: response?.result,
-      };
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Erro no registro';
+      if (response?.result?.token) {
+        this.handleNewToken(response.result.token);
+        // O isLoading é definido como false dentro de handleNewToken,
+        // então não precisamos definir aqui antes de navegar.
+        this.router.navigate(['/dashboard']);
+      } else {
+        throw new Error('Token não recebido do servidor.');
+      }
+    } catch (error: any) {
+      const errorMessage = error?.error?.message || 'E-mail ou senha inválidos.';
       this._error.set(errorMessage);
-      this._isLoading.set(false);
-      throw error;
+      throw new Error(errorMessage);
+    } finally {
+      this._isLoading.set(false); // Garante que o loading termine, independentemente do resultado.
     }
   }
 
-  logout(): void {
-    this.apiService.removeAuthToken();
-    localStorage.removeItem('user_data');
+  /**
+   * Registra um novo usuário.
+   * @param userData Os dados para o registro do novo usuário.
+   */
+  public async register(userData: RegisterRequest): Promise<void> {
+    this._isLoading.set(true);
+    this._error.set(null);
+    try {
+      // A API de registro não retorna um token, então apenas esperamos a conclusão.
+      await lastValueFrom(
+        this.http.post<void>(`${API_CONFIG.BASE_URL}/${API_CONFIG.ENDPOINTS.REGISTER}`, userData)
+      );
+      // Não faz nada com a resposta, apenas conclui com sucesso
+      this._isLoading.set(false);
+    } catch (error: any) {
+      const errorMessage = error?.error?.message || 'Erro ao tentar registrar.';
+      this._error.set(errorMessage);
+      this._isLoading.set(false);
+      throw new Error(errorMessage);
+    }
+  }
+
+  /**
+   * Desconecta o usuário, limpando os dados da sessão e redirecionando para a página de login.
+   */
+  public logout(): void {
     localStorage.removeItem('auth_token');
-
     this._user.set(null);
     this._isAuthenticated.set(false);
-    // Redireciona para a página de login
     this.router.navigate(['/auth/login']);
   }
 
-  isAuthenticatedCheck(): boolean {
-    return this.apiService.isAuthenticated();
-  }
-
-  getToken(): string | null {
-    return localStorage.getItem('auth_token');
-  }
-
-  // Método para decodificar JWT token
-  private decodeJWTToken(token: string): User | null {
-    try {
-      const parts = token.split('.');
-
-      if (parts.length !== 3) {
-        throw new Error('Token JWT inválido - deve ter 3 partes');
-      }
-
-      // Decodifica o payload primeiro
-      const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-      const paddedBase64 = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
-
-      const binaryString = atob(paddedBase64);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-      const jsonPayload = new TextDecoder('utf-8').decode(bytes);
-      const payload = JSON.parse(jsonPayload);
-
-      // SOLUÇÃO DEFINITIVA: força o nome correto baseado no email
-      let cleanUsername = 'Usuário';
-
-      // Se o email contém "joao", força o nome "João Silva"
-      if (payload.email && payload.email.toLowerCase().includes('joao')) {
-        cleanUsername = 'João Silva';
-      } else {
-        // Aplica correções de caracteres corrompidos
-        cleanUsername = (payload.username || 'Usuário')
-          .replace(/ï¿½/g, 'ã')
-          .replace(/Ã£/g, 'ã')
-          .replace(/Ã¡/g, 'á')
-          .replace(/Ã©/g, 'é')
-          .replace(/Ã­/g, 'í')
-          .replace(/Ã³/g, 'ó')
-          .replace(/Ãº/g, 'ú')
-          .replace(/Ã§/g, 'ç')
-          .replace(/Ã¢/g, 'â')
-          .replace(/Ãª/g, 'ê')
-          .replace(/Ã´/g, 'ô')
-          .replace(/Ã¹/g, 'ù')
-          .replace(/Ã¨/g, 'è')
-          .replace(/Ã¬/g, 'ì')
-          .replace(/Ã²/g, 'ò')
-          .replace(/Ã /g, 'à')
-          .replace(/Ã€/g, 'À')
-          .replace(/Ã/g, 'Á')
-          .replace(/Ã‰/g, 'É')
-          .replace(/Ã/g, 'Í')
-          .replace(/Ã"/g, 'Ó')
-          .replace(/Ãš/g, 'Ú')
-          .replace(/Ã‡/g, 'Ç')
-          .replace(/Ã‚/g, 'Â')
-          .replace(/ÃŠ/g, 'Ê')
-          .replace(/Ã"/g, 'Ô')
-          .replace(/Ã™/g, 'Ù')
-          .replace(/Ãˆ/g, 'È')
-          .replace(/ÃŒ/g, 'Ì')
-          .replace(/Ã'/g, 'Ò')
-          .replace(/Ã€/g, 'À')
-          .replace(/Ã/g, 'Ã')
-          .replace(/Ã/g, 'Õ')
-          .replace(/Ã/g, 'Ñ');
-      }
-
-      return {
-        id: payload.id || 'unknown',
-        username: cleanUsername,
-        email: payload.email || 'usuario@exemplo.com',
-      };
-    } catch (error) {
-      console.error('Erro ao decodificar token:', error);
-      return null;
-    }
-  }
-
-  async getCurrentUser(): Promise<User | null> {
-    try {
-      if (!this.isAuthenticatedCheck()) {
-        return null;
-      }
-
-      const token = this.getToken();
-      if (!token) {
-        return null;
-      }
-
-      return this.decodeJWTToken(token);
-    } catch (error) {
-      console.error('Erro ao buscar usuário atual:', error);
-      return null;
-    }
-  }
-
-  // Método para verificar se o token ainda é válido (igual ao Next.js)
-  async validateToken(): Promise<boolean> {
-    try {
-      if (!this.isAuthenticatedCheck()) {
-        return false;
-      }
-
-      // Faz uma requisição real para verificar se o token ainda é válido
-      await this.apiService.get(API_CONFIG.ENDPOINTS.ACCOUNT).toPromise();
-      return true;
-    } catch (error) {
-      console.warn('Token inválido:', error);
-      this.logout();
-      return false;
-    }
-  }
-
-  clearError(): void {
-    this._error.set(null);
-  }
-
-  // Verifica se o usuário está autenticado ao carregar a aplicação (igual ao Next.js)
-  async checkAuth(): Promise<void> {
-    try {
-      if (this.isAuthenticatedCheck()) {
-        // Valida o token (igual ao Next.js)
-        const isValid = await this.validateToken();
-        if (isValid) {
-          // Busca dados do usuário do JWT (igual ao Next.js)
-          const user = await this.getCurrentUser();
-          this._user.set(user);
-          this._isAuthenticated.set(true);
-        } else {
-          this._user.set(null);
-          this._isAuthenticated.set(false);
-        }
-      } else {
-        this._user.set(null);
-        this._isAuthenticated.set(false);
-      }
-    } catch (error) {
-      console.error('Erro ao verificar autenticação:', error);
-      this._user.set(null);
-      this._isAuthenticated.set(false);
-    }
+  /**
+   * Verifica de forma síncrona se o usuário está autenticado.
+   * Ideal para uso em guards.
+   * @returns `true` se o usuário estiver autenticado, caso contrário `false`.
+   */
+  public isAuthenticatedCheck(): boolean {
+    return this._isAuthenticated();
   }
 }

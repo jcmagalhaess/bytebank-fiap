@@ -1,21 +1,20 @@
 import { Component, Input, Output, EventEmitter, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Transaction } from '../edit-transaction-modal/edit-transaction-modal.component';
+import { Transaction } from '../../../interfaces/transaction.interface';
 import { TransactionRowComponent } from '../transaction-row/transaction-row.component';
-import { PaginationComponent } from '../../ui/pagination/pagination.component';
 
 @Component({
   selector: 'app-transaction-list-with-pagination',
   standalone: true,
-  imports: [CommonModule, TransactionRowComponent, PaginationComponent],
+  imports: [CommonModule, TransactionRowComponent],
   templateUrl: './transaction-list-with-pagination.component.html',
 })
 export class TransactionListWithPaginationComponent {
   @Input() transactions: Transaction[] = [];
   @Input() itemsPerPage: number = 10;
 
-  @Output() onEdit = new EventEmitter<Transaction>();
-  @Output() onDelete = new EventEmitter<number>();
+  @Output() edit = new EventEmitter<Transaction>();
+  @Output() delete = new EventEmitter<number>();
 
   currentPage = signal(1);
 
@@ -29,12 +28,17 @@ export class TransactionListWithPaginationComponent {
   currentTransactions = computed(() => {
     const start = this.startIndex();
     const end = this.endIndex();
-    return this.transactions.slice(start, end).slice().reverse();
+    const result = this.transactions.slice(start, end).slice().reverse();
+    console.log('🔍 currentTransactions - start:', start, 'end:', end, 'result.length:', result.length);
+    console.log('📋 currentTransactions result:', result);
+    return result;
   });
 
-  get hasTransactions(): boolean {
+  hasTransactions = computed(() => {
+    console.log('🔍 hasTransactions - transactions.length:', this.transactions.length);
+    console.log('📋 transactions:', this.transactions);
     return this.transactions.length > 0;
-  }
+  });
 
   handlePageChange(page: number): void {
     this.currentPage.set(page);
@@ -43,13 +47,11 @@ export class TransactionListWithPaginationComponent {
   }
 
   handleEdit(transaction: Transaction): void {
-    this.onEdit.emit(transaction);
+    this.edit.emit(transaction);
   }
 
-  handleDelete(id: number | undefined): void {
-    if (id !== undefined) {
-      this.onDelete.emit(id);
-    }
+  handleDelete(id: number): void {
+    this.delete.emit(id);
   }
 
   formatToBRL(amount: number): string {

@@ -1,17 +1,17 @@
 import { loadRemoteModule } from '@angular-architects/native-federation';
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
+import { noAuthGuard } from './core/guard/no-auth.guard';
+import { authGuard } from './core/guard/auth.guard';
 
 export const routes: Routes = [
   {
-    // A rota raiz agora redireciona para o dashboard
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full',
   },
   {
-    // Agrupa todas as rotas de autenticação
     path: 'auth',
+    canActivate: [noAuthGuard], // Impede que usuários logados acessem login/cadastro
     children: [
       {
         path: 'login',
@@ -33,10 +33,8 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard',
-    canActivate: [authGuard], // Protege esta rota
-    loadComponent: () =>
-      import('./shared/components/page-container/page-container.component').then(
-        (m) => m.PageContainerComponent
-      ),
+    canActivate: [authGuard], // Protege a rota do dashboard
+    loadChildren: () =>
+      import('./pages/dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTES),
   },
 ];

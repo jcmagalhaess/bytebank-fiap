@@ -1,43 +1,17 @@
-import { Component, HostListener, WritableSignal, inject, signal } from '@angular/core';
+import { Component, HostListener, OnInit, WritableSignal, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { filter } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import {
-  ArrowDownIconComponent,
-  ArrowRightIconComponent,
-  ArrowUpIconComponent,
-  AvatarIconComponent,
-  EditIconComponent,
-  GearIconComponent,
-  SearchIconComponent,
-  SettingIconComponent,
-  TrashIconComponent,
-  UploadIconComponent,
-} from './shared/components/icons';
 import { AuthService } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
-  imports: [
-    CommonModule,
-    RouterOutlet,
-    HeaderComponent,
-    ArrowDownIconComponent,
-    ArrowRightIconComponent,
-    ArrowUpIconComponent,
-    AvatarIconComponent,
-    EditIconComponent,
-    GearIconComponent,
-    SearchIconComponent,
-    SettingIconComponent,
-    TrashIconComponent,
-    UploadIconComponent,
-  ],
+  imports: [CommonModule, RouterOutlet, HeaderComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('angular-host');
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -53,14 +27,10 @@ export class App {
       });
   }
 
-  // Escuta o evento de login vindo do remote
   @HostListener('window:loginRequest', ['$event'])
   async onLoginRequest(event: Event) {
     try {
-      // Acessamos a propriedade 'detail' do evento customizado
       await this.authService.login((event as CustomEvent).detail);
-      // Em caso de sucesso, o host redireciona
-      this.router.navigate(['/dashboard']); // Redireciona para o dashboard
     } catch (error: any) {
       // Em caso de falha, o host envia um evento de resposta com o erro
       const responseEvent = new CustomEvent('loginResponse', {
@@ -73,13 +43,10 @@ export class App {
     }
   }
 
-  // Escuta o evento de cadastro vindo do remote
   @HostListener('window:registrationRequest', ['$event'])
   async onRegistrationRequest(event: Event) {
     try {
-      // Acessamos a propriedade 'detail' do evento customizado
       await this.authService.register((event as CustomEvent).detail);
-      // Em caso de sucesso, o host redireciona para o login para que o usuário possa entrar
       this.router.navigate(['/auth/login'], { queryParams: { registered: 'success' } });
     } catch (error: any) {
       // Em caso de falha, o host envia um evento de resposta com o erro
@@ -91,5 +58,8 @@ export class App {
       });
       window.dispatchEvent(responseEvent);
     }
+  }
+  async ngOnInit() {
+    await this.authService.checkAuth();
   }
 }

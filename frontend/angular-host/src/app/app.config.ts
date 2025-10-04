@@ -1,18 +1,29 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import {
+  ApplicationConfig,
+  LOCALE_ID,
+  provideBrowserGlobalErrorListeners,
+  provideZoneChangeDetection,
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
 
+import { registerLocaleData } from '@angular/common';
+import localePt from '@angular/common/locales/pt';
 import { routes } from './app.routes';
-import { AuthService } from './core/services/auth.service';
+import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { ApiService } from './core/services/api.service';
+import { AuthService } from './core/services/auth.service';
+
+registerLocaleData(localePt);
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([authInterceptor])),
     AuthService,
-    ApiService
-  ]
+    ApiService,
+    { provide: LOCALE_ID, useValue: 'pt-BR' },
+  ],
 };
