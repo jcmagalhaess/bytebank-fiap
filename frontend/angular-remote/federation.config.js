@@ -3,9 +3,8 @@ const { withNativeFederation, shareAll } = require('@angular-architects/native-f
 module.exports = withNativeFederation({
   name: 'angular-remote',
 
-  // Coloque aqui todos os components que deseja expor
   exposes: {
-    './LoginUser': './src/app/pages/login-user/containers/login-user-index/login-user-index.ts',
+    './UserLogin': './src/app/pages/user-login/user-login.ts',
     './UserRegistration': './src/app/pages/user-registration/user-registration.ts',
   },
 

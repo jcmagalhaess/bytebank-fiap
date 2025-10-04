@@ -6,17 +6,17 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { AuthContainer } from '../../../../shared/auth-container/auth-container';
+import { AuthContainer } from '../../shared/auth-container/auth-container';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-login-user-index',
+  selector: 'app-user-login',
   imports: [CommonModule, ReactiveFormsModule, AuthContainer],
-  templateUrl: './login-user-index.html',
-  styleUrl: './login-user-index.scss',
+  templateUrl: './user-login.html',
+  styleUrl: './user-login.scss',
 })
-export class LoginUserIndex implements OnInit, OnDestroy {
+export class UserLogin implements OnInit, OnDestroy {
   private readonly formBuilder = inject(FormBuilder);
   private readonly renderer = inject(Renderer2);
   private readonly route = inject(ActivatedRoute);

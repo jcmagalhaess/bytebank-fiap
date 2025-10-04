@@ -18,8 +18,8 @@ export const routes: Routes = [
         loadComponent: () =>
           loadRemoteModule({
             remoteName: 'angular-remote',
-            exposedModule: './LoginUser',
-          }).then((m) => m.LoginUserIndex),
+            exposedModule: './UserLogin',
+          }).then((m) => m.UserLogin),
       },
       {
         path: 'register',
