@@ -1,0 +1,31 @@
+<div class="login-page">
+  <!-- Seção da Esquerda (Boas-vindas) -->
+  <section class="welcome-section">
+    <div class="logo-container">
+      <!-- TODO: Substituir com o SVG ou IMG real do logo -->
+      <div class="logo-placeholder"></div>
+    </div>
+    <!-- Usamos <br> para a quebra de linha, conforme o design -->
+    <h1>Bem-vindo(a) ao<br />Bytebank!</h1>
+    <h4>Sua jornada financeira começa agora. Acesse sua conta.</h4>
+  </section>
+
+  <!-- Seção da Direita (Formulário) -->
+  <section class="form-section">
+    <div class="login-form-container">
+      <div class="header-text">
+        <h2>{{ titulo() }}</h2>
+        <p>{{ descricao() }}</p>
+      </div>
+
+      <ng-content></ng-content>
+      <div class="signup-link">
+        @if (login()) {
+        <p>Deseja criar uma conta? <a href="/auth/register">Cadastre-se</a></p>
+        } @else {
+        <p>Já possui uma conta? <a href="/auth/login">Acesse aqui</a></p>
+        }
+      </div>
+    </div>
+  </section>
+</div>

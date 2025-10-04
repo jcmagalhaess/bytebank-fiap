@@ -21,13 +21,8 @@ export class HeaderComponent implements OnInit {
   getFirstName = getFirstName;
 
   handleLogin(): void {
-    this.authService.loginWithCredentials({
-      email: 'teste@gmail.com',
-      password: 'testes',
-    });
-    // Apenas navega para a sua página de login customizada.
-    // A lógica de chamar `loginWithCredentials` ficará dentro do componente de login.
-    // this.router.navigate(['/login']);
+    // A função do botão "Entrar" no header é apenas navegar para a página de login.
+    this.router.navigate(['/auth/login']);
   }
 
   handleLogout() {

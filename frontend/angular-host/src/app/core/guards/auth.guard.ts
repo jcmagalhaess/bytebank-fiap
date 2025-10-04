@@ -10,6 +10,5 @@ export const authGuard: CanActivateFn = () => {
     return true; // Usuário está logado, permite o acesso.
   }
 
-  // Usuário não está logado, redireciona para o login retornando uma UrlTree.
-  return router.parseUrl('/auth/login');
+  return router.parseUrl('/auth/login'); // Usuário não está logado, redireciona para o login.
 };

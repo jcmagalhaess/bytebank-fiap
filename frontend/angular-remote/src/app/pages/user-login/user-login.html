@@ -1,0 +1,27 @@
+<app-auth-container
+  titulo="Acessar conta"
+  descricao="Insira seu e-mail e senha para logar na sua conta."
+  [login]="true"
+>
+  <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <input type="email" id="email" placeholder="Endereço de e-mail" formControlName="email" />
+    </div>
+
+    <div class="form-group">
+      <input type="password" id="password" placeholder="Senha" formControlName="password" />
+    </div>
+
+    <!-- Bloco para exibir a mensagem de sucesso vinda do cadastro -->
+    @if (successMessage) {
+    <div class="server-success-message">{{ successMessage }}</div>
+    }
+
+    <!-- Bloco para exibir a mensagem de erro vinda do host -->
+    @if (errorMessage) {
+    <div class="server-error-message">{{ errorMessage }}</div>
+    }
+
+    <button type="submit" class="btn-login" [disabled]="loginForm.invalid">Entrar</button>
+  </form>
+</app-auth-container>

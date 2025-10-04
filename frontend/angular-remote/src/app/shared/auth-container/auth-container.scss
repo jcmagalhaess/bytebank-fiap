@@ -1,0 +1,199 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
+
+$welcome-bg: #0f2c59;
+$form-bg: #ddebf8;
+$form-card-bg: #ffffff;
+$primary-accent: #00aaff;
+$text-dark: #07122f;
+$text-secondary: #8d93a1;
+$text-light: #ffffff;
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Poppins', 'Plus Jakarta Sans', sans-serif;
+  background-color: $form-bg;
+}
+
+.login-page {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+
+  // --- Seção da Esquerda (Boas-vindas) ---
+  .welcome-section {
+    position: relative;
+    flex: 0 0 66%;
+    background-color: $welcome-bg;
+    background-image: url('/noise.png'); // A imagem está no host/public
+    color: $text-light;
+    padding: 2rem 10%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    overflow: hidden;
+
+    // Efeito de gradiente radial
+    &::before {
+      content: '';
+      position: absolute;
+      // Posicionamento relativo para se adaptar à tela
+      left: 30%;
+      top: 30%;
+      width: 60%;
+      padding-top: 60%; // Mantém a proporção circular
+      background: radial-gradient(circle, $primary-accent 0%, $welcome-bg 70%);
+      transform: translate(-50%, -50%);
+      opacity: 0.4;
+      filter: blur(50px); // Suaviza as bordas do gradiente
+      z-index: 1;
+    }
+
+    .logo-container {
+      // Removemos o posicionamento absoluto para um fluxo natural
+      margin-bottom: 2rem; // 32px
+      z-index: 2;
+
+      .logo-placeholder {
+        width: 2.625rem; // 42px
+        height: 3.6rem; // 55px
+        background-image: url('/logo_bytebank-2.png');
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+    }
+
+    h1 {
+      position: relative; // Para ficar acima dos pseudo-elementos
+      z-index: 2;
+      font-size: 3rem; // 48px
+      font-weight: 800; // Bold
+      line-height: 3.5rem; // 56px
+      margin: 0;
+      margin-bottom: 2rem; // Gap entre h1 e h4
+    }
+
+    h4 {
+      position: relative; // Para ficar acima dos pseudo-elementos
+      z-index: 2;
+      font-size: 1.5rem; // 24px
+      font-weight: 600; // Semibold
+      line-height: 2rem; // 32px
+      margin: 0;
+      max-width: 28rem; // 450px
+    }
+  }
+
+  // --- Seção da Direita (Fundo) ---
+  .form-section {
+    // Ocupa o espaço restante
+    flex: 1;
+    background-color: $form-bg;
+    position: relative;
+    display: flex;
+    justify-content: flex-start; // Alinha o container à esquerda da seção
+    align-items: center;
+
+    // --- Container do Formulário (Card Branco) ---
+    .login-form-container {
+      width: 90%;
+      max-width: 32rem;
+      margin-left: -10%;
+      background-color: $form-card-bg;
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 24px 0 rgba($welcome-bg, 0.12);
+      padding: 4rem; // Espaçamento interno
+      display: flex;
+      flex-direction: column;
+
+      .signup-link {
+        text-align: left;
+        font-size: 0.875rem; // 14px
+        margin-bottom: auto; // Empurra para o topo
+        margin-top: 0.875rem;
+
+        a {
+          color: $primary-accent;
+          font-weight: 500;
+          text-decoration: none;
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+
+      .header-text {
+        text-align: left;
+        margin-bottom: 2.5rem;
+        h2 {
+          font-size: 2.25rem; // 36px
+          font-weight: 500; // Medium
+          color: $text-dark;
+        }
+        p {
+          font-size: 0.75rem; // 12px
+          color: $text-secondary;
+          margin-top: 0.5rem;
+        }
+      }
+    }
+  }
+}
+
+// --- Media Query para Responsividade ---
+@media (max-width: 1200px) {
+  .login-page {
+    flex-direction: column;
+
+    .welcome-section {
+      // Em telas menores, a seção de boas-vindas vira um banner no topo
+      flex: 0 0 350px;
+      padding: 2rem;
+      align-items: center;
+      text-align: center;
+
+      h1 {
+        font-size: 2.5rem; // Reduz a fonte
+        line-height: 3rem;
+        margin-top: 0;
+        margin-bottom: 1rem;
+      }
+      h4 {
+        font-size: 1.25rem; // Reduz a fonte
+        line-height: 1.75rem;
+        max-width: 100%;
+      }
+    }
+
+    .form-section {
+      flex: 1;
+      // O efeito de sobreposição é removido para um layout mais simples
+      .login-form-container {
+        min-height: auto;
+        width: 80%;
+        max-width: 500px;
+        padding: 3rem;
+        margin-top: -4rem; // Cria uma leve sobreposição com o banner
+        margin-bottom: 2rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .login-page .welcome-section {
+    // Em telas de celular, a seção de boas-vindas é removida para focar no formulário
+    display: none;
+  }
+
+  .login-page .form-section .login-form-container {
+    width: 90%;
+    margin-top: 0;
+    box-shadow: none; // Remove a sombra em telas pequenas
+  }
+}

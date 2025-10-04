@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LoginUserIndex } from './login-user-index';
+import { AuthContainer } from './auth-container';
 
-describe('LoginUserIndex', () => {
-  let component: LoginUserIndex;
-  let fixture: ComponentFixture<LoginUserIndex>;
+describe('AuthContainer', () => {
+  let component: AuthContainer;
+  let fixture: ComponentFixture<AuthContainer>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LoginUserIndex]
+      imports: [AuthContainer]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(LoginUserIndex);
+    fixture = TestBed.createComponent(AuthContainer);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

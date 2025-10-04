@@ -5,7 +5,7 @@ import { catchError, map } from 'rxjs/operators';
 import { API_CONFIG } from '../config/api.config';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiService {
   private baseUrl = API_CONFIG.BASE_URL;
@@ -15,7 +15,7 @@ export class ApiService {
   private getHeaders(): HttpHeaders {
     const token = this.getAuthToken();
     let headers = new HttpHeaders({
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     });
 
     if (token) {
@@ -57,39 +57,47 @@ export class ApiService {
   }
 
   get<T>(endpoint: string): Observable<T> {
-    return this.http.get<T>(`${this.baseUrl}${endpoint}`, {
-      headers: this.getHeaders()
-    }).pipe(
-      map(response => this.handleResponse(response)),
-      catchError(this.handleError)
-    );
+    return this.http
+      .get<T>(`${this.baseUrl}${endpoint}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(
+        map((response) => this.handleResponse(response)),
+        catchError(this.handleError)
+      );
   }
 
   post<T>(endpoint: string, data: any): Observable<T> {
-    return this.http.post<T>(`${this.baseUrl}${endpoint}`, data, {
-      headers: this.getHeaders()
-    }).pipe(
-      map(response => this.handleResponse(response)),
-      catchError(this.handleError)
-    );
+    return this.http
+      .post<T>(`${this.baseUrl}${endpoint}`, data, {
+        headers: this.getHeaders(),
+      })
+      .pipe(
+        map((response) => this.handleResponse(response)),
+        catchError(this.handleError)
+      );
   }
 
   put<T>(endpoint: string, data: any): Observable<T> {
-    return this.http.put<T>(`${this.baseUrl}${endpoint}`, data, {
-      headers: this.getHeaders()
-    }).pipe(
-      map(response => this.handleResponse(response)),
-      catchError(this.handleError)
-    );
+    return this.http
+      .put<T>(`${this.baseUrl}${endpoint}`, data, {
+        headers: this.getHeaders(),
+      })
+      .pipe(
+        map((response) => this.handleResponse(response)),
+        catchError(this.handleError)
+      );
   }
 
   delete<T>(endpoint: string): Observable<T> {
-    return this.http.delete<T>(`${this.baseUrl}${endpoint}`, {
-      headers: this.getHeaders()
-    }).pipe(
-      map(response => this.handleResponse(response)),
-      catchError(this.handleError)
-    );
+    return this.http
+      .delete<T>(`${this.baseUrl}${endpoint}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(
+        map((response) => this.handleResponse(response)),
+        catchError(this.handleError)
+      );
   }
 
   setAuthToken(token: string): void {

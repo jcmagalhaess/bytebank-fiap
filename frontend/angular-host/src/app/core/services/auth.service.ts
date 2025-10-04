@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { lastValueFrom } from 'rxjs';
 import { API_CONFIG } from '../config/api.config';
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -36,17 +37,20 @@ export interface User {
   providedIn: 'root',
 })
 export class AuthService {
-  private _router = inject(Router);
-  private _http = inject(HttpClient);
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
 
-  /** Sinal que armazena as informações do usuário autenticado, ou nulo se não autenticado. */
-  user = signal<User | null>(null);
-  /** Sinal que indica se o usuário está atualmente autenticado. */
-  isAuthenticated = signal<boolean>(false);
-  /** Sinal que indica se um processo relacionado à autenticação está em andamento. */
-  isLoading = signal<boolean>(true);
-  /** Sinal que armazena a última mensagem de erro de autenticação, se houver. */
-  error = signal<string | null>(null);
+  // Sinais privados para controle interno do estado
+  private readonly _user = signal<User | null>(null);
+  private readonly _isAuthenticated = signal<boolean>(false);
+  private readonly _isLoading = signal<boolean>(false);
+  private readonly _error = signal<string | null>(null);
+
+  // Sinais públicos (somente leitura)
+  public readonly user = this._user.asReadonly();
+  public readonly isAuthenticated = this._isAuthenticated.asReadonly();
+  public readonly isLoading = this._isLoading.asReadonly();
+  public readonly error = this._error.asReadonly();
 
   /**
    * Processa um novo token de autenticação.
@@ -58,12 +62,19 @@ export class AuthService {
   private handleNewToken(token: string) {
     if (token) {
       localStorage.setItem('auth_token', token);
-      const decodedToken = this.decodeJWTToken(token);
-      this.user.set(decodedToken);
-      this.isAuthenticated.set(true);
-      this._router.navigate(['/']);
+      // Decodifica o token usando uma tipagem forte para mais segurança
+      const decodedToken: JwtPayload & User = jwtDecode(token);
+
+      const user: User = {
+        id: decodedToken.id,
+        username: decodedToken.username,
+        email: decodedToken.email,
+      };
+
+      this._user.set(user);
+      this._isAuthenticated.set(true);
     }
-    this.isLoading.set(false);
+    this._isLoading.set(false);
   }
 
   /**
@@ -71,81 +82,86 @@ export class AuthService {
    * Se um token for encontrado, valida a sessão.
    */
   public async checkAuth(): Promise<void> {
-    this.isLoading.set(true);
+    this._isLoading.set(true);
     const token = localStorage.getItem('auth_token');
     if (token) {
       this.handleNewToken(token);
     } else {
-      this.isLoading.set(false);
+      this._isLoading.set(false);
     }
   }
 
   /**
    * Tenta autenticar o usuário com as credenciais fornecidas.
-   * Em caso de sucesso, armazena o token e atualiza o estado de autenticação.
    * @param credentials O email e a senha do usuário.
    */
-  public async loginWithCredentials(credentials: LoginRequest): Promise<void> {
-    this.isLoading.set(true);
-    this.error.set(null);
+  public async login(credentials: LoginRequest): Promise<void> {
+    this._isLoading.set(true);
+    this._error.set(null);
 
     try {
       const response = await lastValueFrom(
-        this._http.post<AuthResponse>(
+        this.http.post<AuthResponse>(
           `${API_CONFIG.BASE_URL}/${API_CONFIG.ENDPOINTS.LOGIN}`,
           credentials
         )
       );
 
-      if (response && response.result && response.result.token) {
+      if (response?.result?.token) {
         this.handleNewToken(response.result.token);
+        // O isLoading é definido como false dentro de handleNewToken,
+        // então não precisamos definir aqui antes de navegar.
+        this.router.navigate(['/dashboard']);
       } else {
         throw new Error('Token não recebido do servidor.');
       }
     } catch (error: any) {
-      this.error.set(error.message || 'Email ou senha inválidos. Por favor, tente novamente.');
-      this.isLoading.set(false);
-      console.error('Erro no login:', error);
+      const errorMessage = error?.error?.message || 'E-mail ou senha inválidos.';
+      this._error.set(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      this._isLoading.set(false); // Garante que o loading termine, independentemente do resultado.
     }
   }
 
   /**
-   * Desconecta o usuário limpando os dados da sessão e redirecionando para a página de login.
+   * Registra um novo usuário.
+   * @param userData Os dados para o registro do novo usuário.
    */
-  public logout() {
-    this.handleLogout();
-  }
-
-  /**
-   * Limpa o token de autenticação do armazenamento, redefine os sinais de usuário e autenticação,
-   * e navega para a página de login.
-   * @private
-   */
-  private handleLogout() {
-    localStorage.clear();
-    this.user.set(null);
-    this.isAuthenticated.set(false);
-    this._router.navigate(['/login']);
-  }
-
-  /**
-   * Decodifica um token JWT para extrair as informações do usuário.
-   * @param token A string do token JWT.
-   * @returns Um objeto `User` com as informações decodificadas, ou `null` se a decodificação falhar.
-   * @private
-   */
-  private decodeJWTToken(token: string): User | null {
+  public async register(userData: RegisterRequest): Promise<void> {
+    this._isLoading.set(true);
+    this._error.set(null);
     try {
-      const payload = jwtDecode<any>(token);
-      return {
-        id: payload.sub || payload.id || 'unknown',
-        username: payload.name || payload.username || 'Usuário',
-        email: payload.email || 'usuario@exemplo.com',
-      };
-    } catch (error) {
-      console.error('Erro ao decodificar token:', error);
-      this.error.set('Erro ao decodificar as informações do usuário.');
-      return null;
+      // A API de registro não retorna um token, então apenas esperamos a conclusão.
+      await lastValueFrom(
+        this.http.post<void>(`${API_CONFIG.BASE_URL}/${API_CONFIG.ENDPOINTS.REGISTER}`, userData)
+      );
+      // Não faz nada com a resposta, apenas conclui com sucesso
+      this._isLoading.set(false);
+    } catch (error: any) {
+      const errorMessage = error?.error?.message || 'Erro ao tentar registrar.';
+      this._error.set(errorMessage);
+      this._isLoading.set(false);
+      throw new Error(errorMessage);
     }
+  }
+
+  /**
+   * Desconecta o usuário, limpando os dados da sessão e redirecionando para a página de login.
+   */
+  public logout(): void {
+    localStorage.removeItem('auth_token');
+    this._user.set(null);
+    this._isAuthenticated.set(false);
+    this.router.navigate(['/auth/login']);
+  }
+
+  /**
+   * Verifica de forma síncrona se o usuário está autenticado.
+   * Ideal para uso em guards.
+   * @returns `true` se o usuário estiver autenticado, caso contrário `false`.
+   */
+  public isAuthenticatedCheck(): boolean {
+    return this._isAuthenticated();
   }
 }
