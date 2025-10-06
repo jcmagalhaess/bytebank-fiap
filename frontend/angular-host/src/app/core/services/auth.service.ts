@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { jwtDecode } from 'jwt-decode';
 import { lastValueFrom } from 'rxjs';
 import { API_CONFIG } from '../config/api.config';
 
@@ -19,13 +20,23 @@ export interface AuthResponse {
   token: string;
 }
 
-export interface User {
+export interface IUser {
   id: string;
   nome: string;
   email: string;
   createdAt: string;
   updatedAt: string;
 }
+
+export interface IUserSummary {
+  credit: number;
+  debit: number;
+  total: number;
+}
+
+export type IUserYearlySummary = Omit<IUserSummary, 'total'> & {
+  month: string;
+};
 
 /**
  * Serviço responsável por gerenciar a autenticação do usuário,
@@ -37,9 +48,12 @@ export interface User {
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  // Sinal para armazenar os dados da conta
+  public account = signal<IUser | null>(null);
+  // AccountService será injetado depois para evitar dependência cíclica no construtor
 
   // Sinais privados para controle interno do estado
-  private readonly _user = signal<User | null>(null);
+  private readonly _user = signal<IUser | null>(null);
   private readonly _isAuthenticated = signal<boolean>(false);
   private readonly _isLoading = signal<boolean>(false);
   private readonly _error = signal<string | null>(null);
@@ -59,6 +73,8 @@ export class AuthService {
    */
   private handleNewToken(token: string) {
     if (token) {
+      const decodedToken: IUser = jwtDecode(token);
+      this._user.set(decodedToken);
       localStorage.setItem('auth_token', token);
       this._isAuthenticated.set(true);
     }
@@ -73,8 +89,8 @@ export class AuthService {
     this._isLoading.set(true);
     const token = localStorage.getItem('auth_token');
     if (token) {
-      this.handleNewToken(token); // Isso já define isLoading para false
-      await this.handleAccountInfo();
+      this.handleNewToken(token);
+      await this.getAccountData();
     } else {
       // Se não houver token, apenas definimos isLoading como false.
       this._isLoading.set(false);
@@ -99,9 +115,7 @@ export class AuthService {
 
       if (response.token) {
         this.handleNewToken(response.token);
-        this.handleAccountInfo();
-        // O isLoading é definido como false dentro de handleNewToken,
-        // então não precisamos definir aqui antes de navegar.
+        await this.getAccountData();
         this.router.navigate(['/dashboard']);
       } else {
         throw new Error('Token não recebido do servidor.');
@@ -156,17 +170,20 @@ export class AuthService {
     return this._isAuthenticated();
   }
 
-  public async handleAccountInfo() {
+  /**
+   * Busca os dados da conta (conta, transações, cartões) do usuário logado na API.
+   */
+  public async getAccountData(): Promise<void> {
     try {
       const response = await lastValueFrom(
-        this.http.get<User>(`${API_CONFIG.BASE_URL}/${API_CONFIG.ENDPOINTS.ACCOUNT}`)
+        this.http.get<IUser>(`${API_CONFIG.BASE_URL}/${API_CONFIG.ENDPOINTS.ACCOUNT}`)
       );
+      console.log('👤 Conta do usuário:', response);
 
-      this._user.set(response);
-    } catch (error: any) {
-      const errorMessage = error?.error?.message || 'E-mail ou senha inválidos.';
-      this._error.set(errorMessage);
-      throw new Error(errorMessage);
+      this.account.set(response);
+    } catch (error) {
+      console.error('Erro ao buscar contas:', error);
+      this.account.set(null);
     }
   }
 }

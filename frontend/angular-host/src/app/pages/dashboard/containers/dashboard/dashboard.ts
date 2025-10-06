@@ -11,7 +11,20 @@ import { ChartComponent } from '../../../../shared/components/chart/chart';
 export class Dashboard implements OnInit {
   public _accountService = inject(AccountService);
 
+  get monthLabels() {
+    return this._accountService.monthLabels();
+  }
+
+  get yearlySummary() {
+    return this._accountService.monthlyChartData();
+  }
+
+  get summary() {
+    return this._accountService.summary();
+  }
+
   public async ngOnInit() {
-    await this._accountService.getAccountData();
+    await this._accountService.getSummary();
+    await this._accountService.getYearlySummary();
   }
 }

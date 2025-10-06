@@ -17,7 +17,7 @@ export class DashboardTabs implements OnInit, OnDestroy {
   private readonly _router = inject(Router);
   private subscription?: Subscription;
 
-  public username = computed(() => getFirstName(this._authService.user()?.nome ?? ''));
+  public username = computed(() => getFirstName(this._authService.account()?.nome ?? ''));
 
   // Signal para controlar o estado da página atual
   private currentUrl = signal(this._router.url);
