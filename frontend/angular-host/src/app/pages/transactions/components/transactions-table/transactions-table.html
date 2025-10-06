@@ -1,3 +1,8 @@
+@if (loading()) {
+<mat-progress-bar color="primary" mode="indeterminate"></mat-progress-bar>
+} @else {
+  <div class="h-4px"></div>
+}
 <div class="bg-backgroundPrimary rounded-lg px-4 py-4 w-full overflow-x-hidden">
   @if (list()?.meta.total === 0) {
   <div class="flex justify-center items-center py-8">
@@ -35,3 +40,15 @@
   </div>
   }
 </div>
+
+@if (pagination()) {
+<div class="mt-6">
+  <app-pagination
+    [currentPage]="list()?.meta.page"
+    [totalPages]="list()?.meta.totalPages"
+    [itemsPerPage]="list()?.meta.pageSize"
+    [totalItems]="list()?.meta.total"
+    (pageChange)="pageChange.emit($event)"
+  />
+</div>
+}

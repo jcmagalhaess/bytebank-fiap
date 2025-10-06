@@ -42,9 +42,4 @@ export class TransactionsWidget implements OnInit {
       }
     });
   }
-  addTransaction(transaction: any) {
-    // this._transactionsService.insert(transaction).then(() => {
-    //   this.form.reset();
-    // });
-  }
 }

@@ -57,7 +57,7 @@ export class TransactionsForm implements OnInit {
       }
     }
 
-    if (this._dialogRef) {
+    if (this.data?.transaction?.id) {
       const id = this.data?.transaction?.id;
       this._transactionsService.update(id, formData).then(() => {
         this._dialogRef?.close(true);
@@ -65,6 +65,10 @@ export class TransactionsForm implements OnInit {
     } else {
       this._transactionsService.insert(formData).then(() => {
         this.form.reset();
+
+        if (this._dialogRef) {
+          this._dialogRef.close(true);
+        }
       });
     }
   }

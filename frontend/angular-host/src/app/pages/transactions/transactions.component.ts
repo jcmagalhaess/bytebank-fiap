@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
 import { TransactionService } from '../../core/services/transaction.service';
 import { SearchIconComponent } from '../../shared/components/icons/search-icon.component';
@@ -17,6 +18,9 @@ import { ButtonComponent } from '../../shared/components/ui/button/button.compon
 import { PaginationComponent } from '../../shared/components/ui/pagination/pagination.component';
 import { Transaction } from '../../shared/interfaces/transaction.interface';
 import { formatToBRL } from '../../shared/utils/format';
+import { TransactionsForm } from './components/transactions-form/transactions-form';
+import { TransactionsTable } from './components/transactions-table/transactions-table';
+import { TransactionsService } from './services/transactions.service';
 
 @Component({
   selector: 'app-transactions',
@@ -34,14 +38,26 @@ import { formatToBRL } from '../../shared/utils/format';
     PdfViewerModalComponent,
     PdfUploadModalComponent,
     PaginationComponent,
+    TransactionsTable,
   ],
   templateUrl: './transactions.component.html',
 })
 export class TransactionsComponent implements OnInit {
+  private readonly _transactionsService = inject(TransactionsService);
+  private readonly _dialog = inject(MatDialog);
+
+  get transactions() {
+    return this._transactionsService.transactionList;
+  }
+
+  get loading() {
+    return this._transactionsService.loading;
+  }
+
   // Signals para estado reativo
-  transactions = signal<Transaction[]>([]);
+  // transactions = signal<Transaction[]>([]);
   filteredTransactions = signal<Transaction[]>([]);
-  loading = signal<boolean>(true);
+  // loading = signal<boolean>(true);
   showFilters = signal<boolean>(false);
   showAddModal = signal<boolean>(false);
   editingTransaction = signal<Transaction | null>(null);
@@ -72,19 +88,19 @@ export class TransactionsComponent implements OnInit {
   });
 
   // Computed para saldo total
-  balance = computed(() => {
-    const transactions = this.transactions();
-    return transactions.reduce((acc, t) => {
-      if (t.type === 'credit') return acc + t.amount;
-      if (t.type === 'debit') return acc - t.amount;
-      return acc;
-    }, 0);
-  });
+  // balance = computed(() => {
+  //   const transactions = this.transactions();
+  //   return transactions.reduce((acc, t) => {
+  //     if (t.type === 'credit') return acc + t.amount;
+  //     if (t.type === 'debit') return acc - t.amount;
+  //     return acc;
+  //   }, 0);
+  // });
 
   // Computed para categorias disponíveis
   availableCategories = computed(() => {
-    const transactions = this.transactions();
-    return [...new Set(transactions.map((t) => t.categoria).filter(Boolean))];
+    const transactions = this.transactions()?.data || [];
+    return [...new Set(transactions.map((t: any) => t.categoria).filter(Boolean))] as string[];
   });
 
   // Computed para verificar se há filtros ativos
@@ -116,8 +132,8 @@ export class TransactionsComponent implements OnInit {
 
   constructor(private transactionService: TransactionService) {}
 
-  ngOnInit() {
-    this.loadTransactions();
+  async ngOnInit(): Promise<void> {
+    await this._transactionsService.list();
   }
 
   async loadTransactions() {
@@ -151,59 +167,75 @@ export class TransactionsComponent implements OnInit {
     const transactions = this.transactions();
     const f = this.filters();
 
-    let filtered = transactions.filter((transaction) => {
-      // Filtro por tipo
-      if (f.type !== 'all' && transaction.type !== f.type) return false;
+    // let filtered = transactions.filter((transaction) => {
+    //   // Filtro por tipo
+    //   if (f.type !== 'all' && transaction.type !== f.type) return false;
 
-      // Filtro por categoria
-      if (f.category && transaction.categoria !== f.category) return false;
+    //   // Filtro por categoria
+    //   if (f.category && transaction.categoria !== f.category) return false;
 
-      // Filtro por busca
-      if (f.search) {
-        const searchLower = f.search.toLowerCase();
-        const matchesSearch =
-          transaction.descricao?.toLowerCase().includes(searchLower) ||
-          transaction.categoria?.toLowerCase().includes(searchLower);
-        if (!matchesSearch) return false;
-      }
+    //   // Filtro por busca
+    //   if (f.search) {
+    //     const searchLower = f.search.toLowerCase();
+    //     const matchesSearch =
+    //       transaction.descricao?.toLowerCase().includes(searchLower) ||
+    //       transaction.categoria?.toLowerCase().includes(searchLower);
+    //     if (!matchesSearch) return false;
+    //   }
 
-      // Filtro por data
-      if (f.startDate) {
-        const transactionDate = new Date(transaction.date);
-        const startDate = new Date(f.startDate);
-        if (transactionDate < startDate) return false;
-      }
+    //   // Filtro por data
+    //   if (f.startDate) {
+    //     const transactionDate = new Date(transaction.date);
+    //     const startDate = new Date(f.startDate);
+    //     if (transactionDate < startDate) return false;
+    //   }
 
-      if (f.endDate) {
-        const transactionDate = new Date(transaction.date);
-        const endDate = new Date(f.endDate);
-        if (transactionDate > endDate) return false;
-      }
+    //   if (f.endDate) {
+    //     const transactionDate = new Date(transaction.date);
+    //     const endDate = new Date(f.endDate);
+    //     if (transactionDate > endDate) return false;
+    //   }
 
-      // Filtro por valor
-      if (f.minValue) {
-        const minValue = parseFloat(f.minValue);
-        if (transaction.amount < minValue) return false;
-      }
+    //   // Filtro por valor
+    //   if (f.minValue) {
+    //     const minValue = parseFloat(f.minValue);
+    //     if (transaction.amount < minValue) return false;
+    //   }
 
-      if (f.maxValue) {
-        const maxValue = parseFloat(f.maxValue);
-        if (transaction.amount > maxValue) return false;
-      }
+    //   if (f.maxValue) {
+    //     const maxValue = parseFloat(f.maxValue);
+    //     if (transaction.amount > maxValue) return false;
+    //   }
 
-      return true;
-    });
+    //   return true;
+    // });
 
-    this.filteredTransactions.set(filtered);
+    // this.filteredTransactions.set(filtered);
     this.currentPage.set(1); // Reset para primeira página
   }
 
   onFiltersChange(newFilters: any) {
+    const newObj: any = {};
+
+    newObj.tipo =
+      newFilters.type === 'all' ? null : newFilters.type === 'deposit' ? 'credit' : 'debit';
+    newObj.categoria = newFilters.category;
+    // newObj.descricao = newFilters.search;
+    newObj.dataInicio = newFilters.startDate;
+    newObj.dataFim = newFilters.endDate;
+    newObj.valorMin = newFilters.minValue;
+    newObj.valorMax = newFilters.maxValue;
+
+    this._transactionsService.list(newObj);
+
+    console.log('🔍 Filtros atualizados:', newFilters);
+
     this.filters.set(newFilters);
     this.applyFilters();
   }
 
   onClearFilters() {
+    this._transactionsService.list({});
     this.filters.set({
       type: 'all',
       startDate: '',
@@ -217,14 +249,15 @@ export class TransactionsComponent implements OnInit {
   }
 
   onPageChange(page: number) {
-    this.currentPage.set(page);
+    this._transactionsService.list({ page });
     // Scroll para o topo da lista
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  onSearchChange(searchTerm: string) {
-    this.filters.update((f) => ({ ...f, search: searchTerm }));
-    this.applyFilters();
+  onSearchChange(param: string, searchTerm: string) {
+    this._transactionsService.list({ [param]: searchTerm });
+    // this.filters.update((f) => ({ ...f, search: searchTerm }));
+    // this.applyFilters();
   }
 
   toggleFilters() {
@@ -421,5 +454,21 @@ export class TransactionsComponent implements OnInit {
 
   formatDate(date: string): string {
     return new Date(date).toLocaleDateString('pt-BR');
+  }
+
+  deleteTransaction = (id: number) => this._transactionsService.delete(id);
+
+  openModal(transaction?: any) {
+    const dialogRef = this._dialog.open(TransactionsForm, {
+      width: '40vw',
+      data: { transaction },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        // Logic to handle editing/saving, maybe refresh the list
+        this._transactionsService.list();
+      }
+    });
   }
 }

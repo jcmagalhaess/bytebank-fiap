@@ -10,7 +10,7 @@
   <div class="flex items-center gap-2 sm:gap-xs">
     @if (authService.isAuthenticated() && authService.user()) {
     <span class="text-xs sm:text-sm text-backgroundPrimary hidden sm:block">{{
-      getFirstName(authService.account()!.nome)
+      getFirstName(authService.account()?.nome!)
     }}</span>
     <div class="relative group">
       <div

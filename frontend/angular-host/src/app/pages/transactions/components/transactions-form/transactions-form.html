@@ -36,6 +36,7 @@
       label="Descrição"
       type="text"
       formControlName="descricao"
+      [required]="true"
       placeholder="Ex: Compra no supermercado, Pagamento de conta..."
     >
     </app-input>
@@ -96,7 +97,7 @@
           <span class="hidden md:inline">
             {{ data?.transaction ? 'Salvar' : 'Adicionar Transação' }}
           </span>
-          <span class="md:hidden">{{ data?.transaction ? 'Salvar' : 'Adicionar' }}</span>
+          <span class="md:hidden">{{ data?.transaction?.id ? 'Salvar' : 'Adicionar' }}</span>
           }
         </div>
       </app-button>

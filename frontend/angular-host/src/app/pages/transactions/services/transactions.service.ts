@@ -3,6 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
 import { API_CONFIG } from '../../../core/config/api.config';
 import { AccountService } from '../../../core/services/account.service';
+import { removeNullProperties } from '../../../shared/utils/remove-null-properties';
 
 @Injectable({
   providedIn: 'root',
@@ -52,12 +53,15 @@ export class TransactionsService {
     }
   }
 
-  public async list(): Promise<any[]> {
+  public async list(paramsObj: any = { }): Promise<any[]> {
+    const urlParams = new URLSearchParams(removeNullProperties(paramsObj));
+    const queryString = urlParams.toString();
+
     this.loading.set(true);
     try {
       const response = await lastValueFrom(
         this._http.get<any[]>(
-          `${API_CONFIG.BASE_URL}/${API_CONFIG.ENDPOINTS.TRANSACTIONS}?pageSize=5`
+          `${API_CONFIG.BASE_URL}/${API_CONFIG.ENDPOINTS.TRANSACTIONS}?${queryString}`
         )
       ).finally(() => {
         this.loading.set(false);
