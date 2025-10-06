@@ -29,7 +29,7 @@ export class UserLogin implements OnInit, OnDestroy {
   constructor() {
     this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]],
+      senha: ['', [Validators.required]],
     });
   }
 

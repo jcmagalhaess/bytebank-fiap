@@ -1,8 +1,9 @@
 import { Component, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-auth-container',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './auth-container.html',
   styleUrl: './auth-container.scss',
 })

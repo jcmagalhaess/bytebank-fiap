@@ -1,32 +1,30 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { lastValueFrom } from 'rxjs';
 import { API_CONFIG } from '../config/api.config';
 
 export interface LoginRequest {
   email: string;
-  password: string;
+  senha: string;
 }
 
 export interface RegisterRequest {
-  username: string;
+  nome: string;
   email: string;
-  password: string;
+  senha: string;
 }
 
 export interface AuthResponse {
-  message: string;
-  result: {
-    token: string;
-  };
+  token: string;
 }
 
 export interface User {
   id: string;
-  username: string;
+  nome: string;
   email: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 /**
@@ -62,16 +60,6 @@ export class AuthService {
   private handleNewToken(token: string) {
     if (token) {
       localStorage.setItem('auth_token', token);
-      // Decodifica o token usando uma tipagem forte para mais segurança
-      const decodedToken: JwtPayload & User = jwtDecode(token);
-
-      const user: User = {
-        id: decodedToken.id,
-        username: decodedToken.username,
-        email: decodedToken.email,
-      };
-
-      this._user.set(user);
       this._isAuthenticated.set(true);
     }
     this._isLoading.set(false);
@@ -85,8 +73,10 @@ export class AuthService {
     this._isLoading.set(true);
     const token = localStorage.getItem('auth_token');
     if (token) {
-      this.handleNewToken(token);
+      this.handleNewToken(token); // Isso já define isLoading para false
+      await this.handleAccountInfo();
     } else {
+      // Se não houver token, apenas definimos isLoading como false.
       this._isLoading.set(false);
     }
   }
@@ -107,8 +97,9 @@ export class AuthService {
         )
       );
 
-      if (response?.result?.token) {
-        this.handleNewToken(response.result.token);
+      if (response.token) {
+        this.handleNewToken(response.token);
+        this.handleAccountInfo();
         // O isLoading é definido como false dentro de handleNewToken,
         // então não precisamos definir aqui antes de navegar.
         this.router.navigate(['/dashboard']);
@@ -163,5 +154,19 @@ export class AuthService {
    */
   public isAuthenticatedCheck(): boolean {
     return this._isAuthenticated();
+  }
+
+  public async handleAccountInfo() {
+    try {
+      const response = await lastValueFrom(
+        this.http.get<User>(`${API_CONFIG.BASE_URL}/${API_CONFIG.ENDPOINTS.ACCOUNT}`)
+      );
+
+      this._user.set(response);
+    } catch (error: any) {
+      const errorMessage = error?.error?.message || 'E-mail ou senha inválidos.';
+      this._error.set(errorMessage);
+      throw new Error(errorMessage);
+    }
   }
 }

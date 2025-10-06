@@ -40,10 +40,10 @@ export class UserRegistration implements OnInit, OnDestroy {
   constructor() {
     this.registrationForm = this.formBuilder.group(
       {
-        username: ['', [Validators.required]],
+        nome: ['', [Validators.required]],
         email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(6)]],
-        confirmPassword: ['', [Validators.required]],
+        senha: ['', [Validators.required, Validators.minLength(6)]],
+        confirmarSenha: ['', [Validators.required]],
       },
       { validators: passwordMatchValidator }
     );
@@ -61,7 +61,7 @@ export class UserRegistration implements OnInit, OnDestroy {
   onSubmit(): void {
     this.errorMessage = null;
     if (this.registrationForm.valid) {
-      const { confirmPassword, ...registrationData } = this.registrationForm.value;
+      const { confirmarSenha, ...registrationData } = this.registrationForm.value;
       const registrationEvent = new CustomEvent('registrationRequest', {
         detail: registrationData,
       });

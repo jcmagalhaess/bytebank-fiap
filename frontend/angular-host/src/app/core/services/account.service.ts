@@ -16,7 +16,7 @@ export class AccountService {
   public account = signal<IUserAccount | null>(null);
 
   // Sinal computado para obter apenas o nome do usuário
-  public userName = computed(() => this._authService.user()?.username);
+  public userName = computed(() => this._authService.user()?.nome);
 
   // Sinal computado para obter apenas as transações do usuário
   public userTransactions = computed(() => this.account()?.transactions ?? []);

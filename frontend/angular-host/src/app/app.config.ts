@@ -1,5 +1,6 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
+  APP_INITIALIZER,
   ApplicationConfig,
   LOCALE_ID,
   provideBrowserGlobalErrorListeners,
