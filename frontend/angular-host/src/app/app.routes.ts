@@ -1,7 +1,7 @@
 import { loadRemoteModule } from '@angular-architects/native-federation';
 import { Routes } from '@angular/router';
-import { noAuthGuard } from './core/guard/no-auth.guard';
 import { authGuard } from './core/guard/auth.guard';
+import { noAuthGuard } from './core/guard/no-auth.guard';
 
 export const routes: Routes = [
   {

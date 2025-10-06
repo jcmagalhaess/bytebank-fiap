@@ -3,19 +3,13 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
-import { TransactionService } from '../../core/services/transaction.service';
 import { SearchIconComponent } from '../../shared/components/icons/search-icon.component';
 import { SettingIconComponent } from '../../shared/components/icons/setting-icon.component';
 import { EditTransactionModalComponent } from '../../shared/components/transaction/edit-transaction-modal/edit-transaction-modal.component';
-import {
-  PdfUploadModalComponent,
-  PdfUploadResult,
-} from '../../shared/components/transaction/pdf-upload-modal/pdf-upload-modal.component';
+import { PdfUploadModalComponent } from '../../shared/components/transaction/pdf-upload-modal/pdf-upload-modal.component';
 import { PdfViewerModalComponent } from '../../shared/components/transaction/pdf-viewer-modal/pdf-viewer-modal.component';
 import { TransactionFiltersComponent } from '../../shared/components/transaction/transaction-filters/transaction-filters.component';
-import { TransactionRowComponent } from '../../shared/components/transaction/transaction-row/transaction-row.component';
 import { ButtonComponent } from '../../shared/components/ui/button/button.component';
-import { PaginationComponent } from '../../shared/components/ui/pagination/pagination.component';
 import { Transaction } from '../../shared/interfaces/transaction.interface';
 import { formatToBRL } from '../../shared/utils/format';
 import { TransactionsForm } from './components/transactions-form/transactions-form';
@@ -33,9 +27,6 @@ import { TransactionsService } from './services/transactions.service';
     ButtonComponent,
     SearchIconComponent,
     SettingIconComponent,
-    EditTransactionModalComponent,
-    PdfViewerModalComponent,
-    PdfUploadModalComponent,
     TransactionsTable,
   ],
   templateUrl: './transactions.component.html',
@@ -127,8 +118,6 @@ export class TransactionsComponent implements OnInit {
     const end = this.endIndex();
     return this.filteredTransactions().slice(start, end);
   });
-
-  constructor(private transactionService: TransactionService) {}
 
   async ngOnInit(): Promise<void> {
     await this._transactionsService.list();
@@ -247,68 +236,68 @@ export class TransactionsComponent implements OnInit {
     this.deleteId.set(id);
   }
 
-  confirmDelete() {
-    const id = this.deleteId();
-    if (id) {
-      this.transactionService.delete(id).subscribe({
-        next: () => {
-          this.deleteId.set(null);
-          this._transactionsService.list(); // Recarrega a lista através do serviço
-        },
-        error: (error) => {
-          console.error('Erro ao deletar transação:', error);
-        },
-      });
-    }
-  }
+  // confirmDelete() {
+  //   const id = this.deleteId();
+  //   if (id) {
+  //     this.transactionService.delete(id).subscribe({
+  //       next: () => {
+  //         this.deleteId.set(null);
+  //         this._transactionsService.list(); // Recarrega a lista através do serviço
+  //       },
+  //       error: (error) => {
+  //         console.error('Erro ao deletar transação:', error);
+  //       },
+  //     });
+  //   }
+  // }
 
   cancelDelete() {
     this.deleteId.set(null);
   }
 
-  onSaveTransaction(transactionData: any) {
-    console.log('💾 Salvando transação:', transactionData);
+  // onSaveTransaction(transactionData: any) {
+  //   console.log('💾 Salvando transação:', transactionData);
 
-    // Verificar se há um PDF sendo carregado
-    if (this.showPdfUploadModal()) {
-      console.log('⚠️ Tentativa de salvar durante upload de PDF - bloqueando');
-      alert('Aguarde o carregamento do PDF ser concluído antes de salvar.');
-      return;
-    }
+  //   // Verificar se há um PDF sendo carregado
+  //   if (this.showPdfUploadModal()) {
+  //     console.log('⚠️ Tentativa de salvar durante upload de PDF - bloqueando');
+  //     alert('Aguarde o carregamento do PDF ser concluído antes de salvar.');
+  //     return;
+  //   }
 
-    if (transactionData.id) {
-      // Editar transação existente
-      this.transactionService.update(transactionData.id, transactionData).subscribe({
-        next: () => {
-          console.log('✅ Transação editada com sucesso');
-          this.editingTransaction.set(null);
-          this._transactionsService.list(); // Recarrega a lista através do serviço
-        },
-        error: (error) => {
-          console.error('❌ Erro ao editar transação:', error);
-          alert('Erro ao editar transação. Verifique sua conexão.');
-        },
-      });
-    } else {
-      // Adicionar nova transação
-      this.transactionService
-        .add({
-          ...transactionData,
-          date: new Date().toISOString().split('T')[0],
-        })
-        .subscribe({
-          next: (newTransaction) => {
-            console.log('✅ Transação criada com sucesso:', newTransaction);
-            this.showAddModal.set(false);
-            this._transactionsService.list(); // Recarrega a lista através do serviço
-          },
-          error: (error) => {
-            console.error('❌ Erro ao criar transação:', error);
-            alert('Erro ao criar transação. Verifique sua conexão.');
-          },
-        });
-    }
-  }
+  //   if (transactionData.id) {
+  //     // Editar transação existente
+  //     this.transactionService.update(transactionData.id, transactionData).subscribe({
+  //       next: () => {
+  //         console.log('✅ Transação editada com sucesso');
+  //         this.editingTransaction.set(null);
+  //         this._transactionsService.list(); // Recarrega a lista através do serviço
+  //       },
+  //       error: (error) => {
+  //         console.error('❌ Erro ao editar transação:', error);
+  //         alert('Erro ao editar transação. Verifique sua conexão.');
+  //       },
+  //     });
+  //   } else {
+  //     // Adicionar nova transação
+  //     this.transactionService
+  //       .add({
+  //         ...transactionData,
+  //         date: new Date().toISOString().split('T')[0],
+  //       })
+  //       .subscribe({
+  //         next: (newTransaction) => {
+  //           console.log('✅ Transação criada com sucesso:', newTransaction);
+  //           this.showAddModal.set(false);
+  //           this._transactionsService.list(); // Recarrega a lista através do serviço
+  //         },
+  //         error: (error) => {
+  //           console.error('❌ Erro ao criar transação:', error);
+  //           alert('Erro ao criar transação. Verifique sua conexão.');
+  //         },
+  //       });
+  //   }
+  // }
 
   onCloseModal() {
     this.editingTransaction.set(null);
@@ -346,40 +335,40 @@ export class TransactionsComponent implements OnInit {
     this.uploadingToTransaction.set(null);
   }
 
-  onPdfUploaded(uploadResult: PdfUploadResult) {
-    console.log('📎 Transactions - onPdfUploaded recebido:', uploadResult);
+  // onPdfUploaded(uploadResult: PdfUploadResult) {
+  //   console.log('📎 Transactions - onPdfUploaded recebido:', uploadResult);
 
-    const transaction = this.uploadingToTransaction();
-    console.log('📎 Transactions - Transação atual:', transaction);
+  //   const transaction = this.uploadingToTransaction();
+  //   console.log('📎 Transactions - Transação atual:', transaction);
 
-    if (transaction?.id) {
-      console.log('📎 Anexando PDF à transação:', transaction.id);
+  //   if (transaction?.id) {
+  //     console.log('📎 Anexando PDF à transação:', transaction.id);
 
-      // Atualizar a transação com o PDF
-      const updatedTransaction = {
-        ...transaction,
-        pdfUrl: uploadResult.url,
-        pdfFileName: uploadResult.fileName,
-      };
+  //     // Atualizar a transação com o PDF
+  //     const updatedTransaction = {
+  //       ...transaction,
+  //       pdfUrl: uploadResult.url,
+  //       pdfFileName: uploadResult.fileName,
+  //     };
 
-      console.log('📎 Transactions - Transação atualizada:', updatedTransaction);
+  //     console.log('📎 Transactions - Transação atualizada:', updatedTransaction);
 
-      // Atualizar no serviço
-      this.transactionService.update(transaction.id, updatedTransaction).subscribe({
-        next: () => {
-          console.log('✅ PDF anexado com sucesso');
-          this.onClosePdfUploadModal();
-          this._transactionsService.list(); // Recarregar a lista
-        },
-        error: (error) => {
-          console.error('❌ Erro ao anexar PDF:', error);
-          alert('Erro ao anexar PDF. Tente novamente.');
-        },
-      });
-    } else {
-      console.error('❌ Transactions - Nenhuma transação encontrada para anexar PDF');
-    }
-  }
+  //     // Atualizar no serviço
+  //     this.transactionService.update(transaction.id, updatedTransaction).subscribe({
+  //       next: () => {
+  //         console.log('✅ PDF anexado com sucesso');
+  //         this.onClosePdfUploadModal();
+  //         this._transactionsService.list(); // Recarregar a lista
+  //       },
+  //       error: (error) => {
+  //         console.error('❌ Erro ao anexar PDF:', error);
+  //         alert('Erro ao anexar PDF. Tente novamente.');
+  //       },
+  //     });
+  //   } else {
+  //     console.error('❌ Transactions - Nenhuma transação encontrada para anexar PDF');
+  //   }
+  // }
 
   onDownloadPdf() {
     const pdf = this.viewingPdf();
@@ -394,32 +383,32 @@ export class TransactionsComponent implements OnInit {
     }
   }
 
-  onDeletePdf() {
-    const pdf = this.viewingPdf();
-    if (pdf?.id) {
-      console.log('🗑️ Removendo PDF da transação:', pdf.id);
+  // onDeletePdf() {
+  //   const pdf = this.viewingPdf();
+  //   if (pdf?.id) {
+  //     console.log('🗑️ Removendo PDF da transação:', pdf.id);
 
-      // Atualizar a transação removendo o PDF
-      const updatedTransaction = {
-        ...pdf,
-        pdfUrl: undefined,
-        pdfFileName: undefined,
-      };
+  //     // Atualizar a transação removendo o PDF
+  //     const updatedTransaction = {
+  //       ...pdf,
+  //       pdfUrl: undefined,
+  //       pdfFileName: undefined,
+  //     };
 
-      // Atualizar no serviço
-      this.transactionService.update(pdf.id, updatedTransaction).subscribe({
-        next: () => {
-          console.log('✅ PDF removido com sucesso');
-          this.onClosePdfModal();
-          this._transactionsService.list(); // Recarregar a lista
-        },
-        error: (error) => {
-          console.error('❌ Erro ao remover PDF:', error);
-          alert('Erro ao remover PDF. Tente novamente.');
-        },
-      });
-    }
-  }
+  //     // Atualizar no serviço
+  //     this.transactionService.update(pdf.id, updatedTransaction).subscribe({
+  //       next: () => {
+  //         console.log('✅ PDF removido com sucesso');
+  //         this.onClosePdfModal();
+  //         this._transactionsService.list(); // Recarregar a lista
+  //       },
+  //       error: (error) => {
+  //         console.error('❌ Erro ao remover PDF:', error);
+  //         alert('Erro ao remover PDF. Tente novamente.');
+  //       },
+  //     });
+  //   }
+  // }
 
   formatToBRL = formatToBRL;
 
