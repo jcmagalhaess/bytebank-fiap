@@ -1,5 +1,5 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { TransactionRowComponent } from '../../../../shared/components/transaction';
 import { PaginationComponent } from '../../../../shared/components/ui/pagination/pagination.component';
 
@@ -12,6 +12,13 @@ import { PaginationComponent } from '../../../../shared/components/ui/pagination
 export class TransactionsTable {
   public list = input.required<any>();
   public loading = input.required<boolean>();
+
+  public delete = output<number>();
+  public edit = output<any>();
+  public pdfView = output();
+  public pdfUpload = output();
+  public pdfDelete = output();
+  public pageChange = output();
 
   public onEditTransaction(item: any) {}
   public onDeleteTransaction(id: number) {}

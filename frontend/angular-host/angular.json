@@ -16,7 +16,11 @@
       "architect": {
         "build": {
           "builder": "@angular-architects/native-federation:build",
-          "options": {},
+          "options": {
+            "styles": [
+              "src/custom-theme.scss"
+            ]
+          },
           "configurations": {
             "production": {
               "target": "angular-host:esbuild:production"

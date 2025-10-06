@@ -1,0 +1,103 @@
+<form [formGroup]="form">
+  <div class="bg-white rounded-3xl shadow-md flex relative flex-col gap-3 sm:gap-5 p-4 sm:p-7">
+    <h2 class="text-lg font-semibold text-[#0A2A4D]">Adicionar nova transação</h2>
+
+    <div class="mb-md">
+      <label class="block text-sm font-medium text-textPrimary mb-2"> Tipo de transação </label>
+      <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+        @for (option of transactionOptions; track option.value) {
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input
+            type="radio"
+            name="tipoTransacao"
+            formControlName="tipoTransacao"
+            [value]="option.value"
+            class="w-4 h-4 text-brandPrimary bg-backgroundSecondary border-backgroundSecondary focus:ring-brandPrimary focus:ring-2"
+          />
+          <span class="text-sm font-medium text-textPrimary">
+            {{ option.label }}
+          </span>
+        </label>
+        }
+      </div>
+    </div>
+
+    <app-input
+      label="Valor"
+      type="text"
+      formControlName="valor"
+      [required]="true"
+      inputMode="numeric"
+      placeholder="Digite aqui o valor da transação"
+    >
+    </app-input>
+
+    <app-input
+      label="Descrição"
+      type="text"
+      formControlName="descricao"
+      placeholder="Ex: Compra no supermercado, Pagamento de conta..."
+    >
+    </app-input>
+
+    <app-input
+      label="Categoria"
+      type="text"
+      formControlName="categoria"
+      [required]="true"
+      placeholder="Ex: combustível, gasolina, alimentação..."
+    >
+    </app-input>
+
+    <div class="flex justify-center gap-8">
+      @if (data?.transaction) {
+      <app-button
+        id="cancel-transaction-button"
+        variant="danger"
+        (pressed)="cancel()"
+        [disabled]="form.invalid || loading()"
+        class="md:w-auto text-sm md:text-base"
+      >
+        <span class="hidden md:inline">Cancelar</span>
+      </app-button>
+      }
+      <app-button
+        id="add-transaction-button"
+        variant="primary"
+        (pressed)="handleTransaction(form.value)"
+        [disabled]="form.invalid || loading()"
+        class="md:w-auto text-sm md:text-base"
+      >
+        <div class="flex align-middle">
+          @if (loading()) {
+          <svg
+            class="mr-3 -ml-1 size-5 animate-spin text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          Carregando... } @else {
+          <span class="hidden md:inline">
+            {{ data?.transaction ? 'Salvar' : 'Adicionar Transação' }}
+          </span>
+          <span class="md:hidden">{{ data?.transaction ? 'Salvar' : 'Adicionar' }}</span>
+          }
+        </div>
+      </app-button>
+    </div>
+  </div>
+</form>

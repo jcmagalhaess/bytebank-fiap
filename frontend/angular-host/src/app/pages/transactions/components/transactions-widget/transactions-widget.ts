@@ -1,32 +1,19 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { RouterLink } from '@angular/router';
-import { ButtonComponent } from '../../../../shared/components/ui';
-import { ITransactionType } from '../../../../shared/interfaces/transaction.interface';
 import { TransactionsService } from '../../services/transactions.service';
+import { TransactionsForm } from '../transactions-form/transactions-form';
 import { TransactionsTable } from '../transactions-table/transactions-table';
-import { InputComponent } from './../../../../shared/components/ui/input/input.component';
 
 @Component({
   selector: 'app-transactions-widget',
-  imports: [ReactiveFormsModule, ButtonComponent, InputComponent, TransactionsTable, RouterLink],
+  imports: [TransactionsForm, TransactionsTable, RouterLink],
   templateUrl: './transactions-widget.html',
   styleUrl: './transactions-widget.scss',
 })
 export class TransactionsWidget implements OnInit {
-  private readonly _builder = inject(NonNullableFormBuilder);
   private readonly _transactionsService = inject(TransactionsService);
-
-  public form = this._builder.group({
-    categoria: this._builder.control<string | null>('', Validators.required),
-    tipoTransacao: this._builder.control<ITransactionType>('credit'),
-    valor: this._builder.control<number>(0, [Validators.required, Validators.min(0.01)]),
-    descricao: this._builder.control<string>(''),
-  });
-  public transactionOptions = [
-    { label: 'Receita', value: 'credit', bold: true },
-    { label: 'Despesa', value: 'debit', bold: true },
-  ];
+  private readonly _dialog = inject(MatDialog);
 
   get transactions() {
     return this._transactionsService.transactionList;
@@ -40,9 +27,24 @@ export class TransactionsWidget implements OnInit {
     await this._transactionsService.list();
   }
 
-  addTransaction(transaction: any) {
-    this._transactionsService.insert(transaction).then(() => {
-      this.form.reset();
+  deleteTransaction = (id: number) => this._transactionsService.delete(id);
+
+  openModal(transaction: any) {
+    const dialogRef = this._dialog.open(TransactionsForm, {
+      width: '40vw',
+      data: { transaction },
     });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        // Logic to handle editing/saving, maybe refresh the list
+        this._transactionsService.list();
+      }
+    });
+  }
+  addTransaction(transaction: any) {
+    // this._transactionsService.insert(transaction).then(() => {
+    //   this.form.reset();
+    // });
   }
 }
