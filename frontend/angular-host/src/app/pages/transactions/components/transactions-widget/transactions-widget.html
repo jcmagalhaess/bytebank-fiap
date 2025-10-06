@@ -1,66 +1,76 @@
-<div class="grid grid-cols-3">
-  <form [formGroup]="form">
-  <div class="bg-white rounded-3xl shadow-md flex relative flex-col gap-3 sm:gap-5 p-4 sm:p-7">
-    <h2 class="text-lg font-semibold text-[#0A2A4D]">Adicionar nova transação</h2>
+<div class="flex flex-row gap-4 lg:gap-8">
+  <form [formGroup]="form" class="basis-1/3">
+    <div class="bg-white rounded-3xl shadow-md flex relative flex-col gap-3 sm:gap-5 p-4 sm:p-7">
+      <h2 class="text-lg font-semibold text-[#0A2A4D]">Adicionar nova transação</h2>
 
-    <div class="mb-md">
-      <label class="block text-sm font-medium text-textPrimary mb-2"> Tipo de transação </label>
-      <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
-        @for (option of transactionOptions; track option.value) {
-        <label class="flex items-center gap-2 cursor-pointer">
-          <input
-            type="radio"
-            name="tipoTransacao"
-            formControlName="tipoTransacao"
-            [value]="option.value"
-            class="w-4 h-4 text-brandPrimary bg-backgroundSecondary border-backgroundSecondary focus:ring-brandPrimary focus:ring-2"
-          />
-          <span class="text-sm font-medium text-textPrimary">
-            {{ option.label }}
-          </span>
-        </label>
-        }
+      <div class="mb-md">
+        <label class="block text-sm font-medium text-textPrimary mb-2"> Tipo de transação </label>
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+          @for (option of transactionOptions; track option.value) {
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="tipoTransacao"
+              formControlName="tipoTransacao"
+              [value]="option.value"
+              class="w-4 h-4 text-brandPrimary bg-backgroundSecondary border-backgroundSecondary focus:ring-brandPrimary focus:ring-2"
+            />
+            <span class="text-sm font-medium text-textPrimary">
+              {{ option.label }}
+            </span>
+          </label>
+          }
+        </div>
       </div>
+
+      <app-input
+        label="Valor"
+        type="text"
+        formControlName="valor"
+        [required]="true"
+        inputMode="numeric"
+        placeholder="Digite aqui o valor da transação"
+      >
+      </app-input>
+
+      <app-input
+        label="Descrição"
+        type="text"
+        formControlName="descricao"
+        placeholder="Ex: Compra no supermercado, Pagamento de conta..."
+      >
+      </app-input>
+
+      <app-input
+        label="Categoria"
+        type="text"
+        formControlName="categoria"
+        [required]="true"
+        placeholder="Ex: combustível, gasolina, alimentação..."
+      >
+      </app-input>
+
+      <app-button
+        id="add-transaction-button"
+        variant="primary"
+        (pressed)="addTransaction(form.value)"
+        [disabled]="form.invalid"
+        class="flex-1 md:w-auto text-sm md:text-base"
+      >
+        <span class="hidden md:inline">Adicionar Transação</span>
+        <span class="md:hidden">Adicionar</span>
+      </app-button>
     </div>
+  </form>
 
-    <app-input
-      label="Valor"
-      type="text"
-      formControlName="valor"
-      [required]="true"
-      inputMode="numeric"
-      placeholder="Digite aqui o valor da transação"
-    >
-    </app-input>
+  <div class="basis-2/3">
+    <div class="bg-white rounded-3xl shadow-md flex relative flex-col gap-3 sm:gap-5 p-4 sm:p-7">
+      <div class="flex justify-between">
+        <h2 class="text-lg font-semibold text-[#0A2A4D]">Últimas transações</h2>
 
-    <app-input
-      label="Descrição"
-      type="text"
-      formControlName="descricao"
-      placeholder="Ex: Compra no supermercado, Pagamento de conta..."
-    >
-    </app-input>
-
-    <app-input
-      label="Categoria"
-      type="text"
-      formControlName="categoria"
-      [required]="true"
-      placeholder="Ex: combustível, gasolina, alimentação..."
-    >
-    </app-input>
-
-    <app-button
-      id="add-transaction-button"
-      variant="primary"
-      (pressed)="addTransaction(form.value)"
-      [disabled]="form.invalid"
-      class="flex-1 md:w-auto text-sm md:text-base"
-    >
-      <span class="hidden md:inline">Adicionar Transação</span>
-      <span class="md:hidden">Adicionar</span>
-    </app-button>
+        <a routerLink="/dashboard/transactions" class="text-sm font-medium text-brandPrimary">Ver extrato completo →</a>
+      </div>
+      <app-transactions-table [list]="transactions()" [loading]="loading()" />
+    </div>
   </div>
-</form>
-
 </div>

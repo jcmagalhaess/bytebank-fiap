@@ -6,7 +6,7 @@ import { InputComponent } from '../../ui/input/input.component';
 import { PdfUploadLoaderComponent } from '../../ui/loader';
 import { PdfViewerModalComponent } from '../pdf-viewer-modal/pdf-viewer-modal.component';
 
-export type TransactionType = 'deposit' | 'transfer';
+export type TransactionType = 'credit' | 'debit';
 
 export interface Transaction {
   id?: number;
@@ -39,7 +39,7 @@ export class EditTransactionModalComponent implements OnInit, OnChanges {
   @Output() close = new EventEmitter<void>();
 
   // Estados do formulário
-  type: TransactionType = 'deposit';
+  type: TransactionType = 'credit';
   amount: string = '';
   descricao: string = '';
   categoria: string = '';
@@ -66,8 +66,8 @@ export class EditTransactionModalComponent implements OnInit, OnChanges {
 
   // Opções de transação
   transactionOptions = [
-    { label: 'Receita', value: 'deposit', bold: true },
-    { label: 'Despesa', value: 'transfer', bold: true }
+    { label: 'Receita', value: 'credit', bold: true },
+    { label: 'Despesa', value: 'debit', bold: true }
   ];
 
   ngOnInit(): void {
@@ -83,7 +83,7 @@ export class EditTransactionModalComponent implements OnInit, OnChanges {
   private initializeForm(): void {
     if (this.mode === 'add') {
       // Modo adicionar - limpa todos os campos
-      this.type = 'deposit';
+      this.type = 'credit';
       this.amount = '';
       this.descricao = '';
       this.categoria = '';

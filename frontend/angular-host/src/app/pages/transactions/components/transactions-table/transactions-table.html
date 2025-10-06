@@ -1,0 +1,29 @@
+<div class="bg-backgroundPrimary rounded-lg px-4 py-4 w-full overflow-x-hidden">
+  <div
+    class="hidden sm:grid grid-cols-[3fr_1fr_1fr_1fr_1fr] gap-6 md:gap-0 x:gap-[50px] xl:gap-0 lg:gap-0 items-center text-sm font-semibold text-textPrimary mb-sm"
+  >
+    <span class="ml-2">Transação</span>
+    <span>Categoria</span>
+    <span>Data</span>
+    <span class="ml-[-10px]">Valor</span>
+    <span>Ações</span>
+  </div>
+
+  <div class="space-y-0">
+    @for (transaction of list().data; track transaction.id) {
+    <app-transaction-row
+      [type]="transaction.tipoTransacao"
+      [date]="(transaction.createdAt | date : 'dd/MM/yyyy')!"
+      [categoria]="transaction.categoria"
+      [amount]="(transaction.amount | currency : 'BRL')!"
+      [descricao]="transaction.descricao"
+      [pdfUrl]="transaction.pdfUrl"
+      [pdfFileName]="transaction.pdfFileName"
+      (edit)="onEditTransaction(transaction)"
+      (delete)="onDeleteTransaction(transaction.id)"
+      (pdfView)="onViewPdf(transaction)"
+      (pdfUpload)="onPdfUpload(transaction)"
+    />
+    }
+  </div>
+</div>

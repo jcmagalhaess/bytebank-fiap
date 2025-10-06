@@ -11,7 +11,7 @@ export class TransactionService {
   private mockTransactions: Transaction[] = [
     {
       id: 1,
-      type: 'deposit',
+      type: 'credit',
       amount: 1500.00,
       date: '2024-01-15',
       categoria: 'Salário',
@@ -19,7 +19,7 @@ export class TransactionService {
     },
     {
       id: 2,
-      type: 'transfer',
+      type: 'debit',
       amount: -200.00,
       date: '2024-01-14',
       categoria: 'Compras',
@@ -27,7 +27,7 @@ export class TransactionService {
     },
     {
       id: 3,
-      type: 'deposit',
+      type: 'credit',
       amount: 500.00,
       date: '2024-01-13',
       categoria: 'Freelance',
@@ -50,7 +50,7 @@ export class TransactionService {
         const transactions = res?.transactions || res?.result?.transactions || [];
         return transactions.map((t: any) => ({
           id: t.id,
-          type: t.type === 'transfer' ? 'transfer' : 'deposit',
+          type: t.type === 'debit' ? 'debit' : 'credit',
           amount: Number(t.value) || 0,
           date: t.date ? new Date(t.date).toISOString().split('T')[0] : '',
           categoria: t.to || '',

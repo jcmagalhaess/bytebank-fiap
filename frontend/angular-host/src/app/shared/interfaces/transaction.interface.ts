@@ -1,6 +1,6 @@
 export interface Transaction {
   id: number;
-  type: 'deposit' | 'transfer';
+  type: 'credit' | 'debit';
   amount: number;
   date: string;
   categoria: string;
@@ -10,7 +10,7 @@ export interface Transaction {
 }
 
 export interface TransactionFilters {
-  type: 'all' | 'deposit' | 'transfer';
+  type: 'all' | 'credit' | 'debit';
   startDate: string;
   endDate: string;
   category: string;
@@ -21,7 +21,7 @@ export interface TransactionFilters {
 
 export interface TransactionFormData {
   id?: number;
-  type: 'deposit' | 'transfer';
+  type: 'credit' | 'debit';
   amount: number;
   categoria: string;
   descricao: string;
@@ -37,4 +37,4 @@ export type ITransactionRequest = {
   descricao: string;
   categoria: string;
   comprovante?: File;
-}
+};

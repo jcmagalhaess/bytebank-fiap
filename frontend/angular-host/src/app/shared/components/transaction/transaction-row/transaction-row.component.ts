@@ -11,7 +11,7 @@ import { UploadIconComponent } from '../../icons/upload-icon.component';
   templateUrl: './transaction-row.component.html',
 })
 export class TransactionRowComponent {
-  @Input() type!: 'deposit' | 'transfer';
+  @Input() type!: 'credit' | 'debit';
   @Input() date!: string;
   @Input() amount!: string;
   @Input() categoria?: string;

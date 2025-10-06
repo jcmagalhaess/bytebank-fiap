@@ -207,7 +207,7 @@
       <div id="active-filters-tags" class="flex flex-wrap gap-2">
         @if (filters.type !== 'all') {
           <span id="active-filter-type" class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
-            Tipo: {{ filters.type === 'deposit' ? 'Depósito' : 'Transferência' }}
+            Tipo: {{ filters.type === 'credit' ? 'Depósito' : 'Transferência' }}
           </span>
         }
         @if (filters.startDate) {

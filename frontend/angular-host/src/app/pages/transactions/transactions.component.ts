@@ -1,17 +1,20 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { TransactionFiltersComponent } from '../../shared/components/transaction/transaction-filters/transaction-filters.component';
-import { TransactionRowComponent } from '../../shared/components/transaction/transaction-row/transaction-row.component';
-import { ButtonComponent } from '../../shared/components/ui/button/button.component';
+import { TransactionService } from '../../core/services/transaction.service';
 import { SearchIconComponent } from '../../shared/components/icons/search-icon.component';
 import { SettingIconComponent } from '../../shared/components/icons/setting-icon.component';
 import { EditTransactionModalComponent } from '../../shared/components/transaction/edit-transaction-modal/edit-transaction-modal.component';
+import {
+  PdfUploadModalComponent,
+  PdfUploadResult,
+} from '../../shared/components/transaction/pdf-upload-modal/pdf-upload-modal.component';
 import { PdfViewerModalComponent } from '../../shared/components/transaction/pdf-viewer-modal/pdf-viewer-modal.component';
-import { PdfUploadModalComponent, PdfUploadResult } from '../../shared/components/transaction/pdf-upload-modal/pdf-upload-modal.component';
+import { TransactionFiltersComponent } from '../../shared/components/transaction/transaction-filters/transaction-filters.component';
+import { TransactionRowComponent } from '../../shared/components/transaction/transaction-row/transaction-row.component';
+import { ButtonComponent } from '../../shared/components/ui/button/button.component';
 import { PaginationComponent } from '../../shared/components/ui/pagination/pagination.component';
-import { TransactionService } from '../../core/services/transaction.service';
 import { Transaction } from '../../shared/interfaces/transaction.interface';
 import { formatToBRL } from '../../shared/utils/format';
 
@@ -30,9 +33,9 @@ import { formatToBRL } from '../../shared/utils/format';
     EditTransactionModalComponent,
     PdfViewerModalComponent,
     PdfUploadModalComponent,
-    PaginationComponent
+    PaginationComponent,
   ],
-  templateUrl: './transactions.component.html'
+  templateUrl: './transactions.component.html',
 })
 export class TransactionsComponent implements OnInit {
   // Signals para estado reativo
@@ -59,21 +62,21 @@ export class TransactionsComponent implements OnInit {
 
   // Filtros
   filters = signal({
-    type: 'all' as 'all' | 'deposit' | 'transfer',
+    type: 'all' as 'all' | 'credit' | 'debit',
     startDate: '',
     endDate: '',
     category: '',
     minValue: '',
     maxValue: '',
-    search: ''
+    search: '',
   });
 
   // Computed para saldo total
   balance = computed(() => {
     const transactions = this.transactions();
     return transactions.reduce((acc, t) => {
-      if (t.type === 'deposit') return acc + t.amount;
-      if (t.type === 'transfer') return acc - t.amount;
+      if (t.type === 'credit') return acc + t.amount;
+      if (t.type === 'debit') return acc - t.amount;
       return acc;
     }, 0);
   });
@@ -81,14 +84,21 @@ export class TransactionsComponent implements OnInit {
   // Computed para categorias disponíveis
   availableCategories = computed(() => {
     const transactions = this.transactions();
-    return [...new Set(transactions.map(t => t.categoria).filter(Boolean))];
+    return [...new Set(transactions.map((t) => t.categoria).filter(Boolean))];
   });
 
   // Computed para verificar se há filtros ativos
   hasActiveFilters = computed(() => {
     const f = this.filters();
-    return f.type !== 'all' || f.startDate !== '' || f.endDate !== '' ||
-           f.category !== '' || f.minValue !== '' || f.maxValue !== '' || f.search !== '';
+    return (
+      f.type !== 'all' ||
+      f.startDate !== '' ||
+      f.endDate !== '' ||
+      f.category !== '' ||
+      f.minValue !== '' ||
+      f.maxValue !== '' ||
+      f.search !== ''
+    );
   });
 
   // Computed para paginação
@@ -103,7 +113,6 @@ export class TransactionsComponent implements OnInit {
     const end = this.endIndex();
     return this.filteredTransactions().slice(start, end);
   });
-
 
   constructor(private transactionService: TransactionService) {}
 
@@ -128,7 +137,7 @@ export class TransactionsComponent implements OnInit {
         },
         complete: () => {
           this.loading.set(false);
-        }
+        },
       });
     } catch (error) {
       console.error('❌ Erro ao carregar transações:', error);
@@ -142,7 +151,7 @@ export class TransactionsComponent implements OnInit {
     const transactions = this.transactions();
     const f = this.filters();
 
-    let filtered = transactions.filter(transaction => {
+    let filtered = transactions.filter((transaction) => {
       // Filtro por tipo
       if (f.type !== 'all' && transaction.type !== f.type) return false;
 
@@ -202,7 +211,7 @@ export class TransactionsComponent implements OnInit {
       category: '',
       minValue: '',
       maxValue: '',
-      search: ''
+      search: '',
     });
     this.applyFilters();
   }
@@ -214,12 +223,12 @@ export class TransactionsComponent implements OnInit {
   }
 
   onSearchChange(searchTerm: string) {
-    this.filters.update(f => ({ ...f, search: searchTerm }));
+    this.filters.update((f) => ({ ...f, search: searchTerm }));
     this.applyFilters();
   }
 
   toggleFilters() {
-    this.showFilters.update(show => !show);
+    this.showFilters.update((show) => !show);
   }
 
   onAddTransaction() {
@@ -244,7 +253,7 @@ export class TransactionsComponent implements OnInit {
         },
         error: (error) => {
           console.error('Erro ao deletar transação:', error);
-        }
+        },
       });
     }
   }
@@ -274,24 +283,26 @@ export class TransactionsComponent implements OnInit {
         error: (error) => {
           console.error('❌ Erro ao editar transação:', error);
           alert('Erro ao editar transação. Verifique sua conexão.');
-        }
+        },
       });
     } else {
       // Adicionar nova transação
-      this.transactionService.add({
-        ...transactionData,
-        date: new Date().toISOString().split('T')[0]
-      }).subscribe({
-        next: (newTransaction) => {
-          console.log('✅ Transação criada com sucesso:', newTransaction);
-          this.showAddModal.set(false);
-          this.loadTransactions();
-        },
-        error: (error) => {
-          console.error('❌ Erro ao criar transação:', error);
-          alert('Erro ao criar transação. Verifique sua conexão.');
-        }
-      });
+      this.transactionService
+        .add({
+          ...transactionData,
+          date: new Date().toISOString().split('T')[0],
+        })
+        .subscribe({
+          next: (newTransaction) => {
+            console.log('✅ Transação criada com sucesso:', newTransaction);
+            this.showAddModal.set(false);
+            this.loadTransactions();
+          },
+          error: (error) => {
+            console.error('❌ Erro ao criar transação:', error);
+            alert('Erro ao criar transação. Verifique sua conexão.');
+          },
+        });
     }
   }
 
@@ -304,7 +315,7 @@ export class TransactionsComponent implements OnInit {
     console.log('👁️ Transactions - onViewPdf chamado:', {
       transaction: transaction,
       pdfUrl: transaction.pdfUrl,
-      pdfFileName: transaction.pdfFileName
+      pdfFileName: transaction.pdfFileName,
     });
 
     if (transaction.pdfUrl) {
@@ -344,7 +355,7 @@ export class TransactionsComponent implements OnInit {
       const updatedTransaction = {
         ...transaction,
         pdfUrl: uploadResult.url,
-        pdfFileName: uploadResult.fileName
+        pdfFileName: uploadResult.fileName,
       };
 
       console.log('📎 Transactions - Transação atualizada:', updatedTransaction);
@@ -359,7 +370,7 @@ export class TransactionsComponent implements OnInit {
         error: (error) => {
           console.error('❌ Erro ao anexar PDF:', error);
           alert('Erro ao anexar PDF. Tente novamente.');
-        }
+        },
       });
     } else {
       console.error('❌ Transactions - Nenhuma transação encontrada para anexar PDF');
@@ -388,7 +399,7 @@ export class TransactionsComponent implements OnInit {
       const updatedTransaction = {
         ...pdf,
         pdfUrl: undefined,
-        pdfFileName: undefined
+        pdfFileName: undefined,
       };
 
       // Atualizar no serviço
@@ -401,11 +412,10 @@ export class TransactionsComponent implements OnInit {
         error: (error) => {
           console.error('❌ Erro ao remover PDF:', error);
           alert('Erro ao remover PDF. Tente novamente.');
-        }
+        },
       });
     }
   }
-
 
   formatToBRL = formatToBRL;
 
