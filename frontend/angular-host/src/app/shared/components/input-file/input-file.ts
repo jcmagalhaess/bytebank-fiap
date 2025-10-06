@@ -1,7 +1,7 @@
 import { Component, forwardRef, input } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { ToastMessage } from '../transaction';
 import { PdfUploadLoaderComponent } from '../ui';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'app-input-file',
@@ -12,9 +12,9 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => InputFile),
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 })
 export class InputFile implements ControlValueAccessor {
   public label = input<string>();
@@ -31,7 +31,9 @@ export class InputFile implements ControlValueAccessor {
   private onTouched = () => {};
 
   // ControlValueAccessor methods
-  writeValue(value: string): void { }
+  writeValue(value: string): void {
+    if (!value) this.removePdf();
+  }
 
   registerOnChange(fn: (value: File) => void): void {
     this.onChange = fn;

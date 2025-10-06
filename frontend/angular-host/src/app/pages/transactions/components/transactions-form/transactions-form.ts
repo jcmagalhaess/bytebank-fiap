@@ -43,13 +43,27 @@ export class TransactionsForm implements OnInit {
   }
 
   handleTransaction(transaction: any) {
+    const formData = new FormData();
+
+    // Adiciona todos os campos do formulário ao FormData
+    for (const key in transaction) {
+      if (transaction.hasOwnProperty(key)) {
+        const value = transaction[key];
+        if (value instanceof File) {
+          formData.append(key, value, value.name);
+        } else if (value !== null && value !== undefined) {
+          formData.append(key, String(value));
+        }
+      }
+    }
+
     if (this._dialogRef) {
       const id = this.data?.transaction?.id;
-      this._transactionsService.update(id, transaction).then(() => {
+      this._transactionsService.update(id, formData).then(() => {
         this._dialogRef?.close(true);
       });
     } else {
-      this._transactionsService.insert(transaction).then(() => {
+      this._transactionsService.insert(formData).then(() => {
         this.form.reset();
       });
     }
