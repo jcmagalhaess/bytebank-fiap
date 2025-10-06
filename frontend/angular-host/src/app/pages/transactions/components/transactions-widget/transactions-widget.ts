@@ -24,7 +24,7 @@ export class TransactionsWidget implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    await this._transactionsService.list();
+    await this._transactionsService.list({ pageSize: 6 });
   }
 
   deleteTransaction = (id: number) => this._transactionsService.delete(id);

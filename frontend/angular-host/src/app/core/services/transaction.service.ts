@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Observable, map, switchMap, of, throwError } from 'rxjs';
+import { Observable, map, of } from 'rxjs';
 import { Transaction, TransactionFormData } from '../../shared/interfaces/transaction.interface';
 import { ApiService } from '../services/api.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TransactionService {
   // Mock data para teste sem autenticação
@@ -12,7 +12,7 @@ export class TransactionService {
     {
       id: 1,
       type: 'credit',
-      amount: 1500.00,
+      amount: 1500.0,
       date: '2024-01-15',
       categoria: 'Salário',
       descricao: 'Salário mensal',
@@ -20,7 +20,7 @@ export class TransactionService {
     {
       id: 2,
       type: 'debit',
-      amount: -200.00,
+      amount: -200.0,
       date: '2024-01-14',
       categoria: 'Compras',
       descricao: 'Supermercado',
@@ -28,11 +28,11 @@ export class TransactionService {
     {
       id: 3,
       type: 'credit',
-      amount: 500.00,
+      amount: 500.0,
       date: '2024-01-13',
       categoria: 'Freelance',
       descricao: 'Projeto web',
-    }
+    },
   ];
 
   constructor(private api: ApiService) {}
@@ -48,15 +48,18 @@ export class TransactionService {
     return this.api.get<any>('/account').pipe(
       map((res) => {
         const transactions = res?.transactions || res?.result?.transactions || [];
-        return transactions.map((t: any) => ({
-          id: t.id,
-          type: t.type === 'debit' ? 'debit' : 'credit',
-          amount: Number(t.value) || 0,
-          date: t.date ? new Date(t.date).toISOString().split('T')[0] : '',
-          categoria: t.to || '',
-          descricao: t.from || '',
-          pdfUrl: t.anexo || undefined,
-        }) as Transaction);
+        return transactions.map(
+          (t: any) =>
+            ({
+              id: t.id,
+              type: t.type === 'debit' ? 'debit' : 'credit',
+              amount: Number(t.value) || 0,
+              date: t.date ? new Date(t.date).toISOString().split('T')[0] : '',
+              categoria: t.to || '',
+              descricao: t.from || '',
+              pdfUrl: t.anexo || undefined,
+            } as Transaction)
+        );
       })
     );
   }
@@ -69,13 +72,13 @@ export class TransactionService {
     const newTransaction: Transaction = {
       id: Date.now(), // ID temporário
       ...transaction,
-      date: transaction.date || new Date().toISOString().split('T')[0]
+      date: transaction.date || new Date().toISOString().split('T')[0],
     };
-    this.mockTransactions.push(newTransaction);
+    this.mockTransactions = [...this.mockTransactions, newTransaction]; // Evita mutação direta
     console.log('📊 Total de transações mock:', this.mockTransactions.length);
     console.log('📋 Lista atual:', this.mockTransactions);
     return of(newTransaction);
-
+    /*
     return this.api.get<any>('/account').pipe(
       map((res) => (res?.account || res?.result?.account || [])[0]?.id),
       switchMap((accountId: string) => {
@@ -103,6 +106,7 @@ export class TransactionService {
         );
       })
     );
+    */
   }
 
   // Backend atual não expõe update/delete específicos por ID de transação; implementação temporária com mock
@@ -110,16 +114,16 @@ export class TransactionService {
     console.log('🔧 Usando dados mock para update (desenvolvimento)');
 
     // Simular delay da API
-    return new Observable(observer => {
+    return new Observable((observer) => {
       setTimeout(() => {
         // Encontrar a transação no mock data
-        const index = this.mockTransactions.findIndex(t => t.id === id);
+        const index = this.mockTransactions.findIndex((t) => t.id === id);
         if (index !== -1) {
           // Atualizar a transação no mock
           this.mockTransactions[index] = {
             ...this.mockTransactions[index],
             ...transaction,
-            id: id
+            id: id,
           } as Transaction;
 
           console.log('✅ Transação atualizada no mock:', this.mockTransactions[index]);
@@ -137,10 +141,10 @@ export class TransactionService {
     console.log('🔧 Usando dados mock para delete (desenvolvimento)');
 
     // Simular delay da API
-    return new Observable(observer => {
+    return new Observable((observer) => {
       setTimeout(() => {
         // Encontrar e remover a transação do mock data
-        const index = this.mockTransactions.findIndex(t => t.id === id);
+        const index = this.mockTransactions.findIndex((t) => t.id === id);
         if (index !== -1) {
           this.mockTransactions.splice(index, 1);
           console.log('✅ Transação removida do mock:', id);

@@ -136,33 +136,6 @@ export class TransactionsComponent implements OnInit {
     await this._transactionsService.list();
   }
 
-  async loadTransactions() {
-    this.loading.set(true);
-    try {
-      this.transactionService.list().subscribe({
-        next: (transactions) => {
-          this.transactions.set(transactions);
-          this.applyFilters();
-          console.log('✅ Transações carregadas:', transactions.length);
-        },
-        error: (error) => {
-          console.error('❌ Erro ao carregar transações:', error);
-          // Em caso de erro, mostra lista vazia
-          this.transactions.set([]);
-          this.applyFilters();
-        },
-        complete: () => {
-          this.loading.set(false);
-        },
-      });
-    } catch (error) {
-      console.error('❌ Erro ao carregar transações:', error);
-      this.transactions.set([]);
-      this.applyFilters();
-      this.loading.set(false);
-    }
-  }
-
   applyFilters() {
     const transactions = this.transactions();
     const f = this.filters();
@@ -282,7 +255,7 @@ export class TransactionsComponent implements OnInit {
       this.transactionService.delete(id).subscribe({
         next: () => {
           this.deleteId.set(null);
-          this.loadTransactions();
+          this._transactionsService.list(); // Recarrega a lista através do serviço
         },
         error: (error) => {
           console.error('Erro ao deletar transação:', error);
@@ -311,7 +284,7 @@ export class TransactionsComponent implements OnInit {
         next: () => {
           console.log('✅ Transação editada com sucesso');
           this.editingTransaction.set(null);
-          this.loadTransactions();
+          this._transactionsService.list(); // Recarrega a lista através do serviço
         },
         error: (error) => {
           console.error('❌ Erro ao editar transação:', error);
@@ -329,7 +302,7 @@ export class TransactionsComponent implements OnInit {
           next: (newTransaction) => {
             console.log('✅ Transação criada com sucesso:', newTransaction);
             this.showAddModal.set(false);
-            this.loadTransactions();
+            this._transactionsService.list(); // Recarrega a lista através do serviço
           },
           error: (error) => {
             console.error('❌ Erro ao criar transação:', error);
@@ -398,7 +371,7 @@ export class TransactionsComponent implements OnInit {
         next: () => {
           console.log('✅ PDF anexado com sucesso');
           this.onClosePdfUploadModal();
-          this.loadTransactions(); // Recarregar a lista
+          this._transactionsService.list(); // Recarregar a lista
         },
         error: (error) => {
           console.error('❌ Erro ao anexar PDF:', error);
@@ -440,7 +413,7 @@ export class TransactionsComponent implements OnInit {
         next: () => {
           console.log('✅ PDF removido com sucesso');
           this.onClosePdfModal();
-          this.loadTransactions(); // Recarregar a lista
+          this._transactionsService.list(); // Recarregar a lista
         },
         error: (error) => {
           console.error('❌ Erro ao remover PDF:', error);
