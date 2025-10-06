@@ -63,6 +63,13 @@ export class ChartComponent implements AfterViewInit, OnChanges {
           },
           y: {
             stacked: this.stacked(),
+            ticks: {
+              callback: function (value) {
+                const numValue = typeof value === 'string' ? parseFloat(value) : value;
+                if (numValue >= 1000) return numValue / 1000 + 'k';
+                return value;
+              },
+            },
           },
         },
         plugins: {

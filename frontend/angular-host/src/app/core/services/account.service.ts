@@ -18,7 +18,9 @@ export class AccountService {
   // Sinal computado para obter apenas o nome do usuário
   public userName = computed(() => this._authService.account()?.nome);
   public monthLabels = signal(
-    Array.from({ length: 12 }, (_, i) => new Date(0, i).toLocaleString('pt-BR', { month: 'short' }))
+    Array.from({ length: 12 }, (_, i) =>
+      new Date(0, i).toLocaleString('pt-BR', { month: 'short' }).replace('.', '')
+    )
   );
 
   // Sinal computado com os dados de transações agrupados por mês para o gráfico
@@ -31,8 +33,8 @@ export class AccountService {
     if (summaryData) {
       summaryData.forEach((item) => {
         // Converte o nome do mês (ex: "Janeiro") para o formato curto (ex: "jan.") para encontrar o índice
-        const shortMonth = item.month.substring(0, 3).toLowerCase() + '.';
-        const index = labels.findIndex((label) => label.toLowerCase() === shortMonth);
+        const shortMonth = item.month.substring(0, 3).toLowerCase();
+        const index = labels.findIndex((label) => label.toLowerCase() === shortMonth.toLowerCase());
 
         if (index !== -1) {
           incomeData[index] = item.credit;
@@ -49,14 +51,14 @@ export class AccountService {
         {
           label: 'Receitas',
           data: incomeData,
-          backgroundColor: '#00AAFF',
-          borderRadius: 15,
+          backgroundColor: '#00AAFF', // Azul para receitas
+          borderRadius: 15, // Deixa a barra totalmente arredondada
         },
         {
           label: 'Despesas',
           data: expenseData,
-          backgroundColor: '#0F2C59',
-          borderRadius: 15,
+          backgroundColor: '#0F2C59', // Azul escuro para despesas
+          borderRadius: 15, // Deixa a barra totalmente arredondada
         },
       ],
     };
