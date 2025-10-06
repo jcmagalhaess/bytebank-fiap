@@ -1,0 +1,34 @@
+version: "3.8"
+services:
+  api:
+    build: .
+    ports:
+      - "3333:3333"
+    command:
+      [
+        "sh",
+        "-c",
+        "npm run build && npx prisma migrate deploy && npm run start",
+      ]
+    volumes:
+      # Monta o código-fonte para hot-reload
+      - ./src:/app/src
+      - ./prisma:/app/prisma
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+  db:
+    image: postgres:14
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: bytebank
+      POSTGRES_PASSWORD: bytebank@2025
+      POSTGRES_DB: bytebank_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

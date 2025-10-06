@@ -1,65 +1,82 @@
 version: "3.8"
 
 services:
-  # Serviço para o Backend (bytebank-api)
   api:
     build:
-      # O contexto aponta para a pasta do seu backend
-      context: ../bytebank-api
+      context: ./api
       dockerfile: Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
     ports:
       - "3333:3333"
-    command: bash -c "npx prisma generate && npx prisma migrate deploy && npm run dev"
+    command: sh -c "npx prisma generate && npx prisma migrate deploy && npm run dev"
     volumes:
-      # Monta o código-fonte para hot-reload
-      - ../bytebank-api/src:/app/src
-      - ../bytebank-api/prisma:/app/prisma
+      - ./api:/app
+      - /app/node_modules
     env_file:
-      - ../bytebank-api/.env # Garante que o DATABASE_URL seja carregado
+      - ./api/.env
     restart: always
     depends_on:
       - db
+    networks:
+      - bytebank-net
 
-  # Serviço para o Frontend Host (angular-host)
   angular-host:
     build:
       context: ./frontend/angular-host
       dockerfile: Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
     ports:
-      - "4200:4200" # Porta padrão do Angular
+      - "4200:4200"
+    command: npm start
     restart: always
     volumes:
-      - ./frontend/angular-host:/app # Monta o código-fonte para hot-reload
-      - /app/node_modules # Isola o node_modules para não ser sobrescrito pelo volume do host
+      - ./frontend/angular-host:/app
+      - /app/node_modules
     depends_on:
       - api
+    networks:
+      - bytebank-net
 
-  # Serviço para o Frontend Remoto (angular-remote)
   angular-remote:
     build:
       context: ./frontend/angular-remote
       dockerfile: Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
     ports:
-      - "4201:4201" # Porta diferente para o micro-frontend
+      - "4201:4201"
+    command: npm start
     restart: always
     volumes:
-      - ./frontend/angular-remote:/app # Monta o código-fonte para hot-reload
-      - /app/node_modules # Isola o node_modules para não ser sobrescrito pelo volume do host
+      - ./frontend/angular-remote:/app
+      - /app/node_modules
     depends_on:
       - api
+    networks:
+      - bytebank-net
 
-  # Serviço para o Banco de Dados (PostgreSQL)
   db:
     image: postgres:14
     restart: always
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: bytebank # Usuário do banco
-      POSTGRES_PASSWORD: bytebank@2025 # Senha do banco
+      POSTGRES_USER: bytebank
+      POSTGRES_PASSWORD: bytebank-2025
       POSTGRES_DB: bytebank_db
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - bytebank-net
 
 volumes:
   pgdata:
+
+networks:
+  bytebank-net:
+    driver: bridge

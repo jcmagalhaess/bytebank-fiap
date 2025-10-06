@@ -107,7 +107,8 @@
           },
           "defaultConfiguration": "development",
           "options": {
-            "port": 4201
+            "port": 4201,
+            "host": "0.0.0.0"
           }
         }
       }

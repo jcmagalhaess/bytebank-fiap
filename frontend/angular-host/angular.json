@@ -17,9 +17,7 @@
         "build": {
           "builder": "@angular-architects/native-federation:build",
           "options": {
-            "styles": [
-              "src/custom-theme.scss"
-            ]
+            "styles": ["src/custom-theme.scss"]
           },
           "configurations": {
             "production": {
@@ -112,7 +110,8 @@
           },
           "defaultConfiguration": "development",
           "options": {
-            "port": 4200
+            "port": 4200,
+            "host": "0.0.0.0"
           }
         }
       }

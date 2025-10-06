@@ -2,7 +2,6 @@
   "name": "angular-host",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
     "start": "ng serve",
     "build": "node replace-env.js && ng build --configuration=production",
     "watch": "ng build --watch --configuration development",

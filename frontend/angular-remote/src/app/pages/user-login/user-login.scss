@@ -54,11 +54,11 @@ $text-light: #ffffff;
   transition: background-color 0.2s ease-in-out;
 
   &:hover:not(:disabled) {
-    background-color: darken($primary-accent, 10%);
+    background-color: rgba(#000000, .1);
   }
 
   &:disabled {
-    background-color: lighten($primary-accent, 20%);
+    background-color: rgba(#000000, .2);
     cursor: not-allowed;
   }
 }

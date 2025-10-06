@@ -1,24 +1,19 @@
-# Estágio 1: Build
-# Use uma imagem base do Node.js
-FROM node:18-alpine
+# =====================================================================
+# ETAPA 1: Builder
+# Usa uma imagem Node.js mais recente para resolver o "EBADENGINE".
+# =====================================================================
+FROM node:20-alpine AS builder
 
 # Define o diretório de trabalho
 WORKDIR /app
 
-# Copia os arquivos de dependência
+# Otimização de Cache: Copia apenas os arquivos de dependência primeiro.
+# O Docker só vai re-executar o 'npm install' se estes arquivos mudarem.
 COPY package*.json ./
 
 # Instala as dependências
-# Instala as dependências de build, executa o npm install e depois remove as dependências de build
-RUN apk add --no-cache --virtual .build-deps build-base python3 && \
-    npm install --no-optional && \
-    apk del .build-deps
+RUN npm install
 
-# Copia o restante do código da aplicação
+# Agora copia o resto do código-fonte da aplicação.
+# Alterações no código não invalidarão o cache do 'npm install'.
 COPY . .
-
-# Expõe a porta para o micro-frontend
-EXPOSE 4201
-
-# Comando para iniciar o servidor de desenvolvimento em uma porta diferente
-CMD ["ng", "serve", "--host", "0.0.0.0", "--port", "4201"]
