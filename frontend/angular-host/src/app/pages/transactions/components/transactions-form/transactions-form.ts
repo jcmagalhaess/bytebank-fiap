@@ -1,10 +1,10 @@
 import { Component, computed, inject, OnInit, output } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { InputFile } from '../../../../shared/components/input-file/input-file';
 import { ButtonComponent, InputComponent } from '../../../../shared/components/ui';
 import { ITransactionType } from '../../../../shared/interfaces/transaction.interface';
 import { TransactionsService } from '../../services/transactions.service';
-import { InputFile } from '../../../../shared/components/input-file/input-file';
 
 @Component({
   selector: 'app-transactions-form',
@@ -43,7 +43,6 @@ export class TransactionsForm implements OnInit {
   }
 
   handleTransaction(transaction: any) {
-    // Se _dialogRef existe, estamos no modo de edição (modal)
     if (this._dialogRef) {
       const id = this.data?.transaction?.id;
       this._transactionsService.update(id, transaction).then(() => {
