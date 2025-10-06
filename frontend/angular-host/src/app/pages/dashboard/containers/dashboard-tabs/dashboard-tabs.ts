@@ -46,7 +46,7 @@ export class DashboardTabs implements OnInit, OnDestroy {
   }
 
   public navLinks: INav[] = [
-    { name: 'Dashboard', path: '' },
+    { name: 'Dashboard', path: '/' },
     { name: 'Transações', path: 'transactions' },
     { name: 'Orçamento', path: 'budget' },
   ];

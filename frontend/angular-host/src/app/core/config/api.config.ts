@@ -4,7 +4,7 @@ export const API_CONFIG = {
     LOGIN: 'users/login',
     REGISTER: 'users',
     ACCOUNT: 'users/me',
-    TRANSACTION: 'transactions',
+    TRANSACTIONS: 'transactions',
     SUMMARY: 'transactions/summary',
     YEARLY_SUMMARY: 'transactions/yearly-summary',
   },

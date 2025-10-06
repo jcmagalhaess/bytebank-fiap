@@ -1,6 +1,6 @@
 <div class="flex flex-col gap-1 text-base font-inter text-textPrimary">
   @if (label) {
-    <label class="font-semibold">{{ label }}</label>
+    <label class="font-semibold" [ngClass]="{ 'label--required': required }">{{ label }}</label>
   }
 
   <input

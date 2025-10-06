@@ -2,10 +2,11 @@ import { Component, inject, OnInit } from '@angular/core';
 import { AccountService } from '../../../../core/services/account.service';
 import { AnalysisCard } from '../../../../shared/components/analysis-card/analysis-card';
 import { ChartComponent } from '../../../../shared/components/chart/chart';
+import { TransactionsWidget } from '../../../transactions/components/transactions-widget/transactions-widget';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [AnalysisCard, ChartComponent],
+  imports: [AnalysisCard, ChartComponent, TransactionsWidget],
   templateUrl: './dashboard.html',
 })
 export class Dashboard implements OnInit {

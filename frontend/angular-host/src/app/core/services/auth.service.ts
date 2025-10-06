@@ -178,7 +178,6 @@ export class AuthService {
       const response = await lastValueFrom(
         this.http.get<IUser>(`${API_CONFIG.BASE_URL}/${API_CONFIG.ENDPOINTS.ACCOUNT}`)
       );
-      console.log('👤 Conta do usuário:', response);
 
       this.account.set(response);
     } catch (error) {

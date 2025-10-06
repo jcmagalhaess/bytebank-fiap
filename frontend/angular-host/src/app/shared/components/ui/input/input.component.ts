@@ -6,6 +6,15 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   selector: 'app-input',
   templateUrl: './input.component.html',
   standalone: true,
+  styles: [
+    `
+      .label--required::after {
+        content: '*';
+        margin-left: 0.25rem;
+        color: #ff0000;
+      }
+    `
+  ],
   imports: [CommonModule],
   providers: [
     {

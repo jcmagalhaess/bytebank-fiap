@@ -29,7 +29,12 @@ export interface TransactionFormData {
   pdfFileName?: string;
 }
 
+export type ITransactionType = 'credit' | 'debit';
 
-
-
-
+export type ITransactionRequest = {
+  tipoTransacao: ITransactionType;
+  valor: number;
+  descricao: string;
+  categoria: string;
+  comprovante?: File;
+}

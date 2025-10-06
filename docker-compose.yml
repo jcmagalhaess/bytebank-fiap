@@ -1,63 +1,65 @@
 version: "3.8"
 
 services:
-  # Serviço para o Front-end (Next.js)
-  frontend:
-    # Use o Dockerfile na pasta 'frontend' para construir a imagem
+  # Serviço para o Backend (bytebank-api)
+  api:
     build:
-      context: ./frontend/next
+      # O contexto aponta para a pasta do seu backend
+      context: ../bytebank-api
       dockerfile: Dockerfile
-    # Mapeia a porta 4200 do container para a porta 4200 da sua máquina
     ports:
-      - "4201:4201"
-    # Reinicia o container se ele falhar
-    restart: always
-    # Define as variáveis de ambiente necessárias para o Next.js
-    environment:
-      - PORT=4201
-      - NEXT_PUBLIC_API_URL=http://localhost:3000
-      - PUBLIC_API_URL=http://localhost:8080
-    # Monta um volume para o hot-reloading em modo de desenvolvimento
+      - "3333:3333"
+    command: bash -c "npx prisma generate && npx prisma migrate deploy && npm run dev"
     volumes:
-      - ./frontend:/app
-    # Depende do backend estar rodando
+      # Monta o código-fonte para hot-reload
+      - ../bytebank-api/src:/app/src
+      - ../bytebank-api/prisma:/app/prisma
+    env_file:
+      - ../bytebank-api/.env # Garante que o DATABASE_URL seja carregado
+    restart: always
     depends_on:
-      - backend
+      - db
 
-  # Serviço para o Back-end
-  backend:
-    # Use o Dockerfile na pasta 'backend' para construir a imagem
+  # Serviço para o Frontend Host (angular-host)
+  angular-host:
     build:
-      context: ./backend
+      context: ./frontend/angular-host
       dockerfile: Dockerfile
-    # Mapeia a porta do back-end (ex: 5000) para a sua máquina
     ports:
-      - "8080:8080"
-    # Reinicia o container se ele falhar
+      - "4200:4200" # Porta padrão do Angular
     restart: always
-    # Opcional: Define variáveis de ambiente para o back-end
-    environment:
-      - NODE_ENV=development
-      - MONGODB_URI=mongodb+srv://bytebank-fiap:q8l3VKdIXvWvUYmU@cluster0.gylk9nh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-      - PORT=8080
-    # Opcional: Monta um volume para o hot-reloading
-    #q8l3VKdIXvWvUYmU
     volumes:
-      - ./backend:/app
-    # Depende do MongoDB estar rodando
+      - ./frontend/angular-host:/app # Monta o código-fonte para hot-reload
+      - /app/node_modules # Isola o node_modules para não ser sobrescrito pelo volume do host
     depends_on:
-      - mongo
+      - api
 
-  # Serviço para o MongoDB
-  mongo:
-    image: mongo:latest
+  # Serviço para o Frontend Remoto (angular-remote)
+  angular-remote:
+    build:
+      context: ./frontend/angular-remote
+      dockerfile: Dockerfile
     ports:
-      - "27017:27017"
+      - "4201:4201" # Porta diferente para o micro-frontend
     restart: always
-    environment:
-      - MONGO_INITDB_DATABASE=bytebank
     volumes:
-      - mongo_data:/data/db
+      - ./frontend/angular-remote:/app # Monta o código-fonte para hot-reload
+      - /app/node_modules # Isola o node_modules para não ser sobrescrito pelo volume do host
+    depends_on:
+      - api
+
+  # Serviço para o Banco de Dados (PostgreSQL)
+  db:
+    image: postgres:14
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: bytebank # Usuário do banco
+      POSTGRES_PASSWORD: bytebank@2025 # Senha do banco
+      POSTGRES_DB: bytebank_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
 volumes:
-  mongo_data:
+  pgdata:

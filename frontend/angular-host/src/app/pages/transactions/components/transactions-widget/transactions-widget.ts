@@ -1,11 +1,35 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { FormBuilder, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ButtonComponent } from '../../../../shared/components/ui';
+import { ITransactionType } from '../../../../shared/interfaces/transaction.interface';
+import { TransactionsService } from '../../services/transactions.service';
+import { InputComponent } from './../../../../shared/components/ui/input/input.component';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-transactions-widget',
-  imports: [],
+  imports: [ReactiveFormsModule, ButtonComponent, InputComponent],
   templateUrl: './transactions-widget.html',
-  styleUrl: './transactions-widget.scss'
+  styleUrl: './transactions-widget.scss',
 })
 export class TransactionsWidget {
+  private readonly _builder = inject(NonNullableFormBuilder);
+  private readonly _transactionsService = inject(TransactionsService);
 
+  public form = this._builder.group({
+    categoria: this._builder.control<string | null>('', Validators.required),
+    tipoTransacao: this._builder.control<ITransactionType>('credit'),
+    valor: this._builder.control<number>(0, [Validators.required, Validators.min(0.01)]),
+    descricao: this._builder.control<string>(''),
+  });
+  public transactionOptions = [
+    { label: 'Receita', value: 'credit', bold: true },
+    { label: 'Despesa', value: 'debit', bold: true },
+  ];
+
+  addTransaction(transaction: any) {
+    this._transactionsService.insert(transaction).then(() => {
+      this.form.reset();
+    });
+  }
 }
