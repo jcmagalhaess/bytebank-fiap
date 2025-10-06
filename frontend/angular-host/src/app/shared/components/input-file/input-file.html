@@ -1,0 +1,86 @@
+<div class="mb-4">
+  <label class="block text-sm font-medium text-textPrimary mb-2"> Comprovante </label>
+
+  <!-- PDF existente -->
+  @if ((pdfUploaded && pdfUrl && pdfUrl !== "") || (transaction()?.pdfUrl && transaction()?.pdfFileName
+  && pdfUrl !== "")) {
+  <div class="mb-3 p-3 bg-feedbackSuccess bg-opacity-10 border border-feedbackSuccess rounded-lg">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <svg
+          class="w-5 h-5 text-feedbackSuccess"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+        <span class="text-sm text-feedbackSuccess font-medium">
+          {{ transaction()?.pdfFileName || pdfFile?.name || 'comprovante.pdf' }}
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          (click)="removePdf()"
+          class="text-feedbackDanger hover:text-feedbackDanger text-sm"
+        >
+          Remover
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Upload de novo PDF - só aparece se não há PDF existente -->
+  @if (!((pdfUploaded && pdfUrl && pdfUrl !== "") || (transaction()?.pdfUrl &&
+  transaction()?.pdfFileName && pdfUrl !== ""))) {
+  <div class="relative">
+    <input
+      type="file"
+      accept=".pdf"
+      (change)="onPdfChange($event)"
+      class="hidden"
+      id="pdf-upload-edit"
+      [disabled]="pdfUploading"
+    />
+    <label
+      for="pdf-upload-edit"
+      [class]="
+        'flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed rounded-lg cursor-pointer transition-colors duration-200 ' +
+        (pdfUploading
+          ? 'border-brandPrimary bg-backgroundSecondary cursor-not-allowed'
+          : 'border-backgroundSecondary hover:border-brandPrimary hover:bg-backgroundSecondary')
+      "
+    >
+      @if (pdfUploading) {
+      <div class="flex items-center gap-2">
+        <app-pdf-upload-loader />
+        <button
+          type="button"
+          (click)="cancelPdfUpload()"
+          class="text-feedbackDanger hover:text-red-700 text-sm"
+        >
+          Cancelar
+        </button>
+      </div>
+      } @else {
+      <svg class="w-4 h-4 text-textSecondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+        />
+      </svg>
+      <span class="text-sm text-textSecondary">Anexar PDF (máx. 5MB)</span>
+      }
+    </label>
+  </div>
+  }
+</div>

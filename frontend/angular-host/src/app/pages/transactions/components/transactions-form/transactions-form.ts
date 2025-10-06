@@ -4,10 +4,11 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ButtonComponent, InputComponent } from '../../../../shared/components/ui';
 import { ITransactionType } from '../../../../shared/interfaces/transaction.interface';
 import { TransactionsService } from '../../services/transactions.service';
+import { InputFile } from '../../../../shared/components/input-file/input-file';
 
 @Component({
   selector: 'app-transactions-form',
-  imports: [ReactiveFormsModule, ButtonComponent, InputComponent],
+  imports: [ReactiveFormsModule, ButtonComponent, InputComponent, InputFile],
   templateUrl: './transactions-form.html',
   styleUrl: './transactions-form.scss',
 })
@@ -28,6 +29,7 @@ export class TransactionsForm implements OnInit {
     tipoTransacao: this._builder.control<ITransactionType>('credit'),
     valor: this._builder.control<number>(0, [Validators.required, Validators.min(0.01)]),
     descricao: this._builder.control<string>(''),
+    comprovante: this._builder.control<File | null>(null),
   });
   public transactionOptions = [
     { label: 'Receita', value: 'credit', bold: true },
