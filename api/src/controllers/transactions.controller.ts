@@ -196,7 +196,7 @@ export class TransactionsController {
 
     const url = await getSignedUrl(s3Client, getCommand, { expiresIn: 60 }); // URL curta para download
 
-    // Redireciona o usuário para a URL de download
-    return res.redirect(url);
+    // Retorna a URL para o frontend
+    return res.json({ url });
   }
 }

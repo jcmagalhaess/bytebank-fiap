@@ -19,6 +19,7 @@ export class TransactionsService {
   public loadingUpdate = signal<boolean>(false);
   public loadingDelete = signal<boolean>(false);
   public loadingPreview = signal<boolean>(false);
+  public loadingDownload = signal<boolean>(false);
 
   public async insert(transaction: FormData): Promise<void> {
     this.loadingCreate.set(true);
@@ -112,9 +113,22 @@ export class TransactionsService {
     }
   }
 
-  public getReceiptDownloadUrl(id: number): string {
-    // Retorna a URL direta para o endpoint de download, o backend cuidará do redirecionamento.
-    return `${API_CONFIG.BASE_URL}/${API_CONFIG.ENDPOINTS.TRANSACTIONS}/${id}/receipt/download`;
+  public async getReceiptDownloadUrl(id: number): Promise<string> {
+    this.loadingDownload.set(true);
+    try {
+      const response = await lastValueFrom(
+        this._http.get<{ url: string }>(
+          `${API_CONFIG.BASE_URL}/${API_CONFIG.ENDPOINTS.TRANSACTIONS}/${id}/receipt/download`
+        )
+      ).finally(() => {
+        this.loadingDownload.set(false);
+      });
+      // Retorna a URL assinada que veio do backend
+      return response.url;
+    } catch (error) {
+      console.error('Erro ao baixar o arquivo:', error);
+      throw error; // Re-lança o erro para o componente tratar
+    }
   }
 
   public async updateSystemData() {

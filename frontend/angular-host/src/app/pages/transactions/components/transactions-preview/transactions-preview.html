@@ -5,7 +5,7 @@
   <div class="flex justify-between items-center">
     <h2 class="text-lg font-semibold text-[#0A2A4D]">Comprovante</h2>
 
-    <app-button variant="primary" (click)="download()" class="w-full sm:w-auto">
+    <app-button variant="primary" (click)="download()" [loading]="loadingDownloadComplete()" class="w-full sm:w-auto">
       Baixar
     </app-button>
   </div>
@@ -15,7 +15,7 @@
     <p><b>Tamanho:</b> {{ size() | bytes}}</p>
   </div>
 
-  <iframe [src]="urlSanitized()" class="w-full h-[65vh]" frameborder="0"></iframe>
+  <iframe [src]="url()" class="w-full h-[65vh]" frameborder="0"></iframe>
   <div class="flex justify-end">
     <app-button variant="tertiary" (click)="close()" class="w-full sm:w-auto">
       Fechar
