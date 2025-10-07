@@ -19,7 +19,7 @@ export class TransactionsService {
   public loadingUpdate = signal<boolean>(false);
   public loadingDelete = signal<boolean>(false);
 
-  public async insert(transaction: any): Promise<void> {
+  public async insert(transaction: FormData): Promise<void> {
     this.loadingCreate.set(true);
     try {
       await lastValueFrom(
@@ -35,7 +35,7 @@ export class TransactionsService {
     }
   }
 
-  public async update(id: number, transaction: any): Promise<void> {
+  public async update(id: number, transaction: FormData): Promise<void> {
     this.loadingUpdate.set(true);
     try {
       await lastValueFrom(

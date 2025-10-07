@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { TransactionsService } from '../../services/transactions.service';
 import { TransactionsForm } from '../transactions-form/transactions-form';
 import { TransactionsTable } from '../transactions-table/transactions-table';
+import { PdfUploadModalComponent } from '../../../../shared/components/transaction/pdf-upload-modal/pdf-upload-modal.component';
 
 @Component({
   selector: 'app-transactions-widget',
@@ -29,7 +30,7 @@ export class TransactionsWidget implements OnInit {
 
   deleteTransaction = (id: number) => this._transactionsService.delete(id);
 
-  openModal(transaction: any) {
+  openModalEdit(transaction: any) {
     const dialogRef = this._dialog.open(TransactionsForm, {
       width: '40vw',
       data: { transaction },
@@ -37,7 +38,19 @@ export class TransactionsWidget implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        // Logic to handle editing/saving, maybe refresh the list
+        this._transactionsService.list();
+      }
+    });
+  }
+
+  openModalUpload(transaction: any) {
+    const dialogRef = this._dialog.open(PdfUploadModalComponent, {
+      width: '40vw',
+      data: { transaction },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
         this._transactionsService.list();
       }
     });

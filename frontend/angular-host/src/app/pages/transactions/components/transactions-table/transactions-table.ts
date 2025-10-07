@@ -22,8 +22,8 @@ export class TransactionsTable {
 
   public delete = output<number>();
   public edit = output<any>();
-  public pdfView = output();
-  public pdfUpload = output();
+  public pdfView = output<string>();
+  public pdfUpload = output<any>();
   public pdfDelete = output();
   public pageChange = output<number>();
 

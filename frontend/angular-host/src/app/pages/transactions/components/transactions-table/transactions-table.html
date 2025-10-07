@@ -33,8 +33,8 @@
       [pdfFileName]="transaction.pdfFileName"
       (edit)="edit.emit(transaction)"
       (delete)="delete.emit(transaction.id)"
-      (pdfView)="onViewPdf(transaction)"
-      (pdfUpload)="onPdfUpload(transaction)"
+      (pdfView)="pdfView.emit(transaction.filePath)"
+      (pdfUpload)="pdfUpload.emit(transaction)"
     />
     }
   </div>

@@ -431,4 +431,17 @@ export class TransactionsComponent implements OnInit {
       }
     });
   }
+
+  openModalUpload(transaction: any) {
+    const dialogRef = this._dialog.open(PdfUploadModalComponent, {
+      width: '40vw',
+      data: { transaction },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this._transactionsService.list();
+      }
+    });
+  }
 }

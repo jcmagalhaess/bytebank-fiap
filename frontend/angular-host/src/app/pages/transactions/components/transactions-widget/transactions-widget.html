@@ -16,7 +16,8 @@
         [list]="transactions()"
         [loading]="loading()"
         (delete)="deleteTransaction($event)"
-        (edit)="openModal($event)"
+        (edit)="openModalEdit($event)"
+        (pdfUpload)="openModalUpload($event)"
       />
     </div>
   </div>
