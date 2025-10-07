@@ -31,17 +31,19 @@ export class InputFile implements ControlValueAccessor {
 
   // ControlValueAccessor methods
   writeValue(value: string): void {
-    if (!value) this.removePdf();
-
     console.log('🔍 InputFile - writeValue:', value);
-    this.pdfFile = {
-      name: value,
-      size: 0,
-    } as File;
+    if (value) {
+      this.pdfFile = {
+        name: value.split('-').slice(1).join('-') || 'comprovante.pdf',
+        size: 0,
+      } as File;
 
-    this.pdfUploading = false;
-    this.pdfUploaded = true;
-    this.pdfUrl = value;
+      this.pdfUploading = false;
+      this.pdfUploaded = true;
+      this.pdfUrl = value;
+    } else {
+      this.removePdf();
+    }
   }
 
   registerOnChange(fn: (value: File) => void): void {

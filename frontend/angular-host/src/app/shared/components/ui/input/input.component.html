@@ -12,7 +12,7 @@
     [value]="value"
     [class]="inputClasses"
     (input)="onInput($event)"
-    [mask]="inputMode === 'numeric' ? 'separator.2' : null"
+    [mask]="inputMode === 'numeric' ? 'separator.2' : ''"
     thousandSeparator="."
     decimalMarker=","
     (blur)="onBlur($event)"

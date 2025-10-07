@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input, OnInit, output } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -5,8 +6,6 @@ import { InputFile } from '../../../../shared/components/input-file/input-file';
 import { ButtonComponent, InputComponent } from '../../../../shared/components/ui';
 import { ITransactionType } from '../../../../shared/interfaces/transaction.interface';
 import { TransactionsService } from '../../services/transactions.service';
-import { NgxMaskDirective } from 'ngx-mask';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-transactions-form',
@@ -47,7 +46,7 @@ export class TransactionsForm implements OnInit {
 
       this.form.patchValue({
         ...transactionData,
-        comprovante: filePath,
+        comprovante: filePath || null,
       });
     }
   }

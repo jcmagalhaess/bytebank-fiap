@@ -1,5 +1,5 @@
-import { Component, Input, Output, EventEmitter, forwardRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NgxMaskDirective } from 'ngx-mask';
 
@@ -14,16 +14,16 @@ import { NgxMaskDirective } from 'ngx-mask';
         margin-left: 0.25rem;
         color: #ff0000;
       }
-    `
+    `,
   ],
   imports: [CommonModule, NgxMaskDirective],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => InputComponent),
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 })
 export class InputComponent implements ControlValueAccessor {
   @Input() label?: string;
@@ -47,7 +47,8 @@ export class InputComponent implements ControlValueAccessor {
   private onTouched = () => {};
 
   get inputClasses(): string {
-    const baseClasses = 'px-sm py-3 border rounded-xl font-inter text-sm md:text-base text-textPrimary placeholder-textSecondary focus:outline-none focus:ring-2';
+    const baseClasses =
+      'px-sm py-3 border rounded-xl font-inter text-sm md:text-base text-textPrimary placeholder-textSecondary focus:outline-none focus:ring-2';
 
     const errorClasses = this.error
       ? 'border-feedbackDanger ring-feedbackDanger'
@@ -77,7 +78,11 @@ export class InputComponent implements ControlValueAccessor {
 
   // ControlValueAccessor methods
   writeValue(value: string): void {
-    this.value = value || '';
+    // Usamos setTimeout para garantir que a máscara seja aplicada antes do valor ser definido,
+    // especialmente quando a máscara é condicional.
+    setTimeout(() => {
+      this.value = value || '';
+    });
   }
 
   registerOnChange(fn: (value: string) => void): void {
