@@ -40,7 +40,11 @@ export class TransactionsForm implements OnInit {
 
   ngOnInit(): void {
     if (this.data?.transaction) {
-      this.form.patchValue(this.data.transaction);
+      const { filePath, ...transactionData } = this.data.transaction;
+      this.form.patchValue({
+        ...transactionData,
+        comprovante: filePath,
+      });
     }
   }
 

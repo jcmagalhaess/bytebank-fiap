@@ -2,8 +2,7 @@
   <label class="block text-sm font-medium text-textPrimary mb-2"> Comprovante </label>
 
   <!-- PDF existente -->
-  @if ((pdfUploaded && pdfUrl && pdfUrl !== "") || (transaction()?.pdfUrl && transaction()?.pdfFileName
-  && pdfUrl !== "")) {
+  @if ((pdfUploaded && pdfUrl && pdfUrl !== "") || pdfUrl !== "") {
   <div class="mb-3 p-3 bg-feedbackSuccess bg-opacity-10 border border-feedbackSuccess rounded-lg">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
@@ -21,7 +20,7 @@
           />
         </svg>
         <span class="text-sm text-feedbackSuccess font-medium">
-          {{ transaction()?.pdfFileName || pdfFile?.name || 'comprovante.pdf' }}
+          {{ pdfFile?.name || 'comprovante.pdf' }}
         </span>
       </div>
       <div class="flex items-center gap-2">
@@ -38,8 +37,7 @@
   }
 
   <!-- Upload de novo PDF - só aparece se não há PDF existente -->
-  @if (!((pdfUploaded && pdfUrl && pdfUrl !== "") || (transaction()?.pdfUrl &&
-  transaction()?.pdfFileName && pdfUrl !== ""))) {
+  @if (!((pdfUploaded && pdfUrl && pdfUrl !== "") || pdfUrl !== "")) {
   <div class="relative">
     <input
       type="file"

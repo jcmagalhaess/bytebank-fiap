@@ -18,7 +18,6 @@ import { PdfUploadLoaderComponent } from '../ui';
 })
 export class InputFile implements ControlValueAccessor {
   public label = input<string>();
-  public transaction = input<any | null>(null);
   // Estados do PDF
   pdfFile: File | null = null;
   pdfUploading: boolean = false;
@@ -33,6 +32,16 @@ export class InputFile implements ControlValueAccessor {
   // ControlValueAccessor methods
   writeValue(value: string): void {
     if (!value) this.removePdf();
+
+    console.log('🔍 InputFile - writeValue:', value);
+    this.pdfFile = {
+      name: value,
+      size: 0,
+    } as File;
+
+    this.pdfUploading = false;
+    this.pdfUploaded = true;
+    this.pdfUrl = value;
   }
 
   registerOnChange(fn: (value: File) => void): void {
@@ -90,6 +99,8 @@ export class InputFile implements ControlValueAccessor {
     this.pdfFile = null;
     this.pdfUploaded = false;
     this.pdfUrl = '';
+
+    this.onChange('' as any); // Envia uma string vazia para indicar remoção
   }
 
   cancelPdfUpload(): void {
@@ -102,8 +113,8 @@ export class InputFile implements ControlValueAccessor {
   }
 
   onPdfClick(): void {
-    const currentPdfUrl = this.pdfUrl || this.transaction()?.pdfUrl;
-    const currentPdfFileName = this.transaction()?.pdfFileName || this.pdfFile?.name;
+    const currentPdfUrl = this.pdfUrl;
+    const currentPdfFileName = this.pdfFile?.name;
 
     if (currentPdfUrl && currentPdfFileName) {
       this.showPdfModal = true;
@@ -111,8 +122,8 @@ export class InputFile implements ControlValueAccessor {
   }
 
   onPdfDownload(): void {
-    const currentPdfUrl = this.pdfUrl || this.transaction()?.pdfUrl;
-    const currentPdfFileName = this.transaction()?.pdfFileName || this.pdfFile?.name;
+    const currentPdfUrl = this.pdfUrl;
+    const currentPdfFileName = this.pdfFile?.name;
 
     if (currentPdfUrl) {
       const link = document.createElement('a');

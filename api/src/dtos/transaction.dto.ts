@@ -8,12 +8,7 @@ export const createTransactionSchema = z.object({
   categoria: z.string().min(1, "A categoria é obrigatória."),
 });
 
-export const updateTransactionSchema = z.object({
-  tipoTransacao: z.enum(["credit", "debit"]),
-  valor: z.number().positive("O valor deve ser um número positivo."),
-  descricao: z.string().min(1, "A descrição é obrigatória."),
-  categoria: z.string().min(1, "A categoria é obrigatória."),
-});
+export const updateTransactionSchema = createTransactionSchema.partial();
 
 export const listTransactionsQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),

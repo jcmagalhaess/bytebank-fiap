@@ -30,7 +30,7 @@ export class TransactionsService {
         valor,
         descricao,
         categoria,
-        /*  */ userId,
+        userId,
         filePath: filePath ?? null, // Converte undefined para null
       },
     });
@@ -209,13 +209,14 @@ export class TransactionsService {
       throw new AppError("Transação não encontrada.", 404);
     }
 
-    const prismaUpdateData: Prisma.TransactionUpdateInput = {
-      tipoTransacao: data.tipoTransacao,
-      valor: data.valor,
-      descricao: data.descricao,
-      categoria: data.categoria,
-      filePath: data.filePath!,
-    };
+    const prismaUpdateData: Prisma.TransactionUpdateInput = {};
+
+    // Adiciona campos ao objeto de atualização apenas se eles não forem undefined
+    Object.keys(data).forEach((key) => {
+      if (data[key as keyof typeof data] !== undefined) {
+        (prismaUpdateData as any)[key] = data[key as keyof typeof data];
+      }
+    });
 
     const updatedTransaction = await prisma.transaction.update({
       where: { id },

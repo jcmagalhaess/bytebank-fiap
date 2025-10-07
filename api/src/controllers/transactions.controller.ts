@@ -50,7 +50,7 @@ export class TransactionsController {
 
       await s3Client.send(putCommand);
 
-      filePath = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${fileKey}`;
+      filePath = fileKey;
     }
 
     const createData: CreateTransactionDTO = {
@@ -99,7 +99,9 @@ export class TransactionsController {
       throw new AppError("Nenhum dado fornecido para atualização.", 400);
     }
 
-    const transactionData = updateTransactionSchema.parse(parsedBody);
+    const { comprovante: _, ...transactionData } = updateTransactionSchema
+      .passthrough()
+      .parse(parsedBody);
     let filePath: string | undefined = undefined;
 
     if (req.file) {
@@ -115,12 +117,15 @@ export class TransactionsController {
 
       await s3Client.send(putCommand);
 
-      filePath = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${fileKey}`;
+      filePath = fileKey;
+    } else if (req.body.comprovante === "") {
+      // Se 'comprovante' for uma string vazia, significa que o usuário removeu o arquivo
+      filePath = undefined;
     }
 
     const updatedTransaction = await transactionsService.update(id!, userId, {
       ...transactionData,
-      ...(filePath && { filePath }),
+      ...(filePath !== undefined && { filePath }),
     });
 
     return res.json(updatedTransaction);
