@@ -4,12 +4,13 @@ import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angula
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { InputFile } from '../../../../shared/components/input-file/input-file';
 import { ButtonComponent, InputComponent } from '../../../../shared/components/ui';
+import { CategoryAutocompleteComponent } from '../../../../shared/components/category-autocomplete';
 import { ITransactionType } from '../../../../shared/interfaces/transaction.interface';
 import { TransactionsService } from '../../services/transactions.service';
 
 @Component({
   selector: 'app-transactions-form',
-  imports: [ReactiveFormsModule, ButtonComponent, InputComponent, InputFile, CommonModule],
+  imports: [ReactiveFormsModule, ButtonComponent, InputComponent, InputFile, CategoryAutocompleteComponent, CommonModule],
   templateUrl: './transactions-form.html',
   styleUrl: './transactions-form.scss',
 })
@@ -49,6 +50,11 @@ export class TransactionsForm implements OnInit {
         comprovante: filePath || null,
       });
     }
+  }
+
+  onCategorySelected(category: string): void {
+    console.log('Categoria selecionada:', category);
+    // A categoria já é automaticamente definida pelo ControlValueAccessor
   }
 
   handleTransaction(transaction: any) {
