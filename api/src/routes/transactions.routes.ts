@@ -117,30 +117,45 @@ transactionsRoutes.get("/", transactionsController.list);
  * @swagger
  * /transactions/summary:
  *   get:
- *     summary: Retorna os totalizadores de crédito e débito do mês corrente
+ *     summary: Retorna um resumo financeiro do mês atual com evolução percentual
+ *     description: Retorna os totais de crédito e débito do mês atual, a evolução percentual em relação ao mês anterior, e o saldo total acumulado do usuário.
  *     tags: [Transactions]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Totalizadores retornados com sucesso.
+ *         description: Resumo financeiro retornado com sucesso.
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
  *                 credit:
- *                   type: number
- *                   description: Soma de todos os créditos no mês.
- *                   example: 2500.50
+ *                   type: object
+ *                   properties:
+ *                     value:
+ *                       type: number
+ *                       description: Soma de todos os créditos no mês.
+ *                       example: 5000
+ *                     evolution:
+ *                       type: number
+ *                       description: Evolução percentual em relação ao mês anterior.
+ *                       example: 25.5
  *                 debit:
- *                   type: number
- *                   description: Soma de todos os débitos no mês (valor negativo).
- *                   example: -850.75
+ *                   type: object
+ *                   properties:
+ *                     value:
+ *                       type: number
+ *                       description: Soma de todos os débitos no mês (valor negativo).
+ *                       example: -1500
+ *                     evolution:
+ *                       type: number
+ *                       description: Evolução percentual em relação ao mês anterior.
+ *                       example: -10.2
  *                 total:
  *                   type: number
- *                   description: Saldo total do mês (créditos - débitos).
- *                   example: 1649.75
+ *                   description: Saldo total acumulado da conta.
+ *                   example: 12345.67
  *       401:
  *         description: Não autorizado. Token inválido ou não fornecido.
  */

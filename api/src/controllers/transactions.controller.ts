@@ -120,7 +120,7 @@ export class TransactionsController {
       filePath = fileKey;
     } else if (req.body.comprovante === "") {
       // Se 'comprovante' for uma string vazia, significa que o usuário removeu o arquivo
-      filePath = undefined;
+      filePath = null;
     }
 
     const updatedTransaction = await transactionsService.update(id!, userId, {

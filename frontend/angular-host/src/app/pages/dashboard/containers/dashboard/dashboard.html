@@ -1,6 +1,8 @@
 <div class="flex flex-col gap-4 lg:gap-8">
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
     <div class="bg-white rounded-3xl shadow-md p-4 lg:p-7 h-[300px] lg:h-[384px]">
+      <h2 class="text-lg font-semibold text-[#0A2A4D]">Análise Financeira</h2>
+
       <app-chart
         [data]="yearlySummary.datasets"
         [labels]="monthLabels"
@@ -11,8 +13,18 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 lg:gap-8">
-      <app-analysis-card label="Receitas" type="income" [price]="summary?.credit!" />
-      <app-analysis-card label="Despesas" type="expense" [price]="summary?.debit!" />
+      <app-analysis-card
+        label="Receitas"
+        type="income"
+        [price]="summary?.credit?.value!"
+        [evolution]="summary?.credit?.evolution!"
+      />
+      <app-analysis-card
+        label="Despesas"
+        type="expense"
+        [price]="summary?.debit?.value!"
+        [evolution]="summary?.debit?.evolution!"
+      />
 
       <div class="col-span-1 sm:col-span-2 lg:col-span-2">
         <app-analysis-card

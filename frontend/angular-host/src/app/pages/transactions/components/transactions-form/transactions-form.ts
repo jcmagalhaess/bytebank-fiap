@@ -5,10 +5,12 @@ import { InputFile } from '../../../../shared/components/input-file/input-file';
 import { ButtonComponent, InputComponent } from '../../../../shared/components/ui';
 import { ITransactionType } from '../../../../shared/interfaces/transaction.interface';
 import { TransactionsService } from '../../services/transactions.service';
+import { NgxMaskDirective } from 'ngx-mask';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-transactions-form',
-  imports: [ReactiveFormsModule, ButtonComponent, InputComponent, InputFile],
+  imports: [ReactiveFormsModule, ButtonComponent, InputComponent, InputFile, CommonModule],
   templateUrl: './transactions-form.html',
   styleUrl: './transactions-form.scss',
 })
@@ -41,6 +43,8 @@ export class TransactionsForm implements OnInit {
   ngOnInit(): void {
     if (this.data?.transaction) {
       const { filePath, ...transactionData } = this.data.transaction;
+      console.log(transactionData);
+
       this.form.patchValue({
         ...transactionData,
         comprovante: filePath,

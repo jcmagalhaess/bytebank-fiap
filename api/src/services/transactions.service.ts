@@ -112,35 +112,113 @@ export class TransactionsService {
       999
     );
 
-    const creditSummary = await prisma.transaction.aggregate({
-      _sum: {
-        valor: true,
-      },
-      where: {
-        userId,
-        tipoTransacao: "credit",
-        createdAt: { gte: startOfMonth, lte: endOfMonth },
-      },
-    });
+    // Calcula as datas para o mês anterior
+    const startOfPreviousMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() - 1,
+      1
+    );
+    const endOfPreviousMonth = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      0,
+      23,
+      59,
+      59,
+      999
+    );
 
-    const debitSummary = await prisma.transaction.aggregate({
-      _sum: {
-        valor: true,
-      },
-      where: {
-        userId,
-        tipoTransacao: "debit",
-        createdAt: { gte: startOfMonth, lte: endOfMonth },
-      },
-    });
+    // Otimiza as consultas para buscar os resumos de uma só vez
+    const [
+      monthlyCreditSummary,
+      monthlyDebitSummary,
+      previousMonthCreditSummary,
+      previousMonthDebitSummary,
+      totalCreditSummary,
+      totalDebitSummary,
+    ] = await prisma.$transaction([
+      // Créditos do mês atual
+      prisma.transaction.aggregate({
+        _sum: { valor: true },
+        where: {
+          userId,
+          tipoTransacao: "credit",
+          createdAt: { gte: startOfMonth, lte: endOfMonth },
+        },
+      }),
+      // Débitos do mês atual
+      prisma.transaction.aggregate({
+        _sum: { valor: true },
+        where: {
+          userId,
+          tipoTransacao: "debit",
+          createdAt: { gte: startOfMonth, lte: endOfMonth },
+        },
+      }),
+      // Créditos do mês anterior
+      prisma.transaction.aggregate({
+        _sum: { valor: true },
+        where: {
+          userId,
+          tipoTransacao: "credit",
+          createdAt: { gte: startOfPreviousMonth, lte: endOfPreviousMonth },
+        },
+      }),
+      // Débitos do mês anterior
+      prisma.transaction.aggregate({
+        _sum: { valor: true },
+        where: {
+          userId,
+          tipoTransacao: "debit",
+          createdAt: { gte: startOfPreviousMonth, lte: endOfPreviousMonth },
+        },
+      }),
+      // Total de créditos (histórico completo)
+      prisma.transaction.aggregate({
+        _sum: { valor: true },
+        where: { userId, tipoTransacao: "credit" },
+      }),
+      // Total de débitos (histórico completo)
+      prisma.transaction.aggregate({
+        _sum: { valor: true },
+        where: { userId, tipoTransacao: "debit" },
+      }),
+    ]);
 
-    const credit = creditSummary._sum?.valor ?? 0;
-    const debit = debitSummary._sum?.valor ?? 0;
+    const credit = monthlyCreditSummary._sum?.valor ?? 0;
+    const debit = (monthlyDebitSummary._sum?.valor ?? 0) * -1;
+    const previousMonthCredit = previousMonthCreditSummary._sum?.valor ?? 0;
+    const previousMonthDebit =
+      (previousMonthDebitSummary._sum?.valor ?? 0) * -1;
+    const totalCredit = totalCreditSummary._sum?.valor ?? 0;
+    const totalDebit = totalDebitSummary._sum?.valor ?? 0;
+
+    // Função para calcular a evolução percentual
+    const calculateEvolution = (current: number, previous: number) => {
+      if (previous === 0) {
+        // Evita divisão por zero
+        return current > 0 ? 1 : 0; // Se o anterior era 0, qualquer valor > 0 é 100% (1.0) de aumento
+      }
+      return (current - previous) / previous;
+    };
+
+    const creditEvolution = calculateEvolution(credit, previousMonthCredit);
+    // Para débito, comparamos os valores absolutos para uma evolução mais intuitiva
+    const debitEvolution = calculateEvolution(
+      Math.abs(debit),
+      Math.abs(previousMonthDebit)
+    );
 
     return {
-      credit,
-      debit: debit * -1, // Retornando o valor de débito como negativo
-      total: credit - debit, // Calculando o total
+      credit: {
+        value: credit,
+        evolution: creditEvolution,
+      },
+      debit: {
+        value: debit,
+        evolution: debitEvolution,
+      },
+      total: totalCredit - totalDebit, // Saldo total acumulado
     };
   }
 

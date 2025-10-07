@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, forwardRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { NgxMaskDirective } from 'ngx-mask';
 
 @Component({
   selector: 'app-input',
@@ -15,7 +16,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
       }
     `
   ],
-  imports: [CommonModule],
+  imports: [CommonModule, NgxMaskDirective],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -34,6 +35,7 @@ export class InputComponent implements ControlValueAccessor {
   @Input() maxlength?: number;
   @Input() class: string = '';
   @Input() value: string = '';
+  @Input() inputMode: 'numeric' | 'text' = 'text';
 
   @Output() valueChange = new EventEmitter<string>();
   @Output() input = new EventEmitter<Event>();

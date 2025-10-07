@@ -29,8 +29,14 @@ export interface IUser {
 }
 
 export interface IUserSummary {
-  credit: number;
-  debit: number;
+  credit: {
+    value: number;
+    evolution: number;
+  };
+  debit: {
+    value: number;
+    evolution: number;
+  };
   total: number;
 }
 
