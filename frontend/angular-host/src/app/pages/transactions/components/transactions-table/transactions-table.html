@@ -29,11 +29,11 @@
       [categoria]="transaction.categoria"
       [amount]="(transaction.valor | currency : 'BRL')!"
       [descricao]="transaction.descricao"
-      [pdfUrl]="transaction.pdfUrl"
+      [pdfUrl]="transaction.filePath"
       [pdfFileName]="transaction.pdfFileName"
       (edit)="edit.emit(transaction)"
       (delete)="delete.emit(transaction.id)"
-      (pdfView)="pdfView.emit(transaction.filePath)"
+      (pdfView)="pdfView.emit(transaction.id)"
       (pdfUpload)="pdfUpload.emit(transaction)"
     />
     }

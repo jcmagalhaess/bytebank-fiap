@@ -22,7 +22,7 @@ export class TransactionsTable {
 
   public delete = output<number>();
   public edit = output<any>();
-  public pdfView = output<string>();
+  public pdfView = output<number>();
   public pdfUpload = output<any>();
   public pdfDelete = output();
   public pageChange = output<number>();

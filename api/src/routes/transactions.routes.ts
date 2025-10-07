@@ -287,6 +287,71 @@ transactionsRoutes.patch(
 
 /**
  * @swagger
+ * /transactions/{id}/receipt:
+ *   get:
+ *     summary: Obtém os detalhes e a URL de preview do comprovante
+ *     description: Retorna uma URL temporária e segura para visualizar o comprovante, junto com seu nome e tamanho.
+ *     tags: [Transactions]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: O ID da transação.
+ *     responses:
+ *       200:
+ *         description: Detalhes do comprovante retornados com sucesso.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 url:
+ *                   type: string
+ *                   description: URL assinada para preview.
+ *                 name:
+ *                   type: string
+ *                   description: Nome original do arquivo.
+ *                 size:
+ *                   type: integer
+ *                   description: Tamanho do arquivo em bytes.
+ *       404:
+ *         description: Transação ou comprovante não encontrado.
+ */
+transactionsRoutes.get(
+  "/:id/receipt",
+  transactionsController.getReceiptDetails
+);
+
+/**
+ * @swagger
+ * /transactions/{id}/receipt/download:
+ *   get:
+ *     summary: Faz o download do comprovante
+ *     description: Gera uma URL assinada e redireciona o usuário para forçar o download do arquivo.
+ *     tags: [Transactions]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: O ID da transação.
+ */
+transactionsRoutes.get(
+  "/:id/receipt/download",
+  transactionsController.downloadReceipt
+);
+
+/**
+ * @swagger
  * /transactions/{id}:
  *   delete:
  *     summary: Deleta uma transação

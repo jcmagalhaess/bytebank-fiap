@@ -92,6 +92,13 @@ export class TransactionsService {
     };
   }
 
+  async findById(id: string, userId: string): Promise<Transaction | null> {
+    const transaction = await prisma.transaction.findFirst({
+      where: { id, userId },
+    });
+    return transaction;
+  }
+
   async getSummaryByUserId(userId: string) {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);

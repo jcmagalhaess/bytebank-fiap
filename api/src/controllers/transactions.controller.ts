@@ -1,4 +1,10 @@
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+  GetObjectCommand,
+  HeadObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { randomBytes } from "crypto";
 import type { Request, Response } from "express";
 import {
@@ -126,5 +132,71 @@ export class TransactionsController {
 
     await transactionsService.delete(id!, userId);
     return res.status(204).send();
+  }
+
+  async getReceiptDetails(req: Request, res: Response) {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const transaction = await transactionsService.findById(id!, userId);
+
+    if (!transaction || !transaction.filePath) {
+      throw new AppError("Comprovante não encontrado.", 404);
+    }
+
+    // Extrai a chave do arquivo da URL completa
+    const fileKey = transaction.filePath.split("/").pop();
+
+    if (!fileKey) {
+      throw new AppError("Comprovante inválido.", 400);
+    }
+
+    // 1. Pega os metadados do arquivo (tamanho)
+    const headCommand = new HeadObjectCommand({
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: fileKey,
+    });
+    const { ContentLength: size } = await s3Client.send(headCommand);
+
+    // 2. Gera a URL de preview
+    const getCommand = new GetObjectCommand({
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: fileKey,
+    });
+    const url = await getSignedUrl(s3Client, getCommand, { expiresIn: 3600 }); // URL válida por 1 hora
+
+    // Extrai o nome original do arquivo
+    const name = fileKey.split("-").slice(1).join("-");
+
+    return res.json({ url, name, size });
+  }
+
+  async downloadReceipt(req: Request, res: Response) {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const transaction = await transactionsService.findById(id!, userId);
+
+    if (!transaction || !transaction.filePath) {
+      throw new AppError("Comprovante não encontrado.", 404);
+    }
+
+    const fileKey = transaction.filePath.split("/").pop();
+    if (!fileKey) {
+      throw new AppError("Comprovante inválido.", 400);
+    }
+
+    const name = fileKey.split("-").slice(1).join("-");
+
+    const getCommand = new GetObjectCommand({
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: fileKey,
+      ResponseContentDisposition: `attachment; filename="${name}"`,
+    });
+
+    const url = await getSignedUrl(s3Client, getCommand, { expiresIn: 60 }); // URL curta para download
+
+    // Redireciona o usuário para a URL de download
+    return res.redirect(url);
   }
 }

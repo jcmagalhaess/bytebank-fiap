@@ -38,9 +38,9 @@
         </button>
         @if (pdfUrl) {
           <button (click)="onPdfView()">
-            <app-upload-icon
+            <app-preview-icon
               class="text-feedbackSuccess w-4 h-4">
-            </app-upload-icon>
+            </app-preview-icon>
           </button>
         } @else {
           <button (click)="onPdfUpload()">

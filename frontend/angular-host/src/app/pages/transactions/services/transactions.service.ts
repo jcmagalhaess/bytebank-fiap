@@ -18,6 +18,7 @@ export class TransactionsService {
   public loadingCreate = signal<boolean>(false);
   public loadingUpdate = signal<boolean>(false);
   public loadingDelete = signal<boolean>(false);
+  public loadingPreview = signal<boolean>(false);
 
   public async insert(transaction: FormData): Promise<void> {
     this.loadingCreate.set(true);
@@ -91,6 +92,29 @@ export class TransactionsService {
       console.error('Erro ao deletar transações:', error);
       throw error;
     }
+  }
+
+  public async getReceiptDetails(id: number): Promise<{ url: string; name: string; size: number }> {
+    this.loadingPreview.set(true);
+
+    try {
+      const response = await lastValueFrom(
+        this._http.get<{ url: string; name: string; size: number }>(
+          `${API_CONFIG.BASE_URL}/${API_CONFIG.ENDPOINTS.TRANSACTIONS}/${id}/receipt`
+        )
+      ).finally(() => {
+        this.loadingPreview.set(false);
+      });
+      return response;
+    } catch (error) {
+      console.error('Erro ao buscar detalhes do recibo:', error);
+      throw error;
+    }
+  }
+
+  public getReceiptDownloadUrl(id: number): string {
+    // Retorna a URL direta para o endpoint de download, o backend cuidará do redirecionamento.
+    return `${API_CONFIG.BASE_URL}/${API_CONFIG.ENDPOINTS.TRANSACTIONS}/${id}/receipt/download`;
   }
 
   public async updateSystemData() {

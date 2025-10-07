@@ -1,0 +1,25 @@
+<div class="bg-white rounded-3xl shadow-md flex relative flex-col gap-3 sm:gap-5 p-4 sm:p-7">
+  @if(loading()) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  } @else {
+  <div class="flex justify-between items-center">
+    <h2 class="text-lg font-semibold text-[#0A2A4D]">Comprovante</h2>
+
+    <app-button variant="primary" (click)="download()" class="w-full sm:w-auto">
+      Baixar
+    </app-button>
+  </div>
+
+  <div class="text-sm text-gray-600 mb-2">
+    <p><b>Nome:</b> {{ name() }}</p>
+    <p><b>Tamanho:</b> {{ size() | bytes}}</p>
+  </div>
+
+  <iframe [src]="urlSanitized()" class="w-full h-[65vh]" frameborder="0"></iframe>
+  <div class="flex justify-end">
+    <app-button variant="tertiary" (click)="close()" class="w-full sm:w-auto">
+      Fechar
+    </app-button>
+  </div>
+  }
+</div>
