@@ -3,6 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
 import { API_CONFIG } from '../../../core/config/api.config';
 import { AccountService } from '../../../core/services/account.service';
+import { Confirmable } from '../../../shared/decorators/confirmable/confirmable.decorator';
 import { removeNullProperties } from '../../../shared/utils/remove-null-properties';
 
 @Injectable({
@@ -53,7 +54,7 @@ export class TransactionsService {
     }
   }
 
-  public async list(paramsObj: any = { }): Promise<any[]> {
+  public async list(paramsObj: any = {}): Promise<any[]> {
     const urlParams = new URLSearchParams(removeNullProperties(paramsObj));
     const queryString = urlParams.toString();
 
@@ -76,6 +77,7 @@ export class TransactionsService {
     }
   }
 
+  @Confirmable('Tem certeza que deseja excluir essa transação?', 'Confirmar exclusão')
   public async delete(id: number): Promise<void> {
     try {
       await lastValueFrom(

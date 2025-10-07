@@ -1,0 +1,21 @@
+@if (isOpen()) {
+<div
+  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 p-4"
+  (click)="onCancel()"
+>
+  <div class="bg-white p-4 sm:p-6 rounded-xl shadow-lg max-w-sm w-full text-center">
+    <h3 class="text-base sm:text-lg font-semibold mb-4 text-[#0A2A4D]">{{ title() }}</h3>
+    <p class="mb-6 text-sm sm:text-base">{{ message() }}</p>
+    <div class="w-full flex justify-center">
+      <div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 w-full sm:w-[80%]">
+        <app-button variant="primary" (click)="onCancel()" class="w-full sm:w-auto">
+          Cancelar
+        </app-button>
+        <app-button variant="danger" (click)="onConfirm()" class="w-full sm:w-auto">
+          Confirmar
+        </app-button>
+      </div>
+    </div>
+  </div>
+</div>
+}

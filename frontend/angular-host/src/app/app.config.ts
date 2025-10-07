@@ -2,6 +2,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
   APP_INITIALIZER,
   ApplicationConfig,
+  inject,
   LOCALE_ID,
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection,
@@ -14,8 +15,19 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { ApiService } from './core/services/api.service';
 import { AuthService } from './core/services/auth.service';
+import { ConfirmationService } from './shared/decorators/confirmable/confirmable.service';
 
 registerLocaleData(localePt);
+
+function initializeConfirmable() {
+  const confirmationService = inject(ConfirmationService);
+  return () => {
+    // Importa o locator dinamicamente para evitar dependência cíclica
+    import('./shared/decorators/confirmable/confirmable.locator').then(
+      (locator) => (locator.ConfirmableLocator.confirmationService = confirmationService)
+    );
+  };
+}
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -25,6 +37,12 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([authInterceptor])),
     AuthService,
     ApiService,
+    ConfirmationService,
     { provide: LOCALE_ID, useValue: 'pt-BR' },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeConfirmable,
+      multi: true,
+    },
   ],
 };
