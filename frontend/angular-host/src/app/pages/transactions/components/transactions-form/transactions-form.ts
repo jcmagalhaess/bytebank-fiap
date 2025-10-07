@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, output } from '@angular/core';
+import { Component, computed, inject, input, OnInit, output } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { InputFile } from '../../../../shared/components/input-file/input-file';
@@ -16,7 +16,9 @@ export class TransactionsForm implements OnInit {
   private readonly _builder = inject(NonNullableFormBuilder);
   private readonly _transactionsService = inject(TransactionsService);
   private readonly _dialogRef? = inject(MatDialogRef<TransactionsForm>, { optional: true });
+
   public readonly data? = inject(MAT_DIALOG_DATA, { optional: true });
+  public alignAction = input<'start' | 'center' | 'end'>('center');
 
   public loading = computed(
     () => this._transactionsService.loadingCreate() || this._transactionsService.loadingUpdate()
