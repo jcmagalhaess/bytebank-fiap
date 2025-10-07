@@ -131,6 +131,19 @@ export class TransactionsService {
     }
   }
 
+  public async removeReceipt(id: number): Promise<void> {
+    try {
+      await lastValueFrom(
+        this._http.delete(`${API_CONFIG.BASE_URL}/${API_CONFIG.ENDPOINTS.TRANSACTIONS}/${id}/receipt`)
+      );
+
+      await this.updateSystemData();
+    } catch (error) {
+      console.error('Erro ao remover comprovante:', error);
+      throw error;
+    }
+  }
+
   public async updateSystemData() {
     await this.list();
     await this._accountService.getSummary();

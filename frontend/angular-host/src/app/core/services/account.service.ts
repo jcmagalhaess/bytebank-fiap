@@ -39,7 +39,7 @@ export class AccountService {
         if (index !== -1) {
           incomeData[index] = item.credit;
           // A API retorna o débito como negativo, então usamos Math.abs para o gráfico
-          expenseData[index] = Math.abs(item.debit.value);
+          expenseData[index] = Math.abs(item.debit);
         }
       });
     }

@@ -213,12 +213,12 @@ export class NewTransactionFormComponent {
     this.pdfFile = file;
 
     try {
-      // Simular upload (substitua pela sua lógica de upload real)
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Simular upload - o arquivo será enviado junto com a transação
+      // A API não tem endpoint separado para upload, apenas junto com a transação
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Simular URL do arquivo (substitua pela URL real do seu servidor)
-      const mockUrl = URL.createObjectURL(file);
-      this.pdfUrl = mockUrl;
+      // Criar URL temporária para preview
+      this.pdfUrl = URL.createObjectURL(file);
       this.pdfUploaded = true;
       this.showToast('success', 'Comprovante carregado com sucesso!');
     } catch (error) {

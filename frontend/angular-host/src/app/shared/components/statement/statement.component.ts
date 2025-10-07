@@ -46,15 +46,13 @@ export class StatementComponent {
   }
 
   private handleDelete(id: number): void {
-    // Simular exclusão - em um app real, chamaria um serviço
-    console.log('Excluindo transação:', id);
+    // Exclusão real via API será feita pelo componente pai
     this.deleteId = null;
     this.refresh.emit();
   }
 
   private handleSave(updated: Transaction): void {
-    // Simular atualização - em um app real, chamaria um serviço
-    console.log('Atualizando transação:', updated);
+    // Atualização real via API será feita pelo componente pai
     this.editingTransaction = null;
     this.refresh.emit();
   }

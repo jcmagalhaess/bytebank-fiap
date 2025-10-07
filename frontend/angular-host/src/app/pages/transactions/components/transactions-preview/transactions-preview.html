@@ -15,8 +15,17 @@
     <p><b>Tamanho:</b> {{ size() | bytes}}</p>
   </div>
 
+  <!-- PDF Preview -->
   <iframe [src]="url()" class="w-full h-[65vh]" frameborder="0"></iframe>
-  <div class="flex justify-end">
+
+  <div class="flex justify-between items-center mt-4">
+    <app-button
+      variant="danger"
+      (click)="deletePdf()"
+      class="w-full sm:w-auto">
+      Excluir PDF
+    </app-button>
+
     <app-button variant="tertiary" (click)="close()" class="w-full sm:w-auto">
       Fechar
     </app-button>

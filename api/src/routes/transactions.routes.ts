@@ -367,6 +367,44 @@ transactionsRoutes.get(
 
 /**
  * @swagger
+ * /transactions/{id}/receipt:
+ *   delete:
+ *     summary: Remove o comprovante de uma transação
+ *     description: Remove o arquivo de comprovante de uma transação específica, mantendo os outros dados da transação.
+ *     tags: [Transactions]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: O ID da transação.
+ *     responses:
+ *       200:
+ *         description: Comprovante removido com sucesso.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Comprovante removido com sucesso."
+ *       401:
+ *         description: Não autorizado.
+ *       404:
+ *         description: Transação não encontrada.
+ */
+transactionsRoutes.delete(
+  "/:id/receipt",
+  transactionsController.removeReceipt
+);
+
+/**
+ * @swagger
  * /transactions/{id}:
  *   delete:
  *     summary: Deleta uma transação

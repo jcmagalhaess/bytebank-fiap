@@ -40,8 +40,10 @@ export interface IUserSummary {
   total: number;
 }
 
-export type IUserYearlySummary = Omit<IUserSummary, 'total'> & {
+export type IUserYearlySummary = {
   month: string;
+  credit: number;
+  debit: number;
 };
 
 /**
@@ -186,9 +188,29 @@ export class AuthService {
       );
 
       this.account.set(response);
+
+      // Carregar dados adicionais do usuário após login
+      await this.loadUserData();
     } catch (error) {
       console.error('Erro ao buscar contas:', error);
       this.account.set(null);
+    }
+  }
+
+  /**
+   * Carrega todos os dados do usuário após login
+   */
+  private async loadUserData(): Promise<void> {
+    try {
+      // Importar dinamicamente para evitar dependência cíclica
+      const { AccountService } = await import('./account.service');
+      const accountService = new AccountService();
+
+      // Carregar resumo e dados anuais
+      await accountService.getSummary();
+      await accountService.getYearlySummary();
+    } catch (error) {
+      console.error('Erro ao carregar dados do usuário:', error);
     }
   }
 }
