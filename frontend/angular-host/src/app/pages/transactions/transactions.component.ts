@@ -5,9 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
 import { SearchIconComponent } from '../../shared/components/icons/search-icon.component';
 import { SettingIconComponent } from '../../shared/components/icons/setting-icon.component';
-import { EditTransactionModalComponent } from '../../shared/components/transaction/edit-transaction-modal/edit-transaction-modal.component';
 import { PdfUploadModalComponent } from '../../shared/components/transaction/pdf-upload-modal/pdf-upload-modal.component';
-import { PdfViewerModalComponent } from '../../shared/components/transaction/pdf-viewer-modal/pdf-viewer-modal.component';
 import { TransactionFiltersComponent } from '../../shared/components/transaction/transaction-filters/transaction-filters.component';
 import { ButtonComponent } from '../../shared/components/ui/button/button.component';
 import { Transaction } from '../../shared/interfaces/transaction.interface';
@@ -180,7 +178,7 @@ export class TransactionsComponent implements OnInit {
     newObj.tipo =
       newFilters.type === 'all' ? null : newFilters.type === 'deposit' ? 'credit' : 'debit';
     newObj.categoria = newFilters.category;
-    // newObj.descricao = newFilters.search;
+    newObj.descricao = newFilters.search;
     newObj.dataInicio = newFilters.startDate;
     newObj.dataFim = newFilters.endDate;
     newObj.valorMin = newFilters.minValue;

@@ -43,6 +43,11 @@ transactionsRoutes.use(authMiddleware);
  *           type: string
  *         description: Filtra por categoria (busca parcial, case-insensitive).
  *       - in: query
+ *         name: descricao
+ *         schema:
+ *           type: string
+ *         description: Filtra por descrição (busca parcial, case-insensitive).
+ *       - in: query
  *         name: dataInicio
  *         schema:
  *           type: string

@@ -20,6 +20,7 @@ export const listTransactionsQuerySchema = z.object({
   pageSize: z.coerce.number().int().positive().default(10),
   tipo: z.enum(["credit", "debit"]).optional(),
   categoria: z.string().optional(),
+  descricao: z.string().optional(),
   dataInicio: z.coerce.date().optional(),
   dataFim: z.coerce.date().optional(),
   valorMin: z.coerce.number().min(0).optional(),

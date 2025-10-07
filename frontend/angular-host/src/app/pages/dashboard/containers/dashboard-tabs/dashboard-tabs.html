@@ -1,13 +1,13 @@
 <div class="pt-16 pb-24 w-full dashboard__header">
   <div class="flex flex-col lg:flex-row w-full px-4 lg:w-8/12 m-auto justify-between relative z-10 gap-4 lg:gap-0">
     <div class="text-white">
-      @if (isTransactionsPage()) {
+      <!-- @if (isTransactionsPage()) {
         <h2 class="text-3xl lg:text-5xl font-bold">Extrato de transações</h2>
         <p class="text-sm lg:text-base opacity-0">Espaçador</p>
-      } @else {
+      } @else { -->
         <h2 class="text-3xl lg:text-5xl font-bold">Olá, {{ username() }}!</h2>
         <p class="text-sm lg:text-base">Seja bem-vindo (a) de volta.</p>
-      }
+      <!-- } -->
     </div>
     <ul class="dashboard__menu flex flex-wrap gap-0">
       @for (item of navLinks; track item.path) {

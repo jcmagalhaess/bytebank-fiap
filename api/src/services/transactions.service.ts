@@ -46,6 +46,7 @@ export class TransactionsService {
       dataInicio,
       dataFim,
       valorMin,
+      descricao,
       valorMax,
     } = query;
 
@@ -57,6 +58,8 @@ export class TransactionsService {
     if (tipo) where.tipoTransacao = tipo;
     if (categoria)
       where.categoria = { contains: categoria, mode: "insensitive" };
+    if (descricao)
+      where.descricao = { contains: descricao, mode: "insensitive" };
     if (valorMin !== undefined)
       where.valor = { ...(where.valor as object), gte: valorMin };
     if (valorMax !== undefined)
