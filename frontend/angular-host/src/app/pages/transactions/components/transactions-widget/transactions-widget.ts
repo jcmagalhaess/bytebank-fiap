@@ -4,8 +4,8 @@ import { RouterLink } from '@angular/router';
 import { PdfUploadModalComponent } from '../../../../shared/components/transaction/pdf-upload-modal/pdf-upload-modal.component';
 import { TransactionsService } from '../../services/transactions.service';
 import { TransactionsForm } from '../transactions-form/transactions-form';
-import { TransactionsTable } from '../transactions-table/transactions-table';
 import { TransactionsPreview } from '../transactions-preview/transactions-preview';
+import { TransactionsTable } from '../transactions-table/transactions-table';
 
 @Component({
   selector: 'app-transactions-widget',
@@ -57,12 +57,10 @@ export class TransactionsWidget implements OnInit {
     });
   }
 
-  async openModalViewPDF(transactionId: number) {
+  openModalViewPDF(transactionId: number) {
     this._dialog.open(TransactionsPreview, {
       width: '40vw',
       data: { transactionId },
     });
-    // const url = await this._transactionsService.getReceiptUrl(transactionId);
-    // window.open(url, '_blank');
   }
 }

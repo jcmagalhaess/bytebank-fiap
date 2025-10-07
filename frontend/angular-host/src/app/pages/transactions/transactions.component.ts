@@ -11,6 +11,7 @@ import { ButtonComponent } from '../../shared/components/ui/button/button.compon
 import { Transaction } from '../../shared/interfaces/transaction.interface';
 import { formatToBRL } from '../../shared/utils/format';
 import { TransactionsForm } from './components/transactions-form/transactions-form';
+import { TransactionsPreview } from './components/transactions-preview/transactions-preview';
 import { TransactionsTable } from './components/transactions-table/transactions-table';
 import { TransactionsService } from './services/transactions.service';
 
@@ -440,6 +441,13 @@ export class TransactionsComponent implements OnInit {
       if (result) {
         this._transactionsService.list();
       }
+    });
+  }
+
+  openModalViewPDF(transactionId: number) {
+    this._dialog.open(TransactionsPreview, {
+      width: '40vw',
+      data: { transactionId },
     });
   }
 }
