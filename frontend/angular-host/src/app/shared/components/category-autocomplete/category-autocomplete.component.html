@@ -1,0 +1,43 @@
+<div class="relative">
+  <input
+    type="text"
+    [placeholder]="placeholder"
+    [disabled]="disabled"
+    [value]="inputValue"
+    (input)="onInput($event)"
+    (blur)="onBlur()"
+    (focus)="onFocus()"
+    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
+    [class.bg-gray-100]="disabled"
+    [class.cursor-not-allowed]="disabled"
+  />
+
+  @if (showSuggestions && suggestions.length > 0) {
+    <div class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+      @for (suggestion of suggestions; track suggestion.value) {
+        <div
+          class="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors duration-150"
+          (mousedown)="selectSuggestion(suggestion)"
+        >
+          <div class="font-medium text-gray-900">{{ suggestion.label }}</div>
+          @if (suggestion.synonyms.length > 0) {
+            <div class="text-sm text-gray-500 mt-1">
+              Sinônimos: {{ suggestion.synonyms.slice(0, 3).join(', ') }}
+              @if (suggestion.synonyms.length > 3) {
+                <span class="text-gray-400">+{{ suggestion.synonyms.length - 3 }} mais</span>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  @if (showSuggestions && suggestions.length === 0 && inputValue.length > 0) {
+    <div class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+      <div class="px-4 py-3 text-gray-500 text-center">
+        Nenhuma categoria encontrada
+      </div>
+    </div>
+  }
+</div>
