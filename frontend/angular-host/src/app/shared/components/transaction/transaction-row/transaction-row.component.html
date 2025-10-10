@@ -3,13 +3,13 @@
   <div class="flex flex-col sm:hidden gap-2">
     <!-- Linha 1: ícone, nome e data -->
     <div class="flex items-center gap-2">
-      @if (type === 'deposit') {
+      @if (type === 'credit') {
         <app-arrow-up-icon></app-arrow-up-icon>
       } @else {
         <app-arrow-down-icon></app-arrow-down-icon>
       }
       <div class="flex flex-col">
-        <span class="font-semibold block md:hidden">{{ descricao || (type === 'deposit' ? 'Receita' : 'Despesa') }}</span>
+        <span class="font-semibold block md:hidden">{{ descricao || (type === 'credit' ? 'Receita' : 'Despesa') }}</span>
         <!-- Categoria -->
         <span>
           @if (categoria) {
@@ -38,9 +38,9 @@
         </button>
         @if (pdfUrl) {
           <button (click)="onPdfView()">
-            <app-upload-icon
+            <app-preview-icon
               class="text-feedbackSuccess w-4 h-4">
-            </app-upload-icon>
+            </app-preview-icon>
           </button>
         } @else {
           <button (click)="onPdfUpload()">
@@ -57,12 +57,12 @@
   <div class="hidden sm:grid grid-cols-[3fr_1fr_1fr_1fr_1fr] gap-4 md:gap-6 lg:gap-6 items-center">
     <!-- Transação - coluna mais larga -->
     <div class="flex items-center gap-3 overflow-x-hidden">
-      @if (type === 'deposit') {
+      @if (type === 'credit') {
         <app-arrow-up-icon></app-arrow-up-icon>
       } @else {
         <app-arrow-down-icon></app-arrow-down-icon>
       }
-      <span class="font-semibold truncate">{{ descricao || (type === 'deposit' ? 'Receita' : 'Despesa') }}</span>
+      <span class="font-semibold truncate">{{ descricao || (type === 'credit' ? 'Receita' : 'Despesa') }}</span>
     </div>
     <!-- Categoria -->
     <span>

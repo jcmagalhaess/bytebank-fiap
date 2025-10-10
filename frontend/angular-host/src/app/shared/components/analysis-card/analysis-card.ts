@@ -1,11 +1,11 @@
-import { CurrencyPipe, NgClass } from '@angular/common';
+import { CurrencyPipe, NgClass, PercentPipe } from '@angular/common';
 import { Component, computed, input } from '@angular/core';
 
 @Component({
   selector: 'app-analysis-card',
   templateUrl: './analysis-card.html',
   styleUrl: './analysis-card.scss',
-  imports: [CurrencyPipe, NgClass],
+  imports: [CurrencyPipe, NgClass, PercentPipe],
 })
 export class AnalysisCard {
   public label = input.required<string>();
@@ -14,6 +14,9 @@ export class AnalysisCard {
   public alignment = input<'horizontal' | 'vertical'>('vertical');
   public isHorizontal = computed(() => this.alignment() === 'horizontal');
   public isVertical = computed(() => this.alignment() === 'vertical');
+  public evolution = input<number>(0);
+  public isPositive = computed(() => this.evolution() > 0);
+  public isNegative = computed(() => this.evolution() < 0);
 
   protected readonly color = computed(() => {
     switch (this.type()) {

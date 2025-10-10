@@ -1,5 +1,7 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { TransactionsService } from '../../../../pages/transactions/services/transactions.service';
 import { ButtonComponent } from '../../ui/button/button.component';
 import { PdfUploadLoaderComponent } from '../../ui/loader/pdf-upload-loader.component';
 
@@ -13,14 +15,17 @@ export interface PdfUploadResult {
   selector: 'app-pdf-upload-modal',
   templateUrl: './pdf-upload-modal.component.html',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, PdfUploadLoaderComponent]
+  imports: [CommonModule, ButtonComponent, PdfUploadLoaderComponent],
 })
 export class PdfUploadModalComponent {
-  @Input() isOpen: boolean = false;
-  @Input() transactionId?: number;
+  private readonly _dialogRef? = inject(MatDialogRef<PdfUploadModalComponent>, { optional: true });
+  private readonly _transactionsService = inject(TransactionsService);
 
-  @Output() close = new EventEmitter<void>();
-  @Output() upload = new EventEmitter<PdfUploadResult>();
+  public readonly data? = inject(MAT_DIALOG_DATA, { optional: true });
+
+  // transactionId?: number;
+
+  // @Output() upload = new EventEmitter<PdfUploadResult>();
 
   // Estados do upload
   pdfFile: File | null = null;
@@ -29,8 +34,11 @@ export class PdfUploadModalComponent {
   pdfUrl: string = '';
   errorMessage: string = '';
 
+  comprovanteTransaction = (item: any) =>
+    this._transactionsService.update(this.data?.transaction?.id, item);
+
   onClose(): void {
-    this.close.emit();
+    this._dialogRef?.close();
     this.resetForm();
   }
 
@@ -61,7 +69,7 @@ export class PdfUploadModalComponent {
 
     try {
       // Simular upload (substitua pela sua lógica de upload real)
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // Simular URL do arquivo (substitua pela URL real do seu servidor)
       const mockUrl = URL.createObjectURL(file);
@@ -80,22 +88,46 @@ export class PdfUploadModalComponent {
       hasPdfFile: !!this.pdfFile,
       hasPdfUrl: !!this.pdfUrl,
       pdfFile: this.pdfFile,
-      pdfUrl: this.pdfUrl
+      pdfUrl: this.pdfUrl,
     });
 
     if (this.pdfFile && this.pdfUrl) {
       const uploadResult = {
         file: this.pdfFile,
         url: this.pdfUrl,
-        fileName: this.pdfFile.name
+        fileName: this.pdfFile.name,
       };
 
+      this._sendComprovante(uploadResult);
+
       console.log('📤 PDF Upload Modal - Emitindo upload:', uploadResult);
-      this.upload.emit(uploadResult);
-      this.resetForm();
     } else {
       console.error('❌ PDF Upload Modal - Condições não atendidas para upload');
     }
+  }
+
+  private _sendComprovante(result: any): void {
+    const formData = new FormData();
+    const transaction: any = {
+      ...this.data?.transaction,
+      comprovante: result.file,
+    };
+
+    for (const key in transaction) {
+      if (transaction.hasOwnProperty(key)) {
+        const value = transaction[key];
+        if (value instanceof File) {
+          formData.append(key, value, value.name);
+        } else if (value !== null && value !== undefined) {
+          formData.append(key, String(value));
+        }
+      }
+    }
+
+    this.comprovanteTransaction(formData).then(() => {
+      this._dialogRef?.close(true);
+      this.resetForm();
+    });
   }
 
   removePdf(): void {

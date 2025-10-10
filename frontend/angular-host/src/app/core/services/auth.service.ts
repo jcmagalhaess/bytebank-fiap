@@ -1,33 +1,48 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { jwtDecode, JwtPayload } from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { lastValueFrom } from 'rxjs';
 import { API_CONFIG } from '../config/api.config';
 
 export interface LoginRequest {
   email: string;
-  password: string;
+  senha: string;
 }
 
 export interface RegisterRequest {
-  username: string;
+  nome: string;
   email: string;
-  password: string;
+  senha: string;
 }
 
 export interface AuthResponse {
-  message: string;
-  result: {
-    token: string;
-  };
+  token: string;
 }
 
-export interface User {
+export interface IUser {
   id: string;
-  username: string;
+  nome: string;
   email: string;
+  createdAt: string;
+  updatedAt: string;
 }
+
+export interface IUserSummary {
+  credit: {
+    value: number;
+    evolution: number;
+  };
+  debit: {
+    value: number;
+    evolution: number;
+  };
+  total: number;
+}
+
+export type IUserYearlySummary = Omit<IUserSummary, 'total'> & {
+  month: string;
+};
 
 /**
  * Serviço responsável por gerenciar a autenticação do usuário,
@@ -39,9 +54,12 @@ export interface User {
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  // Sinal para armazenar os dados da conta
+  public account = signal<IUser | null>(null);
+  // AccountService será injetado depois para evitar dependência cíclica no construtor
 
   // Sinais privados para controle interno do estado
-  private readonly _user = signal<User | null>(null);
+  private readonly _user = signal<IUser | null>(null);
   private readonly _isAuthenticated = signal<boolean>(false);
   private readonly _isLoading = signal<boolean>(false);
   private readonly _error = signal<string | null>(null);
@@ -61,17 +79,9 @@ export class AuthService {
    */
   private handleNewToken(token: string) {
     if (token) {
+      const decodedToken: IUser = jwtDecode(token);
+      this._user.set(decodedToken);
       localStorage.setItem('auth_token', token);
-      // Decodifica o token usando uma tipagem forte para mais segurança
-      const decodedToken: JwtPayload & User = jwtDecode(token);
-
-      const user: User = {
-        id: decodedToken.id,
-        username: decodedToken.username,
-        email: decodedToken.email,
-      };
-
-      this._user.set(user);
       this._isAuthenticated.set(true);
     }
     this._isLoading.set(false);
@@ -86,7 +96,9 @@ export class AuthService {
     const token = localStorage.getItem('auth_token');
     if (token) {
       this.handleNewToken(token);
+      await this.getAccountData();
     } else {
+      // Se não houver token, apenas definimos isLoading como false.
       this._isLoading.set(false);
     }
   }
@@ -107,10 +119,9 @@ export class AuthService {
         )
       );
 
-      if (response?.result?.token) {
-        this.handleNewToken(response.result.token);
-        // O isLoading é definido como false dentro de handleNewToken,
-        // então não precisamos definir aqui antes de navegar.
+      if (response.token) {
+        this.handleNewToken(response.token);
+        await this.getAccountData();
         this.router.navigate(['/dashboard']);
       } else {
         throw new Error('Token não recebido do servidor.');
@@ -163,5 +174,21 @@ export class AuthService {
    */
   public isAuthenticatedCheck(): boolean {
     return this._isAuthenticated();
+  }
+
+  /**
+   * Busca os dados da conta (conta, transações, cartões) do usuário logado na API.
+   */
+  public async getAccountData(): Promise<void> {
+    try {
+      const response = await lastValueFrom(
+        this.http.get<IUser>(`${API_CONFIG.BASE_URL}/${API_CONFIG.ENDPOINTS.ACCOUNT}`)
+      );
+
+      this.account.set(response);
+    } catch (error) {
+      console.error('Erro ao buscar contas:', error);
+      this.account.set(null);
+    }
   }
 }

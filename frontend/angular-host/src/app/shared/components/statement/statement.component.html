@@ -1,111 +1,157 @@
 <div class="bg-backgroundPrimary p-lg rounded-xl shadow-md max-w-[1200px] w-full">
   @if (transactions.length === 0) {
-    <p class="text-textSecondary">Nenhuma transação encontrada.</p>
+  <p class="text-textSecondary">Nenhuma transação encontrada.</p>
   } @else {
-    <div class="space-y-0">
-      @for (transaction of getDisplayedTransactions(); track transaction.id) {
-        <div class="w-full border-b border-backgroundSecondary py-sm px-sm text-caption sm:text-sm text-textPrimary font-inter">
-          <!-- Mobile layout -->
-          <div class="flex flex-col sm:hidden gap-2">
-            <!-- Linha 1: ícone, nome e data -->
-            <div class="flex items-center gap-2">
-              @if (transaction.type === 'deposit') {
-                <div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-feedbackSuccess">
-                  <span class="material-symbols-outlined text-xl text-white">
-                    arrow_upward
-                  </span>
-                </div>
-              } @else {
-                <div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-feedbackAction">
-                  <span class="material-symbols-outlined text-xl text-white">
-                    arrow_downward
-                  </span>
-                </div>
-              }
-              <div class="flex flex-col">
-                <span class="font-semibold block md:hidden">{{ transaction.descricao || (transaction.type === 'deposit' ? 'Receita' : 'Despesa') }}</span>
-                <!-- Categoria -->
-                <span>
-                  @if (transaction.categoria) {
-                    <span id="categoria">
-                      {{ transaction.categoria }}
-                    </span>
-                  } @else {
-                    -
-                  }
-                </span>
-                <span class="text-caption">{{ transaction.date ? formatDate(transaction.date) : '-' }}</span>
-              </div>
-            </div>
-
-            <!-- Linha 2: valor + ações (lado a lado) -->
-            <div class="flex items-center ml-[10px] gap-3">
-              <span class="font-bold">{{ formatCurrency(transaction.amount) }}</span>
-              <button (click)="onEdit(transaction)" class="hover:opacity-70 transition-opacity">
-                <svg class="w-4 h-4 text-textPrimary hover:text-feedbackInfo" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-              </button>
-              <button (click)="onDelete(transaction.id)" class="hover:opacity-70 transition-opacity">
-                <svg class="w-4 h-4 text-textPrimary hover:text-feedbackDanger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </button>
-            </div>
+  <div class="space-y-0">
+    @for (transaction of getDisplayedTransactions(); track transaction.id) {
+    <div
+      class="w-full border-b border-backgroundSecondary py-sm px-sm text-caption sm:text-sm text-textPrimary font-inter"
+    >
+      <!-- Mobile layout -->
+      <div class="flex flex-col sm:hidden gap-2">
+        <!-- Linha 1: ícone, nome e data -->
+        <div class="flex items-center gap-2">
+          @if (transaction.type === 'credit') {
+          <div
+            class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-feedbackSuccess"
+          >
+            <span class="material-symbols-outlined text-xl text-white"> arrow_upward </span>
           </div>
-
-          <!-- Desktop layout -->
-          <div class="hidden sm:grid grid-cols-[3fr_1fr_1fr_1fr_1fr] gap-6 md:gap-0 x:gap-[50px] xl:gap-0 items-center lg:gap-0">
-            <!-- Transação - coluna mais larga -->
-            <div class="flex md:flex-col lg:flex-row items-center gap-2 overflow-x-hidden">
-              @if (transaction.type === 'deposit') {
-                <div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-feedbackSuccess">
-                  <span class="material-symbols-outlined text-xl text-white">
-                    arrow_upward
-                  </span>
-                </div>
-              } @else {
-                <div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-feedbackAction">
-                  <span class="material-symbols-outlined text-xl text-white">
-                    arrow_downward
-                  </span>
-                </div>
-              }
-              <span class="font-semibold">{{ transaction.descricao || (transaction.type === 'deposit' ? 'Receita' : 'Despesa') }}</span>
-            </div>
+          } @else {
+          <div
+            class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-feedbackAction"
+          >
+            <span class="material-symbols-outlined text-xl text-white"> arrow_downward </span>
+          </div>
+          }
+          <div class="flex flex-col">
+            <span class="font-semibold block md:hidden">{{
+              transaction.descricao || (transaction.type === 'credit' ? 'Receita' : 'Despesa')
+            }}</span>
             <!-- Categoria -->
             <span>
               @if (transaction.categoria) {
-                <span id="categoria">
-                  {{ transaction.categoria }}
-                </span>
-              } @else {
-                -
-              }
+              <span id="categoria">
+                {{ transaction.categoria }}
+              </span>
+              } @else { - }
             </span>
-            <!-- Data -->
-            <span>{{ transaction.date ? formatDate(transaction.date) : '-' }}</span>
-
-            <!-- Valor -->
-            <span class="font-bold">{{ formatCurrency(transaction.amount) }}</span>
-
-            <!-- Ações -->
-            <div class="flex gap-2 items-center">
-              <button (click)="onEdit(transaction)" class="hover:opacity-70 transition-opacity">
-                <svg class="w-5 h-5 text-textPrimary hover:text-feedbackInfo" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-              </button>
-              <button (click)="onDelete(transaction.id)" class="hover:opacity-70 transition-opacity">
-                <svg class="w-5 h-5 text-textPrimary hover:text-feedbackDanger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </button>
-            </div>
+            <span class="text-caption">{{
+              transaction.date ? formatDate(transaction.date) : '-'
+            }}</span>
           </div>
         </div>
-      }
+
+        <!-- Linha 2: valor + ações (lado a lado) -->
+        <div class="flex items-center ml-[10px] gap-3">
+          <span class="font-bold">{{ formatCurrency(transaction.amount) }}</span>
+          <button (click)="onEdit(transaction)" class="hover:opacity-70 transition-opacity">
+            <svg
+              class="w-4 h-4 text-textPrimary hover:text-feedbackInfo"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+              />
+            </svg>
+          </button>
+          <button (click)="onDelete(transaction.id)" class="hover:opacity-70 transition-opacity">
+            <svg
+              class="w-4 h-4 text-textPrimary hover:text-feedbackDanger"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Desktop layout -->
+      <div
+        class="hidden sm:grid grid-cols-[3fr_1fr_1fr_1fr_1fr] gap-6 md:gap-0 x:gap-[50px] xl:gap-0 items-center lg:gap-0"
+      >
+        <!-- Transação - coluna mais larga -->
+        <div class="flex md:flex-col lg:flex-row items-center gap-2 overflow-x-hidden">
+          @if (transaction.type === 'credit') {
+          <div
+            class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-feedbackSuccess"
+          >
+            <span class="material-symbols-outlined text-xl text-white"> arrow_upward </span>
+          </div>
+          } @else {
+          <div
+            class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-feedbackAction"
+          >
+            <span class="material-symbols-outlined text-xl text-white"> arrow_downward </span>
+          </div>
+          }
+          <span class="font-semibold">{{
+            transaction.descricao || (transaction.type === 'credit' ? 'Receita' : 'Despesa')
+          }}</span>
+        </div>
+        <!-- Categoria -->
+        <span>
+          @if (transaction.categoria) {
+          <span id="categoria">
+            {{ transaction.categoria }}
+          </span>
+          } @else { - }
+        </span>
+        <!-- Data -->
+        <span>{{ transaction.date ? formatDate(transaction.date) : '-' }}</span>
+
+        <!-- Valor -->
+        <span class="font-bold">{{ formatCurrency(transaction.amount) }}</span>
+
+        <!-- Ações -->
+        <div class="flex gap-2 items-center">
+          <button (click)="onEdit(transaction)" class="hover:opacity-70 transition-opacity">
+            <svg
+              class="w-5 h-5 text-textPrimary hover:text-feedbackInfo"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+              />
+            </svg>
+          </button>
+          <button (click)="onDelete(transaction.id)" class="hover:opacity-70 transition-opacity">
+            <svg
+              class="w-5 h-5 text-textPrimary hover:text-feedbackDanger"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
+    }
+  </div>
   }
 
   <!-- Modal de Edição -->
@@ -114,30 +160,23 @@
     [transaction]="editingTransaction"
     [mode]="'edit'"
     (save)="onSave($event)"
-    (close)="onEditClose()">
+    (close)="onEditClose()"
+  >
   </app-edit-transaction-modal>
 
   <!-- Modal de confirmação de exclusão -->
   @if (deleteId !== null) {
-    <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-      <div class="bg-backgroundPrimary p-lg rounded-xl shadow-lg max-w-sm w-full text-center">
-        <h3 class="text-h6 font-semibold mb-md text-brandSecondary">
-          Confirmar exclusão
-        </h3>
-        <p class="mb-lg text-textPrimary">
-          Tem certeza que deseja excluir esta transação?
-        </p>
-        <div class="w-full flex justify-center">
-          <div class="flex justify-center gap-sm">
-            <app-button variant="primary" (click)="onDeleteCancel()">
-              Cancelar
-            </app-button>
-            <app-button variant="danger" (click)="onDeleteConfirm()">
-              Confirmar
-            </app-button>
-          </div>
+  <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+    <div class="bg-backgroundPrimary p-lg rounded-xl shadow-lg max-w-sm w-full text-center">
+      <h3 class="text-h6 font-semibold mb-md text-brandSecondary">Confirmar exclusão</h3>
+      <p class="mb-lg text-textPrimary">Tem certeza que deseja excluir esta transação?</p>
+      <div class="w-full flex justify-center">
+        <div class="flex justify-center gap-sm">
+          <app-button variant="primary" (click)="onDeleteCancel()"> Cancelar </app-button>
+          <app-button variant="danger" (click)="onDeleteConfirm()"> Confirmar </app-button>
         </div>
       </div>
     </div>
+  </div>
   }
 </div>

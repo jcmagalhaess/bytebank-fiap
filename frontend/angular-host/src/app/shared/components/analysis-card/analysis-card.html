@@ -6,7 +6,9 @@
   }"
 >
   <div class="flex gap-3 items-center">
-    <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl {{ color() }} flex items-center justify-center">
+    <div
+      class="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl {{ color() }} flex items-center justify-center"
+    >
       @if (urlImage()) {
       <img [src]="urlImage()" alt="" class="w-6 h-6 sm:w-8 sm:h-8" />
       }
@@ -17,5 +19,18 @@
     <h5 class="text-xl sm:text-3xl">
       <strong>{{ price() | currency : 'BRL' }}</strong>
     </h5>
+    @if (evolution()) {
+    <span
+      class="flex items-center text-sm sm:text-base"
+      [ngClass]="{ 'text-feedbackSuccess': isPositive(), 'text-feedbackDanger': isNegative() }"
+    >
+      {{ evolution() | percent : '1.0-1' }}
+      <i
+        class="fa-solid text-xs xs:text-base"
+        [ngClass]="{ 'fa-arrow-up': isPositive(), 'fa-arrow-down': isNegative() }"
+      >
+      </i>
+    </span>
+    }
   </div>
 </div>

@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js" // "binaryTargets" is not needed for App Runner with Debian base
+  // binaryTargets = ["native", "debian-openssl-3.0.x"] // You could be explicit like this
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  nome      String
+  email     String   @unique
+  senha     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactions Transaction[] // Um usuário pode ter várias transações
+
+  @@map("users")
+}
+
+// Enum para o tipo de transação
+enum TransactionType {
+  credit
+  debit
+}
+
+model Transaction {
+  id            String          @id @default(uuid())
+  tipoTransacao TransactionType
+  valor         Float
+  descricao     String
+  categoria     String
+  filePath      String? // Caminho para o arquivo (opcional)
+  createdAt     DateTime        @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@map("transactions")
+}

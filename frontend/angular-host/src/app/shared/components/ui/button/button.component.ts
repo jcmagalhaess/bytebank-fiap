@@ -1,27 +1,37 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-export type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'danger' | 'success' | 'warning' | 'info' | 'action';
+import { Component, EventEmitter, input, Output } from '@angular/core';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+export type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'tertiary'
+  | 'danger'
+  | 'success'
+  | 'warning'
+  | 'info'
+  | 'action';
 
 @Component({
   selector: 'app-button',
   templateUrl: './button.component.html',
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule, MatProgressSpinner],
 })
 export class ButtonComponent {
-  @Input() variant: ButtonVariant = 'primary';
-  @Input() disabled: boolean = false;
-  @Input() type: 'button' | 'submit' | 'reset' = 'button';
-  @Input() class: string = '';
+  variant = input<ButtonVariant>('primary');
+  disabled = input<boolean>(false);
+  type = input<'button' | 'submit' | 'reset'>('button');
+  class = input<string>('');
+  loading = input<boolean>(false);
   // Quando fornecido, substitui completamente as classes calculadas
-  @Input() overrideClass: string | null = null;
+  overrideClass = input<string | null>(null);
   @Output() click = new EventEmitter<Event>();
   // Evento alternativo para evitar conflitos com (click) nativo
   @Output() pressed = new EventEmitter<void>();
 
   get buttonClasses(): string {
-    const base = 'px-5 py-2 rounded-lg font-semibold transition-all duration-200 font-inter text-sm leading-5';
+    const base =
+      'px-5 py-2 rounded-lg font-semibold transition-all duration-200 font-inter text-sm leading-5';
 
     const variants = {
       primary: 'bg-brandPrimary text-backgroundPrimary hover:bg-brandPrimaryHover w-full',
@@ -46,17 +56,19 @@ export class ButtonComponent {
     };
 
     // Se overrideClass for fornecido, usar somente ela
-    if (this.overrideClass) {
-      return this.overrideClass.trim();
+    if (this.overrideClass()) {
+      return this.overrideClass()?.trim() || '';
     }
 
-    const variantClasses = this.disabled ? disabledStyles[this.variant] : variants[this.variant];
-    return `${base} ${variantClasses} ${this.class}`.trim();
+    const variantClasses = this.disabled() || this.loading()
+      ? disabledStyles[this.variant()]
+      : variants[this.variant()];
+    return `${base} ${variantClasses} ${this.class()}`.trim();
   }
 
   onButtonClick(event: Event): void {
     console.log('🔘 Button clicked!', event);
-    if (!this.disabled) {
+    if (!this.disabled() || !this.loading()) {
       console.log('🔘 Emitting click event');
       this.click.emit(event);
       this.pressed.emit();

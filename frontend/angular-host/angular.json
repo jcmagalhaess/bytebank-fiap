@@ -16,7 +16,9 @@
       "architect": {
         "build": {
           "builder": "@angular-architects/native-federation:build",
-          "options": {},
+          "options": {
+            "styles": ["src/custom-theme.scss"]
+          },
           "configurations": {
             "production": {
               "target": "angular-host:esbuild:production"
@@ -70,7 +72,11 @@
               },
               "src/assets"
             ],
-            "styles": ["src/tailwind.css", "src/styles.scss"]
+            "styles": [
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
+              "src/tailwind.css",
+              "src/styles.scss"
+            ]
           },
           "configurations": {
             "production": {
@@ -108,7 +114,8 @@
           },
           "defaultConfiguration": "development",
           "options": {
-            "port": 4200
+            "port": 4200,
+            "host": "0.0.0.0"
           }
         }
       }

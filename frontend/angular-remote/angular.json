@@ -69,7 +69,8 @@
               },
               "src/assets"
             ],
-            "styles": ["src/styles.scss"]
+            "styles": ["src/styles.scss"],
+            "externalDependencies": ["*"]
           },
           "configurations": {
             "production": {
@@ -107,7 +108,8 @@
           },
           "defaultConfiguration": "development",
           "options": {
-            "port": 4201
+            "port": 4201,
+            "host": "0.0.0.0"
           }
         }
       }

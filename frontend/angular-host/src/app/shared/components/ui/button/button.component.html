@@ -1,7 +1,16 @@
 <button
-  [type]="type"
-  [disabled]="disabled"
+  [type]="type()"
+  [disabled]="disabled() || loading()"
   [class]="buttonClasses"
-  (click)="onButtonClick($event)">
+  (click)="onButtonClick($event)"
+>
+  @if (loading()) {
+  <div class="flex gap-4">
+    <mat-spinner [diameter]="25" />
+
+    Carregando...
+  </div>
+  } @else {
   <ng-content></ng-content>
+  }
 </button>

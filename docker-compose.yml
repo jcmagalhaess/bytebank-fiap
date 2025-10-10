@@ -1,63 +1,73 @@
 version: "3.8"
 
 services:
-  # Serviço para o Front-end (Next.js)
-  frontend:
-    # Use o Dockerfile na pasta 'frontend' para construir a imagem
+  api:
     build:
-      context: ./frontend/next
+      context: ./api
       dockerfile: Dockerfile
-    # Mapeia a porta 4200 do container para a porta 4200 da sua máquina
+    ports:
+      - "3333:3333"
+    command: sh -c "npx prisma generate && npx prisma migrate deploy && npm run dev"
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+    env_file:
+      - ./api/.env
+    restart: always
+    depends_on:
+      - db
+    networks:
+      - bytebank-net
+
+  angular-host:
+    build:
+      context: ./frontend/angular-host
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    command: sh -c "npm run start"
+    restart: always
+    volumes:
+      - ./frontend/angular-host:/app
+      - /app/node_modules
+    depends_on:
+      - api
+    networks:
+      - bytebank-net
+
+  angular-remote:
+    build:
+      context: ./frontend/angular-remote
+      dockerfile: Dockerfile
     ports:
       - "4201:4201"
-    # Reinicia o container se ele falhar
+    command: sh -c "npm run start"
     restart: always
-    # Define as variáveis de ambiente necessárias para o Next.js
-    environment:
-      - PORT=4201
-      - NEXT_PUBLIC_API_URL=http://localhost:3000
-      - PUBLIC_API_URL=http://localhost:8080
-    # Monta um volume para o hot-reloading em modo de desenvolvimento
     volumes:
-      - ./frontend:/app
-    # Depende do backend estar rodando
+      - ./frontend/angular-remote:/app
+      - /app/node_modules
     depends_on:
-      - backend
+      - api
+    networks:
+      - bytebank-net
 
-  # Serviço para o Back-end
-  backend:
-    # Use o Dockerfile na pasta 'backend' para construir a imagem
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    # Mapeia a porta do back-end (ex: 5000) para a sua máquina
-    ports:
-      - "8080:8080"
-    # Reinicia o container se ele falhar
+  db:
+    image: postgres:14
     restart: always
-    # Opcional: Define variáveis de ambiente para o back-end
-    environment:
-      - NODE_ENV=development
-      - MONGODB_URI=mongodb+srv://bytebank-fiap:q8l3VKdIXvWvUYmU@cluster0.gylk9nh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-      - PORT=8080
-    # Opcional: Monta um volume para o hot-reloading
-    #q8l3VKdIXvWvUYmU
-    volumes:
-      - ./backend:/app
-    # Depende do MongoDB estar rodando
-    depends_on:
-      - mongo
-
-  # Serviço para o MongoDB
-  mongo:
-    image: mongo:latest
     ports:
-      - "27017:27017"
-    restart: always
+      - "5432:5432"
     environment:
-      - MONGO_INITDB_DATABASE=bytebank
+      POSTGRES_USER: bytebank
+      POSTGRES_PASSWORD: bytebank-2025
+      POSTGRES_DB: bytebank_db
     volumes:
-      - mongo_data:/data/db
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - bytebank-net
 
 volumes:
-  mongo_data:
+  pgdata:
+
+networks:
+  bytebank-net:
+    driver: bridge

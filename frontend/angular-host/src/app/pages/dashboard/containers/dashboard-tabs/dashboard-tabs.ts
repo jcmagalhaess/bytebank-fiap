@@ -1,10 +1,8 @@
-import { Component, computed, inject, signal, OnInit, OnDestroy } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { Component, computed, inject } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { INav } from '../../../../shared/interfaces/nav.interface';
 import { getFirstName } from '../../../../shared/utils/format';
-import { filter } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard-tabs',
@@ -12,42 +10,17 @@ import { Subscription } from 'rxjs';
   templateUrl: './dashboard-tabs.html',
   styleUrl: './dashboard-tabs.scss',
 })
-export class DashboardTabs implements OnInit, OnDestroy {
+export class DashboardTabs {
   private readonly _authService = inject(AuthService);
   private readonly _router = inject(Router);
-  private subscription?: Subscription;
 
-  public username = computed(() => getFirstName(this._authService.user()?.username ?? ''));
+  public username = computed(() => getFirstName(this._authService.account()?.nome ?? ''));
 
-  // Signal para controlar o estado da página atual
-  private currentUrl = signal(this._router.url);
-
-  // Computed para verificar se estamos na página de transações
-  public isTransactionsPage = computed(() => {
-    const url = this.currentUrl();
-    console.log('Current URL:', url); // Debug
-    return url.includes('transactions');
-  });
-
-  ngOnInit() {
-    // Escutar mudanças na rota
-    this.subscription = this._router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        console.log('Navigation event:', event.url); // Debug
-        this.currentUrl.set(event.url);
-      });
-  }
-
-  ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-  }
+  public isTransactionsPage = computed(() => this._router.url.includes('transactions'));
 
   public navLinks: INav[] = [
-    { name: 'Dashboard', path: '' },
+    { name: 'Dashboard', path: '/' },
     { name: 'Transações', path: 'transactions' },
-    { name: 'Orçamento', path: 'budget' },
+    // { name: 'Orçamento', path: 'budget' },
   ];
 }

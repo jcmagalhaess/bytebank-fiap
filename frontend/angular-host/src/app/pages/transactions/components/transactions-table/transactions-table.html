@@ -1,0 +1,54 @@
+@if (loading()) {
+<mat-progress-bar color="primary" mode="indeterminate"></mat-progress-bar>
+} @else {
+  <div class="h-4px"></div>
+}
+<div class="bg-backgroundPrimary rounded-lg px-4 py-4 w-full overflow-x-hidden">
+  @if (list()?.meta.total === 0) {
+  <div class="flex justify-center items-center py-8">
+    <p class="text-gray-500">
+      {{ loading() ? 'Carregando transações...' : 'Nenhuma transação encontrada.' }}
+    </p>
+  </div>
+  } @else {
+  <div
+    class="hidden sm:grid grid-cols-[3fr_1fr_1fr_1fr_1fr] gap-6 md:gap-0 x:gap-[50px] xl:gap-0 lg:gap-0 items-center text-sm font-semibold text-textPrimary mb-sm"
+  >
+    <span class="ml-2">Transação</span>
+    <span>Categoria</span>
+    <span>Data</span>
+    <span class="ml-[-10px]">Valor</span>
+    <span>Ações</span>
+  </div>
+
+  <div class="space-y-0">
+    @for (transaction of list()?.data; track transaction.id) {
+    <app-transaction-row
+      [type]="transaction.tipoTransacao"
+      [date]="(transaction.createdAt | date : 'dd/MM/yyyy')!"
+      [categoria]="transaction.categoria"
+      [amount]="(transaction.valor | currency : 'BRL')!"
+      [descricao]="transaction.descricao"
+      [pdfUrl]="transaction.filePath"
+      [pdfFileName]="transaction.pdfFileName"
+      (edit)="edit.emit(transaction)"
+      (delete)="delete.emit(transaction.id)"
+      (pdfView)="pdfView.emit(transaction.id)"
+      (pdfUpload)="pdfUpload.emit(transaction)"
+    />
+    }
+  </div>
+  }
+</div>
+
+@if (pagination()) {
+<div class="mt-6">
+  <app-pagination
+    [currentPage]="list()?.meta.page"
+    [totalPages]="list()?.meta.totalPages"
+    [itemsPerPage]="list()?.meta.pageSize"
+    [totalItems]="list()?.meta.total"
+    (pageChange)="pageChange.emit($event)"
+  />
+</div>
+}

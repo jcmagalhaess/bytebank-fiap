@@ -21,9 +21,9 @@
       <ng-content></ng-content>
       <div class="signup-link">
         @if (login()) {
-        <p>Deseja criar uma conta? <a href="/auth/register">Cadastre-se</a></p>
+        <p>Deseja criar uma conta? <a routerLink="/auth/register">Cadastre-se</a></p>
         } @else {
-        <p>Já possui uma conta? <a href="/auth/login">Acesse aqui</a></p>
+        <p>Já possui uma conta? <a routerLink="/auth/login">Acesse aqui</a></p>
         }
       </div>
     </div>

@@ -1,8 +1,11 @@
 export const API_CONFIG = {
-  BASE_URL: 'http://localhost:8080',
+  BASE_URL: 'http://localhost:3333',
   ENDPOINTS: {
-    LOGIN: 'user/auth',
-    REGISTER: 'user',
-    ACCOUNT: 'account',
+    LOGIN: 'users/login',
+    REGISTER: 'users',
+    ACCOUNT: 'users/me',
+    TRANSACTIONS: 'transactions',
+    SUMMARY: 'transactions/summary',
+    YEARLY_SUMMARY: 'transactions/yearly-summary',
   },
 };

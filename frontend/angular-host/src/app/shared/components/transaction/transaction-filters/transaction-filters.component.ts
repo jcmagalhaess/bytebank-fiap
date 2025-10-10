@@ -5,7 +5,7 @@ import { InputComponent } from '../../ui/input/input.component';
 import { SelectComponent } from '../../ui/select/select.component';
 
 export interface FilterState {
-  type: 'all' | 'deposit' | 'transfer';
+  type: 'all' | 'credit' | 'debit';
   startDate: string;
   endDate: string;
   category: string;
