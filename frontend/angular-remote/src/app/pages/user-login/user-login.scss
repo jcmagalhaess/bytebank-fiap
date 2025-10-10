@@ -1,5 +1,7 @@
 $form-bg: #ddebf8;
 $primary-accent: #00aaff;
+$primary-accent-hover: #0088cc;
+$primary-accent-disabled: #99e0ff;
 $text-secondary: #8d93a1;
 $text-light: #ffffff;
 
@@ -54,11 +56,11 @@ $text-light: #ffffff;
   transition: background-color 0.2s ease-in-out;
 
   &:hover:not(:disabled) {
-    background-color: darken($primary-accent, 10%);
+    background-color: $primary-accent-hover;
   }
 
   &:disabled {
-    background-color: lighten($primary-accent, 20%);
+    background-color: $primary-accent-disabled;
     cursor: not-allowed;
   }
 }
