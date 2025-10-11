@@ -67,7 +67,15 @@ export class TransactionsForm implements OnInit {
         if (value instanceof File) {
           formData.append(key, value, value.name);
         } else if (value !== null && value !== undefined) {
-          formData.append(key, String(value));
+          // Converte o valor monetário para o formato correto
+          if (key === 'valor') {
+            // Converte de formato brasileiro (1.234,56) para decimal (1234.56)
+            const numericValue = String(value).replace(/\./g, '').replace(',', '.');
+            const decimalValue = parseFloat(numericValue);
+            formData.append(key, String(decimalValue));
+          } else {
+            formData.append(key, String(value));
+          }
         }
       }
     }
