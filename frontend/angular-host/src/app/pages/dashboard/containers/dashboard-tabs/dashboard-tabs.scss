@@ -1,6 +1,8 @@
 .dashboard__header {
   background-image: radial-gradient(circle 500px at 40%, #00aaff, #0f2c59 120%);
   position: relative;
+  min-height: 200px;
+
   &::before {
     content: '';
     position: absolute;
@@ -10,12 +12,37 @@
     height: 100%;
     z-index: 1;
     background-image: url('../../../../../assets/img/Noise.png');
+    background-size: cover;
+    background-repeat: no-repeat;
   }
 }
 
 // Garantir que o container de conteúdo tenha posicionamento consistente
 .dashboard__content {
   position: relative;
-  top: -4rem; // -top-16 equivalente
+  top: -2.5rem; // Ajustado para mobile
   z-index: 10;
+
+  @media (min-width: 640px) {
+    top: -3rem; // Ajustado para tablet
+  }
+
+  @media (min-width: 1024px) {
+    top: -4rem; // -top-16 equivalente para desktop
+  }
+}
+
+// Melhorias para dispositivos móveis
+@media (max-width: 640px) {
+  .dashboard__header {
+    min-height: 160px;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+  }
+
+  .dashboard__content {
+    top: -2rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
 }
