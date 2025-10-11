@@ -23,9 +23,7 @@ export class DashboardTabs {
     // Atualiza o signal quando a rota muda
     this._router.events.subscribe(() => {
       const url = this._router.url;
-      console.log('🔍 URL atual:', url);
       const isTransactions = url.includes('/transactions');
-      console.log('🔍 É página de transações?', isTransactions);
       this.isTransactionsPage.set(isTransactions);
     });
 
@@ -35,8 +33,18 @@ export class DashboardTabs {
   }
 
   public navLinks: INav[] = [
-    { name: 'Dashboard', path: '/' },
+    { name: 'Dashboard', path: '/dashboard' },
     { name: 'Transações', path: 'transactions' },
     // { name: 'Orçamento', path: 'budget' },
   ];
+
+  public isRouteActive(path: string): boolean {
+    const currentUrl = this._router.url;
+
+    if (path === '/dashboard') {
+      return currentUrl === '/dashboard' || currentUrl === '/dashboard/';
+    }
+
+    return currentUrl.includes(path);
+  }
 }

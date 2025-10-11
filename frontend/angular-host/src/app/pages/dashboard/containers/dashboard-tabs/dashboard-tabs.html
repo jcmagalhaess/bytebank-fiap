@@ -16,9 +16,7 @@
         <a
           class="dashboard__menu-item text-sm lg:text-base px-3 py-2 lg:px-4 lg:py-2"
           [routerLink]="item.path"
-          routerLinkActive="dashboard__menu-item--active"
-          [routerLinkActiveOptions]="{ exact: true }"
-          #link="routerLinkActive"
+          [class.dashboard__menu-item--active]="isRouteActive(item.path)"
           [attr.data-path]="item.path"
         >
           {{ item.name }}
