@@ -4,6 +4,7 @@ services:
   api:
     build:
       context: ./api
+      target: builder # Diz ao Docker para usar o estágio "builder" do Dockerfile
       dockerfile: Dockerfile
     ports:
       - "3333:3333"

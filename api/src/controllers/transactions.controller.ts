@@ -42,7 +42,7 @@ export class TransactionsController {
       const fileKey = `${randomBytes(16).toString("hex")}-${file.originalname}`;
 
       const putCommand = new PutObjectCommand({
-        Bucket: process.env.AWS_BUCKET_NAME,
+        Bucket: process.env.S3_BUCKET_NAME,
         Key: fileKey,
         Body: file.buffer,
         ContentType: file.mimetype,
@@ -109,7 +109,7 @@ export class TransactionsController {
       const fileKey = `${randomBytes(16).toString("hex")}-${file.originalname}`;
 
       const putCommand = new PutObjectCommand({
-        Bucket: process.env.AWS_BUCKET_NAME,
+        Bucket: process.env.S3_BUCKET_NAME,
         Key: fileKey,
         Body: file.buffer,
         ContentType: file.mimetype,
@@ -120,7 +120,7 @@ export class TransactionsController {
       filePath = fileKey;
     } else if (req.body.comprovante === "") {
       // Se 'comprovante' for uma string vazia, significa que o usuário removeu o arquivo
-      filePath = null;
+      filePath = undefined;
     }
 
     const updatedTransaction = await transactionsService.update(id!, userId, {
@@ -158,14 +158,14 @@ export class TransactionsController {
 
     // 1. Pega os metadados do arquivo (tamanho)
     const headCommand = new HeadObjectCommand({
-      Bucket: process.env.AWS_BUCKET_NAME,
+      Bucket: process.env.S3_BUCKET_NAME,
       Key: fileKey,
     });
     const { ContentLength: size } = await s3Client.send(headCommand);
 
     // 2. Gera a URL de preview
     const getCommand = new GetObjectCommand({
-      Bucket: process.env.AWS_BUCKET_NAME,
+      Bucket: process.env.S3_BUCKET_NAME,
       Key: fileKey,
     });
     const url = await getSignedUrl(s3Client, getCommand, { expiresIn: 3600 }); // URL válida por 1 hora
@@ -194,7 +194,7 @@ export class TransactionsController {
     const name = fileKey.split("-").slice(1).join("-");
 
     const getCommand = new GetObjectCommand({
-      Bucket: process.env.AWS_BUCKET_NAME,
+      Bucket: process.env.S3_BUCKET_NAME,
       Key: fileKey,
       ResponseContentDisposition: `attachment; filename="${name}"`,
     });

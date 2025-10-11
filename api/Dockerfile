@@ -1,29 +1,48 @@
-# Use uma imagem base do Node.js. A versão alpine é leve.
-FROM node:18-alpine
+# /home/juliomagalhaes/Documentos/bytebank-fiap/api/Dockerfile
 
-# Define o diretório de trabalho dentro do contêiner
+# --- Estágio de Build ---
+# Este estágio instala as devDependencies, compila o TypeScript e gera o Prisma Client.
+FROM node:18-alpine AS builder
+
 WORKDIR /app
 
-# Copia o package.json e package-lock.json (ou yarn.lock, etc.)
-# Isso aproveita o cache do Docker, reinstalando dependências apenas se esses arquivos mudarem.
-COPY package*.json ./
+# Copia os arquivos de manifesto do projeto
+COPY package.json package-lock.json ./
 
-# Copia o schema do Prisma para garantir que o cliente seja gerado corretamente
-COPY prisma ./prisma/
+# Instala todas as dependências, incluindo as de desenvolvimento para o build
+RUN npm install
 
-# Instala as dependências do projeto
-# Instala as dependências de build, executa o npm install e depois remove as dependências de build
-RUN apk add --no-cache --virtual .build-deps build-base python3 && \
-    npm install --no-optional && \
-    npm cache clean --force && \
-    apk del .build-deps
-
-# Copia o restante do código-fonte da aplicação para o diretório de trabalho
+# Copia o restante do código-fonte da aplicação
 COPY . .
 
-# Expõe a porta em que a API será executada
+# Gera o Prisma Client
+RUN npx prisma generate
+
+# Compila o TypeScript para JavaScript, criando a pasta /dist
+RUN npm run build
+
+
+# --- Estágio de Produção ---
+# Este estágio cria uma imagem final menor, apenas com o necessário para rodar.
+FROM node:18-alpine AS production
+
+WORKDIR /app
+
+# Copia os arquivos de manifesto novamente
+COPY package.json package-lock.json ./
+
+# Instala APENAS as dependências de produção
+RUN npm install --omit=dev
+
+# Copia o schema do Prisma para a imagem final para que o migrate funcione
+COPY --from=builder /app/prisma ./prisma
+
+# **A ETAPA MAIS IMPORTANTE: Copia o código compilado (pasta dist) do estágio de build**
+COPY --from=builder /app/dist ./dist
+
+# Expõe a porta que a aplicação usa
 EXPOSE 3333
 
-# O comando para iniciar a aplicação será fornecido pelo docker-compose.yml
-# A linha abaixo é a que provavelmente precisa ser corrigida
-CMD [ "node", "dist/server.js" ]
+# Comando que o App Runner irá executar.
+# Primeiro, ele aplica as migrações do banco e depois inicia o servidor.
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/server.js"]

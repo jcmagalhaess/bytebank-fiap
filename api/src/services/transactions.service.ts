@@ -12,7 +12,7 @@ export type CreateTransactionDTO = {
   descricao: string;
   categoria: string;
   userId: string;
-  filePath?: string;
+  filePath?: string | null;
 };
 
 export class TransactionsService {
