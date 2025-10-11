@@ -65,6 +65,7 @@ $text-light: #ffffff;
         background-image: url('/logo_bytebank-2.png');
         background-repeat: no-repeat;
         background-position: center;
+        background-size: contain; // Garante que o logo caiba no container
       }
     }
 
@@ -81,11 +82,11 @@ $text-light: #ffffff;
     h4 {
       position: relative; // Para ficar acima dos pseudo-elementos
       z-index: 2;
-      font-size: 1.5rem; // 24px
-      font-weight: 600; // Semibold
-      line-height: 2rem; // 32px
+      font-size: 1.5rem;
+      font-weight: 600;
+      line-height: 2rem;
       margin: 0;
-      max-width: 28rem; // 450px
+      max-width: 28rem;
     }
   }
 
@@ -147,6 +148,9 @@ $text-light: #ffffff;
 
 // --- Media Query para Responsividade ---
 @media (max-width: 1200px) {
+  :host {
+    overflow: auto;
+  }
   .login-page {
     flex-direction: column;
 
@@ -172,28 +176,72 @@ $text-light: #ffffff;
 
     .form-section {
       flex: 1;
+      display: flex; // Adicionado para permitir centralização
+      justify-content: center;
+      align-items: center;
       // O efeito de sobreposição é removido para um layout mais simples
       .login-form-container {
         min-height: auto;
         width: 80%;
         max-width: 500px;
-        padding: 3rem;
-        margin-top: -4rem; // Cria uma leve sobreposição com o banner
+        padding: 2.5rem;
+        margin-top: 2.5rem;
         margin-bottom: 2rem;
+        margin-left: 0;
       }
     }
   }
 }
 
 @media (max-width: 768px) {
-  .login-page .welcome-section {
-    // Em telas de celular, a seção de boas-vindas é removida para focar no formulário
-    display: none;
+  :host {
+    background-color: $form-card-bg;
   }
 
-  .login-page .form-section .login-form-container {
-    width: 90%;
-    margin-top: 0;
-    box-shadow: none; // Remove a sombra em telas pequenas
+  .login-page {
+    .welcome-section {
+      flex: 0 0 auto;
+      align-items: flex-start; // Alinha o logo à esquerda
+      background: none;
+      padding: 2rem 3rem 0;
+
+      &::before {
+        display: none; // Remove o efeito de gradiente
+      }
+
+      .logo-container {
+        margin-bottom: 0;
+      }
+
+      .logo-container .logo-placeholder {
+        // Altera para o logo positivo em telas menores
+        background-image: url('/logo_positivo.png');
+        width: 12rem;
+      }
+
+      // Oculta os textos de boas-vindas em telas menores
+      h1 {
+        display: none;
+      }
+      h4 {
+        display: none;
+      }
+    }
+  }
+
+  .login-page .form-section {
+    // Garante que a seção do formulário ocupe todo o espaço e centralize o conteúdo
+    padding: 1rem;
+    align-items: flex-start;
+    background-color: $form-card-bg;
+
+    .login-form-container {
+      width: 100%; // Ocupa a largura total disponível
+      max-width: 100%;
+      margin: 0; // Remove margens de sobreposição
+      box-shadow: none;
+      border-radius: 0;
+      padding-top: 1.5rem;
+    }
   }
 }

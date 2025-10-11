@@ -5,8 +5,14 @@ $primary-accent-disabled: #99e0ff;
 $text-secondary: #8d93a1;
 $text-light: #ffffff;
 
+.registration-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* Espaçamento moderno entre os elementos */
+}
+
 .form-group {
-  margin-bottom: 1.5rem;
+  /* margin-bottom removido em favor do gap no .registration-form */
 
   input {
     width: 100%;
@@ -70,6 +76,5 @@ $text-light: #ffffff;
   color: #721c24;
   padding: 1rem;
   border-radius: 4px;
-  margin-bottom: 1.5rem;
   text-align: center;
 }
