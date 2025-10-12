@@ -1,32 +1,32 @@
 <div
-  class="bg-white rounded-3xl shadow-md flex relative"
+  class="bg-white rounded-3xl shadow-md flex relative min-h-[120px] h-full"
   [ngClass]="{
-    'flex-col sm:flex-row gap-4 sm:gap-10 px-4 sm:px-7 py-6 sm:py-14': isHorizontal(),
-    'flex-col gap-3 sm:gap-5 p-4 sm:p-7': isVertical()
+    'flex-col sm:flex-row gap-4 sm:gap-6 lg:gap-10 px-4 sm:px-6 lg:px-7 py-6 lg:py-14 items-center': isHorizontal(),
+    'flex-col gap-3 lg:gap-5 p-4 lg:p-7': isVertical()
   }"
 >
-  <div class="flex gap-3 items-center">
+  <div class="flex gap-3 items-center flex-shrink-0">
     <div
-      class="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl {{ color() }} flex items-center justify-center"
+      class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-2xl {{ color() }} flex items-center justify-center flex-shrink-0"
     >
       @if (urlImage()) {
-      <img [src]="urlImage()" alt="" class="w-6 h-6 sm:w-8 sm:h-8" />
+      <img [src]="urlImage()" alt="" class="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8" />
       }
     </div>
-    <h4 class="text-[#B3B3B3] text-sm sm:text-base">{{ label() }}</h4>
+    <h4 class="text-[#B3B3B3] text-sm sm:text-base font-medium">{{ label() }}</h4>
   </div>
-  <div class="flex gap-3 items-center">
-    <h5 class="text-xl sm:text-3xl">
-      <strong>{{ price() | currency : 'BRL' }}</strong>
+  <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 lg:gap-3 items-center flex-1">
+    <h5 class="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[#0A2A4D]">
+      {{ price() | currency : 'BRL' }}
     </h5>
     @if (evolution()) {
     <span
-      class="flex items-center text-sm sm:text-base"
+      class="flex items-center text-sm sm:text-base font-medium"
       [ngClass]="{ 'text-feedbackSuccess': isPositive(), 'text-feedbackDanger': isNegative() }"
     >
       {{ evolution() | percent : '1.0-1' }}
       <i
-        class="fa-solid text-xs xs:text-base"
+        class="fa-solid text-xs sm:text-sm ml-1"
         [ngClass]="{ 'fa-arrow-up': isPositive(), 'fa-arrow-down': isNegative() }"
       >
       </i>

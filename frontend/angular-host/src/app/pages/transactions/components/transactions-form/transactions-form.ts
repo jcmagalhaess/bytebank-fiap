@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input, OnInit, output } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { CategoryAutocompleteComponent } from '../../../../shared/components/category-autocomplete';
 import { InputFile } from '../../../../shared/components/input-file/input-file';
 import { ButtonComponent, InputComponent } from '../../../../shared/components/ui';
 import { ITransactionType } from '../../../../shared/interfaces/transaction.interface';
@@ -9,7 +10,7 @@ import { TransactionsService } from '../../services/transactions.service';
 
 @Component({
   selector: 'app-transactions-form',
-  imports: [ReactiveFormsModule, ButtonComponent, InputComponent, InputFile, CommonModule],
+  imports: [ReactiveFormsModule, ButtonComponent, InputComponent, InputFile, CategoryAutocompleteComponent, CommonModule],
   templateUrl: './transactions-form.html',
   styleUrl: './transactions-form.scss',
 })
@@ -51,6 +52,11 @@ export class TransactionsForm implements OnInit {
     }
   }
 
+  onCategorySelected(category: string): void {
+    console.log('Categoria selecionada:', category);
+    // A categoria já é automaticamente definida pelo ControlValueAccessor
+  }
+
   handleTransaction(transaction: any) {
     const formData = new FormData();
 
@@ -61,7 +67,15 @@ export class TransactionsForm implements OnInit {
         if (value instanceof File) {
           formData.append(key, value, value.name);
         } else if (value !== null && value !== undefined) {
-          formData.append(key, String(value));
+          // Converte o valor monetário para o formato correto
+          if (key === 'valor') {
+            // Converte de formato brasileiro (1.234,56) para decimal (1234.56)
+            const numericValue = String(value).replace(/\./g, '').replace(',', '.');
+            const decimalValue = parseFloat(numericValue);
+            formData.append(key, String(decimalValue));
+          } else {
+            formData.append(key, String(value));
+          }
         }
       }
     }

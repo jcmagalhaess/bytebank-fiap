@@ -1,32 +1,40 @@
-<div class="flex flex-col gap-4 lg:gap-8">
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
-    <div class="bg-white rounded-3xl shadow-md p-4 lg:p-7 h-[300px] lg:h-[384px]">
-      <h2 class="text-lg font-semibold text-[#0A2A4D]">Análise Financeira</h2>
-
-      <app-chart
-        [data]="yearlySummary.datasets"
-        [labels]="monthLabels"
-        type="bar"
-        indexAxis="x"
-        [stacked]="true"
-      />
+<div class="flex flex-col gap-4 sm:gap-6 lg:gap-8">
+  <!-- Grid principal com análise financeira e cards -->
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+    <!-- Gráfico de análise financeira -->
+    <div class="bg-white rounded-3xl shadow-md p-4 sm:p-6 lg:p-7 h-[280px] sm:h-[320px] lg:h-[384px] xl:h-[400px]">
+      <h2 class="text-base sm:text-lg font-semibold text-[#0A2A4D] mb-4">Análise Financeira</h2>
+      <div class="h-[calc(100%-3rem)]">
+        <app-chart
+          [data]="yearlySummary.datasets"
+          [labels]="monthLabels"
+          type="bar"
+          indexAxis="x"
+          [stacked]="true"
+        />
+      </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 lg:gap-8">
-      <app-analysis-card
-        label="Receitas"
-        type="income"
-        [price]="summary?.credit?.value!"
-        [evolution]="summary?.credit?.evolution!"
-      />
-      <app-analysis-card
-        label="Despesas"
-        type="expense"
-        [price]="summary?.debit?.value!"
-        [evolution]="summary?.debit?.evolution!"
-      />
+    <!-- Cards de análise -->
+    <div class="flex flex-col gap-4 sm:gap-6">
+      <!-- Cards de receitas e despesas -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        <app-analysis-card
+          label="Receitas"
+          type="income"
+          [price]="summary?.credit?.value!"
+          [evolution]="summary?.credit?.evolution!"
+        />
+        <app-analysis-card
+          label="Despesas"
+          type="expense"
+          [price]="summary?.debit?.value!"
+          [evolution]="summary?.debit?.evolution!"
+        />
+      </div>
 
-      <div class="col-span-1 sm:col-span-2 lg:col-span-2">
+      <!-- Card de balanço -->
+      <div class="w-full">
         <app-analysis-card
           label="Balanço"
           type="balance"
@@ -37,5 +45,8 @@
     </div>
   </div>
 
-  <app-transactions-widget />
+  <!-- Widget de transações -->
+  <div class="w-full">
+    <app-transactions-widget />
+  </div>
 </div>

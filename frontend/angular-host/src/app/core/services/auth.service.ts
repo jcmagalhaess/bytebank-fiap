@@ -40,8 +40,10 @@ export interface IUserSummary {
   total: number;
 }
 
-export type IUserYearlySummary = Omit<IUserSummary, 'total'> & {
+export type IUserYearlySummary = {
   month: string;
+  credit: number;
+  debit: number;
 };
 
 /**

@@ -61,7 +61,19 @@ export class InputComponent implements ControlValueAccessor {
 
   onInput(event: Event): void {
     const target = event.target as HTMLInputElement;
-    this.value = target.value;
+    let rawValue = target.value.replace(/\D/g, ''); // Remove tudo que não é número
+
+    if (this.inputMode === 'numeric' && rawValue) {
+      // Converte para formato monetário brasileiro
+      // Se digitar 1211, vira 12,11
+      // Se digitar 121100, vira 1.211,00
+      const numericValue = parseInt(rawValue);
+      const formattedValue = this.formatCurrencyValue(numericValue);
+      this.value = formattedValue;
+    } else {
+      this.value = target.value;
+    }
+
     this.valueChange.emit(this.value);
     this.onChange(this.value);
     this.input.emit(event);
@@ -95,5 +107,16 @@ export class InputComponent implements ControlValueAccessor {
 
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
+  }
+
+  private formatCurrencyValue(value: number): string {
+    // Converte centavos para reais
+    const reais = value / 100;
+
+    // Formata com separadores brasileiros
+    return reais.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
   }
 }

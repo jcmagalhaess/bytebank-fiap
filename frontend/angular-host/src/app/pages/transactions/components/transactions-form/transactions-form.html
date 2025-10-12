@@ -40,14 +40,14 @@
     >
     </app-input>
 
-    <app-input
-      label="Categoria"
-      type="text"
-      formControlName="categoria"
-      [required]="true"
-      placeholder="Ex: combustível, gasolina, alimentação..."
-    >
-    </app-input>
+    <div class="mb-md">
+      <label class="block text-sm font-medium text-textPrimary mb-2">Categoria</label>
+      <app-category-autocomplete
+        formControlName="categoria"
+        placeholder="Digite a categoria (ex: ifood, uber, farmácia...)"
+        (categorySelected)="onCategorySelected($event)"
+      />
+    </div>
 
     <app-input-file label="Comprovante" formControlName="comprovante"></app-input-file>
 
