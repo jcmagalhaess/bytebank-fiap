@@ -2,6 +2,9 @@
 
 Sistema de controle financeiro com frontend em Angular (arquitetura de micro frontends: host e remote) e backend em Node.js/Express com Prisma e PostgreSQL, containerizado com Docker.
 
+[Assista ao vídeo no YouTube](https://www.youtube.com/watch?v=aNWfAj2hJGk)
+
+
 ## 🚀 Funcionalidades
 
 - ✅ **Autenticação de usuários** - Login e registro
@@ -188,18 +191,6 @@ bytebank-fiap/
 - `GET /transactions/{id}/receipt` - Visualizar recibo
 - `GET /transactions/{id}/receipt/download` - Download de recibo
 - `DELETE /transactions/{id}` - Remover transação
-
-## 🤝 Contribuição
-
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
 ## 👥 Equipe
 
