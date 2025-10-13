@@ -1,6 +1,6 @@
 # ByteBank - Sistema de Controle Financeiro
 
-Sistema de controle financeiro desenvolvido com Next.js (frontend) e Node.js/Express (backend), containerizado com Docker.
+Sistema de controle financeiro com frontend em Angular (arquitetura de micro frontends: host e remote) e backend em Node.js/Express com Prisma e PostgreSQL, containerizado com Docker.
 
 ## 🚀 Funcionalidades
 
@@ -15,24 +15,24 @@ Sistema de controle financeiro desenvolvido com Next.js (frontend) e Node.js/Exp
 
 ### Frontend
 
-- Next.js 15
-- React 19
+- Angular 20 (aplicações `angular-host` e `angular-remote`)
 - TypeScript
-- Tailwind CSS
-- Context API para gerenciamento de estado
+- Tailwind CSS (no host)
+- Module Federation (Native Federation)
 
 ### Backend
 
 - Node.js
 - Express.js
-- MongoDB
+- Prisma ORM
+- PostgreSQL
 - JWT para autenticação
-- Swagger para documentação da API
+- Swagger (OpenAPI) para documentação da API
 
 ### Infraestrutura
 
 - Docker & Docker Compose
-- MongoDB (containerizado)
+- PostgreSQL (containerizado)
 
 ## 📋 Pré-requisitos
 
@@ -56,41 +56,54 @@ docker-compose up --build
 
 ### 3. Acesse a aplicação
 
-- **Frontend**: http://localhost:4200
-- **Backend API**: http://localhost:8080
-- **Documentação da API**: http://localhost:8080/docs
-- **MongoDB**: localhost:27017
+- **Angular Host**: http://localhost:4200
+- **Angular Remote**: http://localhost:4201
+- **Backend API**: http://localhost:3333
+- **Documentação da API (Swagger)**: http://localhost:3333/api-docs
+- **PostgreSQL**: localhost:5432 (usuário: `bytebank`, senha: `bytebank-2025`, db: `bytebank_db`)
 
 ## 🔧 Configuração
 
-### Variáveis de Ambiente
+### Variáveis de Ambiente (API)
 
-O projeto está configurado para funcionar automaticamente com Docker. As variáveis de ambiente são:
+O projeto está configurado para funcionar automaticamente com Docker. Para executar localmente (ou customizar), configure as variáveis na pasta `api`:
 
-- `NEXT_PUBLIC_API_URL`: URL da API (configurada automaticamente para `http://localhost:3000`)
-- `MONGODB_URI`: URI de conexão com MongoDB (configurada automaticamente para `mongodb://mongo:27017/bytebank`)
+- `DATABASE_URL`: URL de conexão do PostgreSQL (Prisma). Exemplo (Docker):
+  `postgresql://bytebank:bytebank-2025@db:5432/bytebank_db?schema=public`
+- `JWT_SECRET`: segredo para assinatura dos tokens JWT
+- (Opcional) Variáveis para storage S3 se os recibos forem enviados para S3
 
 ### Para desenvolvimento local (sem Docker)
 
 Se quiser rodar localmente sem Docker:
 
-1. **Backend**:
+1. **API (Node/Express/Prisma)**
 
 ```bash
-cd backend
+cd api
 npm install
+npx prisma generate
+npx prisma migrate dev
 npm run dev
 ```
 
-2. **Frontend**:
+2. **Frontend Angular Host**
 
 ```bash
-cd frontend
+cd frontend/angular-host
 npm install
-npm run dev
+npm run start
 ```
 
-3. **MongoDB**: Instale e configure um MongoDB local
+3. **Frontend Angular Remote**
+
+```bash
+cd frontend/angular-remote
+npm install
+npm run start
+```
+
+4. **Banco de dados**: Utilize um PostgreSQL local (ex.: Postgres 14) e aponte `DATABASE_URL` adequadamente, ou suba somente o serviço `db` do `docker-compose`.
 
 ## 📱 Como usar
 
@@ -124,21 +137,18 @@ npm run dev
 
 ```
 bytebank-fiap/
-├── frontend/                 # Aplicação Next.js
+├── api/                      # API Node.js/Express + Prisma (PostgreSQL)
 │   ├── src/
-│   │   ├── app/             # Páginas e rotas
-│   │   ├── components/      # Componentes React
-│   │   ├── contexts/        # Context API
-│   │   ├── services/        # Serviços de API
-│   │   └── hooks/           # Custom hooks
-├── backend/                 # API Node.js/Express
-│   ├── src/
-│   │   ├── controller/      # Controllers
-│   │   ├── feature/         # Lógica de negócio
-│   │   ├── infra/           # Infraestrutura (MongoDB)
-│   │   ├── models/          # Modelos de dados
-│   │   └── routes/          # Rotas da API
-├── docker-compose.yml       # Configuração Docker
+│   │   ├── controllers/      # Controllers
+│   │   ├── services/         # Regras de negócio
+│   │   ├── routes/           # Rotas da API
+│   │   ├── middlewares/      # Middlewares (inclui Swagger)
+│   │   └── lib/              # Prisma client e helpers
+│   └── prisma/               # Schema e migrações
+├── frontend/
+│   ├── angular-host/         # App Angular principal (porta 4200)
+│   └── angular-remote/       # App Angular remoto (porta 4201)
+├── docker-compose.yml        # Orquestração Docker
 └── README.md
 ```
 
@@ -146,32 +156,38 @@ bytebank-fiap/
 
 ### Erro de conexão com a API
 
-- Verifique se o backend está rodando na porta 3000
-- Confirme se a variável `NEXT_PUBLIC_API_URL` está correta
+- Verifique se a API está rodando na porta 3333
+- Confirme se a `DATABASE_URL` e `JWT_SECRET` estão configuradas
 
-### Erro de conexão com MongoDB
+### Erro de conexão com o PostgreSQL
 
-- Verifique se o container do MongoDB está rodando
-- Confirme se a variável `MONGODB_URI` está correta
+- Verifique se o container do PostgreSQL está rodando (`db`)
+- Confirme se as credenciais do banco batem com a `DATABASE_URL`
 
 ### Problemas de build
 
 - Execute `docker-compose down` e `docker-compose up --build` para rebuildar
-- Verifique se não há conflitos de porta
+- Verifique se não há conflitos nas portas 3333, 4200, 4201, 5432
+- Em caso de erros do Prisma, rode `npx prisma generate` e `npx prisma migrate deploy`
 
-## 📝 API Endpoints
+## 📝 API Endpoints (principais)
 
-### Autenticação
+### Usuários
 
-- `POST /user/auth` - Login
-- `POST /user` - Registro
-- `GET /user` - Listar usuários
+- `POST /users` - Registro
+- `POST /users/login` - Login
+- `GET /users/me` - Perfil do usuário autenticado
 
-### Contas e Transações
+### Transações
 
-- `GET /account` - Obter dados da conta
-- `POST /account/transaction` - Criar transação
-- `GET /account/statement` - Obter extrato
+- `GET /transactions` - Listar transações
+- `GET /transactions/summary` - Resumo
+- `GET /transactions/yearly-summary` - Resumo anual
+- `POST /transactions` - Criar transação
+- `PATCH /transactions/{id}` - Atualizar transação
+- `GET /transactions/{id}/receipt` - Visualizar recibo
+- `GET /transactions/{id}/receipt/download` - Download de recibo
+- `DELETE /transactions/{id}` - Remover transação
 
 ## 🤝 Contribuição
 
@@ -186,5 +202,9 @@ bytebank-fiap/
 Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
 ## 👥 Equipe
+
+- [Priscilla Correa](https://github.com/prissycorrea)
+- [Júlio Magalhães](https://github.com/jcmagalhaess)
+- [Mauro Rodrigues de Melo](https://github.com/mauromelo)
 
 Desenvolvido para o Tech Challenge FIAP - Fase 02.
