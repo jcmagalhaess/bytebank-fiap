@@ -4,7 +4,7 @@ module.exports = withNativeFederation({
   name: 'angular-host',
 
   remotes: {
-    'angular-remote': 'http://localhost:4201/remoteEntry.json',
+    'angular-remote': `http://${process.env.ANGULAR_REMOTE}/remoteEntry.json`,
   },
 
   features: {
