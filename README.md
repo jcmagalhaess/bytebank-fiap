@@ -6,6 +6,8 @@ Sistema de controle financeiro com frontend em Angular (arquitetura de micro fro
 
 [Layout no Figma](https://www.figma.com/design/iEFswemmf7cQVTA4tHygZn/Tech-Challenge--2?node-id=0-1&t=nvpqaIFXIvrkzy83-1)
 
+[Acesso a aplicação na Vercel](https://bytebank-fiap-ps41.vercel.app/)
+
 
 ## 🚀 Funcionalidades
 
