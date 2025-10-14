@@ -1,12 +1,12 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { INav } from '../../../../shared/interfaces/nav.interface';
 import { getFirstName } from '../../../../shared/utils/format';
 
 @Component({
   selector: 'app-dashboard-tabs',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink],
   templateUrl: './dashboard-tabs.html',
   styleUrl: './dashboard-tabs.scss',
 })

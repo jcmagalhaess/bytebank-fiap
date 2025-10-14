@@ -4,6 +4,7 @@
   "scripts": {
     "start": "ng serve",
     "build": "node replace-env.js && ng build --configuration=production",
+    "vercel": "ng build --configuration=vercel",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
