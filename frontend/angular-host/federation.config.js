@@ -4,7 +4,7 @@ module.exports = withNativeFederation({
   name: 'angular-host',
 
   remotes: {
-    'angular-remote': `https://bytebank-fiap-fiii.vercel.app/remoteEntry.json`,
+    'angular-remote': `https://bytebank-fiap-y7vo.vercel.app/remoteEntry.json`,
   },
 
   features: {
