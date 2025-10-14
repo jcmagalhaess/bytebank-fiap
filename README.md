@@ -4,6 +4,8 @@ Sistema de controle financeiro com frontend em Angular (arquitetura de micro fro
 
 [Assista ao vídeo no YouTube](https://www.youtube.com/watch?v=aNWfAj2hJGk)
 
+[Layout no Figma](https://www.figma.com/design/iEFswemmf7cQVTA4tHygZn/Tech-Challenge--2?node-id=0-1&t=nvpqaIFXIvrkzy83-1)
+
 
 ## 🚀 Funcionalidades
 
