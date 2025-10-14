@@ -25,9 +25,14 @@ services:
     build:
       context: ./frontend/angular-host
       dockerfile: Dockerfile
+    environment:
+      # URL que o browser vai usar para acessar o remote.
+      # Em produção, seria o IP público ou DNS da sua instância AWS.
+      # Para rodar localmente com Docker, localhost funciona.
+      ANGULAR_REMOTE_URL: http://3.94.196.79:4201
     ports:
-      - "4200:4200"
-    command: sh -c "npm run start"
+      - "80:4200"
+    command: sh -c "node ./replace-env.js && npm run start"
     restart: always
     volumes:
       - ./frontend/angular-host:/app
