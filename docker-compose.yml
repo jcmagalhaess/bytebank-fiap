@@ -8,6 +8,8 @@ services:
     ports:
       - "3333:3333"
     command: sh -c "npx prisma generate && npx prisma migrate deploy && npm run dev"
+    env_file:
+      - ./.env
     volumes:
       - .:/app
       - /app/node_modules
