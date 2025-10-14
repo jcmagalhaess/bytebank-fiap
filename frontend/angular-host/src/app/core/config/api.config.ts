@@ -1,5 +1,5 @@
 export const API_CONFIG = {
-  BASE_URL: 'http://ec2-3-94-196-79.compute-1.amazonaws.com:3333',
+  BASE_URL: 'api',
   ENDPOINTS: {
     LOGIN: 'users/login',
     REGISTER: 'users',
